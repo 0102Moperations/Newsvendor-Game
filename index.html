@@ -17,8 +17,6 @@
     --radius:10px;--radius-lg:14px;
   }
   body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
-
-  /* Layout */
   .page{max-width:600px;margin:0 auto;padding:20px 16px 60px;}
   .screen{display:none;}.screen.active{display:block;}
 
@@ -33,7 +31,7 @@
   .card-title{font-size:13px;font-weight:500;color:var(--text2);margin-bottom:12px;display:flex;align-items:center;gap:6px;}
 
   /* Stat bar */
-  .stat-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+  .stat-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
   .sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;}
   .sc .lb{font-size:11px;color:var(--text2);margin-bottom:2px;}
   .sc .vl{font-size:15px;font-weight:500;color:var(--text);}
@@ -57,9 +55,6 @@
   .sv{font-size:22px;font-weight:700;min-width:44px;text-align:right;color:var(--text);}
   .cost-prev{font-size:13px;color:var(--text2);}
   .cost-prev span{color:var(--red);font-weight:500;}
-  .cr-row{display:flex;align-items:center;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);font-size:12px;color:var(--text2);}
-  .cr-bw{flex:1;height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;}
-  .cr-bf{height:100%;background:var(--green);border-radius:3px;transition:width 0.3s;}
 
   /* Buttons */
   .btn-p{display:block;width:100%;padding:13px;background:var(--red);color:#fff;border:none;border-radius:var(--radius);font-size:15px;font-weight:500;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:opacity 0.15s;margin-bottom:8px;}
@@ -115,23 +110,26 @@
   .hist-wrap td.neg{color:var(--red);font-weight:500;}
 
   /* Progress dots */
-  .prog{display:flex;gap:6px;justify-content:center;margin-bottom:16px;}
-  .pd{width:30px;height:30px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--text2);}
+  .prog{display:flex;gap:4px;justify-content:center;margin-bottom:16px;flex-wrap:wrap;}
+  .pd{width:28px;height:28px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--text2);}
   .pd.done{background:var(--green);color:#fff;border-color:var(--green);}
   .pd.cur{background:var(--red);color:#fff;border-color:var(--red);}
 
   /* Intro */
-  .hero{text-align:center;padding:20px 0 12px;}
-  .hero .emo{font-size:52px;display:block;margin-bottom:12px;}
+  .hero{text-align:center;padding:16px 0 12px;}
   .hero h2{font-family:'Black Han Sans',sans-serif;font-size:28px;margin-bottom:10px;}
-  .hero p{font-size:14px;color:var(--text2);line-height:1.8;max-width:380px;margin:0 auto;}
-  .rules-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;margin:14px 0;font-size:13px;color:var(--text2);line-height:2.2;}
-  .rule-i{display:flex;gap:8px;align-items:flex-start;}
-  .rule-i i{color:var(--red);margin-top:2px;}
+  .hero p{font-size:14px;color:var(--text2);line-height:1.9;max-width:400px;margin:0 auto;}
+  .story-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;margin:14px 0;font-size:14px;color:var(--text);line-height:2.1;}
+  .story-box .story-line{display:flex;gap:10px;align-items:flex-start;margin-bottom:4px;}
+  .story-box .story-line i{color:var(--red);margin-top:3px;flex-shrink:0;}
+  .story-rule{background:var(--surface2);border-radius:var(--radius);padding:12px 14px;margin-top:12px;font-size:13px;color:var(--text2);line-height:2;}
   .name-row{display:flex;gap:8px;margin-bottom:6px;}
   .name-row input{flex:1;font-family:'Noto Sans KR',sans-serif;font-size:14px;padding:10px 14px;border:1px solid var(--border2);border-radius:var(--radius);outline:none;background:var(--surface);}
   .name-row input:focus{border-color:var(--red);}
   .name-row .btn-p{width:auto;margin:0;padding:0 20px;white-space:nowrap;}
+
+  /* Kimbap SVG */
+  .kimbap-hero{display:flex;justify-content:center;margin:8px 0 16px;}
 
   /* Final */
   .final-big{text-align:center;padding:20px 0 12px;}
@@ -139,9 +137,8 @@
   .final-big .fn.neg{color:var(--red);}
   .grade-b{display:inline-block;padding:6px 22px;border-radius:20px;font-size:14px;font-weight:500;margin:8px 0;}
 
-  /* Responsive */
   @media(max-width:480px){
-    .stat-bar{grid-template-columns:repeat(2,1fr);}
+    .stat-bar{grid-template-columns:repeat(3,1fr);}
     .res-grid{grid-template-columns:1fr;}
   }
 </style>
@@ -149,27 +146,100 @@
 <body>
 <div class="page">
 
-  <!-- Title -->
   <div class="title-bar">
-    <span style="font-size:26px">🍱</span>
+    <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="30" height="30" rx="6" fill="#1a1a1a"/>
+      <rect x="4" y="13" width="22" height="4" rx="2" fill="white"/>
+      <rect x="7" y="10" width="16" height="10" rx="1.5" fill="#f5c842"/>
+      <rect x="9" y="12" width="12" height="6" rx="1" fill="#e8f5e8"/>
+      <ellipse cx="12" cy="15" rx="1.5" ry="1.2" fill="#e24b4a"/>
+      <ellipse cx="15" cy="15" rx="1.5" ry="1.2" fill="#f5a623"/>
+      <ellipse cx="18" cy="15" rx="1.5" ry="1.2" fill="#4caf50"/>
+      <rect x="4" y="13" width="22" height="1.5" rx="0.75" fill="#1a1a1a" opacity="0.3"/>
+      <rect x="4" y="15.5" width="22" height="1.5" rx="0.75" fill="#1a1a1a" opacity="0.3"/>
+    </svg>
     <h1>도전, 김밥왕!</h1>
-    <span class="badge">4라운드</span>
+    <span class="badge">10라운드</span>
     <span class="badge live"><span class="live-dot"></span> 실시간</span>
   </div>
 
   <!-- ══════════════ INTRO ══════════════ -->
   <div class="screen active" id="s-intro">
     <div class="hero">
-      <span class="emo">🍱</span>
+      <!-- Korean Kimbap SVG Illustration -->
+      <div class="kimbap-hero">
+        <svg width="200" height="110" viewBox="0 0 200 110" xmlns="http://www.w3.org/2000/svg">
+          <!-- 접시 -->
+          <ellipse cx="100" cy="98" rx="88" ry="10" fill="#e8e0d4"/>
+          <ellipse cx="100" cy="96" rx="85" ry="8" fill="#f0e8dc"/>
+          <!-- 김밥 롤 3개 (비스듬히) -->
+          <!-- 뒤 김밥 -->
+          <ellipse cx="68" cy="72" rx="18" ry="18" fill="#1a1a1a"/>
+          <ellipse cx="68" cy="72" rx="14" ry="14" fill="#f5f0e8"/>
+          <ellipse cx="68" cy="72" rx="10" ry="10" fill="#e8c84a"/>
+          <ellipse cx="65" cy="70" rx="3" ry="2.5" fill="#e24b4a"/>
+          <ellipse cx="71" cy="73" rx="3" ry="2.5" fill="#4caf50"/>
+          <ellipse cx="68" cy="76" rx="2.5" ry="2" fill="#f5a623"/>
+          <!-- 김밥 옆면 (뒤) -->
+          <rect x="50" y="54" width="36" height="38" rx="2" fill="#1a1a1a" opacity="0.0"/>
+          <!-- 가운데 김밥 -->
+          <rect x="42" y="48" width="116" height="32" rx="4" fill="#1a1a1a"/>
+          <rect x="45" y="51" width="110" height="26" rx="3" fill="#f5f0e8"/>
+          <rect x="48" y="54" width="104" height="20" rx="2" fill="#e8c84a"/>
+          <!-- 속재료 줄 -->
+          <rect x="52" y="58" width="96" height="4" rx="2" fill="#e24b4a" opacity="0.85"/>
+          <rect x="52" y="63" width="96" height="3" rx="1.5" fill="#4caf50" opacity="0.85"/>
+          <rect x="52" y="67" width="96" height="3" rx="1.5" fill="#f5a623" opacity="0.85"/>
+          <!-- 앞 김밥 단면 (왼쪽 끝) -->
+          <ellipse cx="47" cy="64" rx="14" ry="13" fill="#1a1a1a"/>
+          <ellipse cx="47" cy="64" rx="11" ry="10" fill="#f5f0e8"/>
+          <ellipse cx="47" cy="64" rx="8" ry="7" fill="#e8c84a"/>
+          <ellipse cx="45" cy="62" rx="2.5" ry="2" fill="#e24b4a"/>
+          <ellipse cx="49" cy="66" rx="2.5" ry="2" fill="#4caf50"/>
+          <ellipse cx="46" cy="67" rx="2" ry="1.8" fill="#f5a623"/>
+          <!-- 앞 김밥 단면 (오른쪽 끝) -->
+          <ellipse cx="153" cy="64" rx="14" ry="13" fill="#1a1a1a"/>
+          <ellipse cx="153" cy="64" rx="11" ry="10" fill="#f5f0e8"/>
+          <ellipse cx="153" cy="64" rx="8" ry="7" fill="#e8c84a"/>
+          <ellipse cx="151" cy="62" rx="2.5" ry="2" fill="#e24b4a"/>
+          <ellipse cx="155" cy="66" rx="2.5" ry="2" fill="#4caf50"/>
+          <ellipse cx="152" cy="67" rx="2" ry="1.8" fill="#f5a623"/>
+          <!-- 참깨 -->
+          <circle cx="70" cy="57" r="1" fill="#c8b98a"/>
+          <circle cx="85" cy="59" r="1" fill="#c8b98a"/>
+          <circle cx="100" cy="57" r="1" fill="#c8b98a"/>
+          <circle cx="115" cy="59" r="1" fill="#c8b98a"/>
+          <circle cx="130" cy="57" r="1" fill="#c8b98a"/>
+          <!-- 단무지 슬라이스 -->
+          <ellipse cx="175" cy="80" rx="12" ry="12" fill="#f5e642"/>
+          <ellipse cx="175" cy="80" rx="9" ry="9" fill="#f7ec6e"/>
+          <line x1="175" y1="69" x2="175" y2="91" stroke="#e8d43a" stroke-width="1"/>
+          <line x1="164" y1="80" x2="186" y2="80" stroke="#e8d43a" stroke-width="1"/>
+          <!-- 가격표 느낌 작은 장식 -->
+          <rect x="155" y="20" width="38" height="20" rx="4" fill="#e24b4a"/>
+          <text x="174" y="34" font-size="11" fill="white" text-anchor="middle" font-family="sans-serif" font-weight="bold">₩3,000</text>
+        </svg>
+      </div>
       <h2>도전, 김밥왕!</h2>
-      <p>학교 축제 김밥 가게 사장이 되어<br>4라운드 최고 이익을 올리세요.<br>반 친구들과 실시간 순위 경쟁!</p>
+      <p>수요를 예측하고, 최고의 이익을 올려라!</p>
     </div>
-    <div class="rules-box">
-      <div class="rule-i"><i class="ti ti-circle-check"></i><span>매일 아침 딱 한 번만 주문 가능 (추가 주문 불가)</span></div>
-      <div class="rule-i"><i class="ti ti-circle-check"></i><span>남은 김밥은 잔존가치로 처리 (라운드마다 다름)</span></div>
-      <div class="rule-i"><i class="ti ti-circle-check"></i><span>순이익 = 매출 − 구매비용 + 잔존가치</span></div>
-      <div class="rule-i"><i class="ti ti-trophy"></i><span>4라운드 누적 이익 Top 5 실시간 공개!</span></div>
+
+    <div class="story-box">
+      <div style="font-weight:500;font-size:15px;margin-bottom:12px;color:var(--text);">📖 스토리</div>
+      <div class="story-line"><i class="ti ti-map-pin"></i><span>여러분은 학교 축제에서 <strong>김밥 가게</strong>를 열었습니다.</span></div>
+      <div class="story-line"><i class="ti ti-calendar"></i><span>축제는 <strong>딱 10일간</strong> — 매일 아침 김밥을 주문하고 하루를 시작합니다.</span></div>
+      <div class="story-line"><i class="ti ti-clock"></i><span>하루가 끝나면 남은 김밥은 <strong>전량 폐기</strong>. 다음 날로 넘길 수 없습니다.</span></div>
+      <div class="story-line"><i class="ti ti-trending-up"></i><span>날씨, 요일, 원가 변화에 따라 전략을 바꿔가며 <strong>10일 누적 이익을 최대화</strong>하세요!</span></div>
+      <div class="story-line"><i class="ti ti-trophy"></i><span>과연 당신은 <strong>김밥왕 👑</strong>이 될 수 있을까요?</span></div>
+      <div class="story-rule">
+        <strong>게임 규칙</strong><br>
+        • 매일 아침 딱 한 번만 주문 가능 (추가 주문 불가)<br>
+        • 남은 김밥은 잔존가치로 처리 (라운드마다 다름)<br>
+        • 순이익 = 매출 − 구매비용 + 잔존가치<br>
+        • 10라운드 누적 이익 Top 5 실시간 공개!
+      </div>
     </div>
+
     <div style="margin-bottom:14px;">
       <div style="font-size:13px;font-weight:500;margin-bottom:8px;">닉네임 입력</div>
       <div class="name-row">
@@ -178,6 +248,7 @@
       </div>
       <div style="font-size:11px;color:var(--text3);">닉네임은 리더보드에 공개됩니다 (최대 12자)</div>
     </div>
+
     <div class="card">
       <div class="card-title"><span class="live-dot"></span> 현재 리더보드 (Top 5)</div>
       <div id="intro-lb"><div class="lb-empty">불러오는 중...</div></div>
@@ -189,10 +260,9 @@
   <div class="screen" id="s-game">
     <div class="prog" id="prog-g"></div>
     <div class="stat-bar">
-      <div class="sc"><div class="lb">라운드</div><div class="vl" id="st-round">1/4</div></div>
+      <div class="sc"><div class="lb">라운드</div><div class="vl" id="st-round">1/10</div></div>
       <div class="sc"><div class="lb">누적 이익</div><div class="vl" id="st-profit" style="color:var(--green)">₩0</div></div>
       <div class="sc"><div class="lb">내 순위</div><div class="vl" id="st-rank">-</div></div>
-      <div class="sc"><div class="lb">임계비(CR)</div><div class="vl" id="st-cr">-</div></div>
     </div>
     <div class="round-hdr">
       <h2 id="rh-title">라운드 1</h2>
@@ -206,18 +276,12 @@
     </div>
     <div class="hint-box" id="g-hint"></div>
     <div class="order-box">
-      <h3>주문량 결정</h3>
+      <h3>오늘 김밥 주문량을 결정하세요</h3>
       <div class="slider-row">
         <input type="range" id="o-slider" min="0" max="200" value="100" step="1" oninput="onSlider()">
-        <span class="sv" id="sv-disp">100</span>
+        <span class="sv" id="sv-disp">100</span><span style="font-size:13px;color:var(--text2);margin-left:2px;">줄</span>
       </div>
       <div class="cost-prev">예상 구매 비용: <span id="cp-val">₩200,000</span></div>
-      <div class="cr-row">
-        <span style="white-space:nowrap;">임계비</span>
-        <div class="cr-bw"><div class="cr-bf" id="cr-fill" style="width:33%"></div></div>
-        <span id="cr-lbl" style="font-weight:500;">33%</span>
-        <span style="font-size:11px;">품절 허용 기준</span>
-      </div>
     </div>
     <div class="card">
       <div class="card-title"><span class="live-dot"></span> 실시간 리더보드 (Top 5)</div>
@@ -264,7 +328,7 @@
   <div class="screen" id="s-final">
     <div class="final-big">
       <div style="font-size:42px;margin-bottom:8px">🏆</div>
-      <div style="font-size:13px;color:var(--text2);margin-bottom:4px">4라운드 최종 누적 이익</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:4px">10라운드 최종 누적 이익</div>
       <div class="fn" id="f-num"></div>
       <div class="grade-b" id="f-grade"></div>
       <div style="font-size:14px;color:var(--text2);margin-top:6px">최종 순위: <strong id="f-rank" style="font-size:17px"></strong></div>
@@ -275,7 +339,7 @@
     </div>
     <div class="hist-wrap">
       <table>
-        <thead><tr><th>라운드</th><th>날씨</th><th>주문</th><th>수요</th><th>판매</th><th>재고</th><th>순이익</th></tr></thead>
+        <thead><tr><th>R</th><th>날씨</th><th>주문</th><th>수요</th><th>판매</th><th>재고</th><th>순이익</th></tr></thead>
         <tbody id="f-tbody"></tbody>
       </table>
     </div>
@@ -284,12 +348,12 @@
     <button class="btn-s" onclick="shareResult()">결과 공유하기 📋</button>
   </div>
 
-</div><!-- /page -->
+</div>
 
-<!-- ══════════════ Firebase SDK ══════════════ -->
+<!-- ══════════════ Firebase ══════════════ -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-import { getDatabase, ref, set, get, onValue, query, orderByChild, limitToLast }
+import { getDatabase, ref, set, get, onValue }
   from "https://www.gstatic.com/firebasejs/12.13.0/firebase-database.js";
 
 const firebaseConfig = {
@@ -305,60 +369,66 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db  = getDatabase(app);
 
-/* ════════════════════════════════
-   GAME DATA
-════════════════════════════════ */
+/* ══ 10라운드 구성 (PDF 기준) ══ */
 const ROUNDS = [
-  { label:'라운드 1', weather:'☀️ 맑음/평일', price:3000, cost:2000, salvage:0,
+  { label:'1일차', weather:'☀️ 맑음/평일', price:3000, cost:2000, salvage:0,
     demand:[72,74,89,89,89,92,92,93,97,100,101,102,104,113,113],
-    hint:'과거 데이터: 맑음·평일 15일, 평균 95명 (72~113명)', event:null, sliderMax:160 },
-  { label:'라운드 2', weather:'☔ 비/평일', price:3000, cost:2000, salvage:0,
+    hint:'과거 데이터: 맑음·평일 평균 95명 (72~113명)', event:null, sliderMax:160 },
+  { label:'2일차', weather:'☀️ 맑음/평일', price:3000, cost:2000, salvage:0,
+    demand:[72,74,89,89,89,92,92,93,97,100,101,102,104,113,113],
+    hint:'과거 데이터: 맑음·평일 평균 95명 (72~113명)', event:null, sliderMax:160 },
+  { label:'3일차', weather:'☔ 비/평일', price:3000, cost:2000, salvage:0,
     demand:[45,46,54,56,61],
-    hint:'과거 데이터: 비 오는 날 5일, 평균 52명 (45~61명). 오늘은 비!', event:null, sliderMax:120 },
-  { label:'라운드 3', weather:'☀️ 맑음/주말', price:3000, cost:1000, salvage:0,
+    hint:'과거 데이터: 비 오는 날 평균 52명 (45~61명). 오늘은 비!', event:null, sliderMax:120 },
+  { label:'4일차', weather:'☁️ 흐림/평일', price:3000, cost:1000, salvage:0,
+    demand:[60,63,68,69,72,75,76,78],
+    hint:'과거 데이터: 흐림·평일 평균 70명 (60~78명). 재료를 싸게 구했습니다!',
+    event:'🎉 원가 인하! ₩2,000 → ₩1,000', sliderMax:150 },
+  { label:'5일차', weather:'☀️ 맑음/주말', price:3000, cost:1000, salvage:0,
     demand:[113,119,121,126,139,156],
-    hint:'맑음·주말 6일, 평균 129명 (113~156명). 재료를 싸게 구했다! 원가 ₩1,000으로 인하!',
-    event:'🎉 원가 인하! ₩1,000', sliderMax:200 },
-  { label:'라운드 4', weather:'☁️ 흐림/주말', price:3000, cost:1000, salvage:1000,
+    hint:'과거 데이터: 맑음·주말 평균 129명 (113~156명). 주말이라 손님이 많습니다!', event:null, sliderMax:200 },
+  { label:'6일차', weather:'☔ 비/평일', price:3000, cost:1000, salvage:0,
+    demand:[45,46,54,56,61],
+    hint:'과거 데이터: 비 오는 날 평균 52명 (45~61명). 또 비가 옵니다!', event:null, sliderMax:120 },
+  { label:'7일차', weather:'☁️ 흐림/주말', price:3000, cost:1000, salvage:1000,
     demand:[97,101,127],
-    hint:'흐림·주말 3일, 평균 108명 (97~127명). 밴드부가 남은 김밥을 ₩1,000에 전부 사준다!',
-    event:'🎸 밴드부 구매! 잔존가 ₩1,000', sliderMax:180 }
+    hint:'과거 데이터: 흐림·주말 평균 108명 (97~127명). 밴드부가 남은 김밥을 사준답니다!',
+    event:'🎸 밴드부 구매! 잔존가 ₩1,000', sliderMax:180 },
+  { label:'8일차', weather:'☀️ 맑음/평일', price:3000, cost:1000, salvage:1000,
+    demand:[72,74,89,89,89,92,92,93,97,100,101,102,104,113,113],
+    hint:'과거 데이터: 맑음·평일 평균 95명 (72~113명). 밴드부가 오늘도 남은 김밥을 사줍니다!',
+    event:'🎸 밴드부 구매! 잔존가 ₩1,000', sliderMax:160 },
+  { label:'9일차', weather:'☀️ 맑음/주말', price:3000, cost:1000, salvage:-500,
+    demand:[113,119,121,126,139,156],
+    hint:'과거 데이터: 맑음·주말 평균 129명 (113~156명). 주의! 음식물 처리비가 발생합니다.',
+    event:'⚠️ 폐기비용 발생! 잔존가 -₩500', sliderMax:200 },
+  { label:'10일차 (최종)', weather:'☀️ 맑음/주말', price:3000, cost:1000, salvage:-500,
+    demand:[113,119,121,126,139,156],
+    hint:'과거 데이터: 맑음·주말 평균 129명 (113~156명). 축제 마지막 날! 마지막 기회입니다!',
+    event:'⚠️ 폐기비용 발생! 잔존가 -₩500', sliderMax:200 }
 ];
 
-/* ════════════════════════════════
-   STATE
-════════════════════════════════ */
+/* ══ 상태 ══ */
 let cur = 0, cumProfit = 0, history = [];
 let myNick = '', myKey = '';
-let lbUnsub = null;   // Firebase listener unsubscribe
+let lbUnsub = null;
 
-/* ════════════════════════════════
-   HELPERS
-════════════════════════════════ */
+/* ══ 유틸 ══ */
 const fmt = n => (n < 0 ? '-₩' : '₩') + Math.abs(n).toLocaleString();
 const randDemand = set => set[Math.floor(Math.random() * set.length)];
-const getCR = r => { const cu = r.price - r.cost, co = r.cost - r.salvage; return co === 0 ? 1 : cu / (cu + co); };
-const show  = id => { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); };
+const show = id => { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); };
 
-/* ════════════════════════════════
-   FIREBASE — write my score
-════════════════════════════════ */
+/* ══ Firebase 저장 ══ */
 async function saveScore() {
   await set(ref(db, 'leaderboard/' + myKey), {
-    nick: myNick,
-    profit: cumProfit,
-    rounds: cur,
-    ts: Date.now()
+    nick: myNick, profit: cumProfit, rounds: cur, ts: Date.now()
   });
 }
 
-/* ════════════════════════════════
-   FIREBASE — real-time leaderboard listener
-════════════════════════════════ */
+/* ══ 실시간 리더보드 리스너 ══ */
 function startLbListener(containerIds) {
-  if (lbUnsub) lbUnsub();   // detach previous
-  const lbRef = ref(db, 'leaderboard');
-  lbUnsub = onValue(lbRef, snap => {
+  if (lbUnsub) lbUnsub();
+  lbUnsub = onValue(ref(db, 'leaderboard'), snap => {
     const data = snap.val() || {};
     const sorted = Object.entries(data)
       .map(([k, v]) => ({ key: k, ...v }))
@@ -366,44 +436,32 @@ function startLbListener(containerIds) {
     const top5 = sorted.slice(0, 5);
     const myIdx = sorted.findIndex(e => e.key === myKey);
     const myRank = myIdx === -1 ? null : { rank: myIdx + 1, total: sorted.length };
-
     containerIds.forEach(id => renderLB(id, top5, sorted, myRank));
-
-    if (myRank) {
-      document.getElementById('st-rank').textContent = `${myRank.rank}위/${myRank.total}명`;
-    }
+    if (myRank) document.getElementById('st-rank').textContent = `${myRank.rank}위/${myRank.total}명`;
   });
 }
 
-/* ════════════════════════════════
-   RENDER LEADERBOARD
-════════════════════════════════ */
+/* ══ 리더보드 렌더 ══ */
 function renderLB(containerId, top5, allSorted, myRank) {
   const el = document.getElementById(containerId);
   if (!el) return;
   if (!top5.length) { el.innerHTML = '<div class="lb-empty">아직 참가자가 없습니다</div>'; return; }
-
   const mx = Math.max(...top5.map(e => Math.abs(e.profit)), 1);
   let html = '';
-
   top5.forEach((e, i) => {
     const isMe = e.key === myKey;
     const rankCls = i === 0 ? 'r1' : i === 1 ? 'r2' : i === 2 ? 'r3' : 'rn';
-    const medal   = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1);
-    const barW    = Math.max(4, Math.round(Math.abs(e.profit) / mx * 100));
-    const profCls = e.profit >= 0 ? 'pos' : 'neg';
+    const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1);
+    const barW = Math.max(4, Math.round(Math.abs(e.profit) / mx * 100));
     html += `<div class="lb-row${isMe ? ' me-row' : ''}">
       <div class="lb-rank ${rankCls}">${medal}</div>
       <div class="lb-name${isMe ? ' me' : ''}">${isMe ? '⭐ ' : ''}${e.nick.substring(0,11)}</div>
       <div class="lb-rounds">${e.rounds}R</div>
       <div class="lb-bar-wrap"><div class="lb-bar ${isMe ? 'bar-me' : 'bar-o'}" style="width:${barW}%"></div></div>
-      <div class="lb-profit ${profCls}">${fmt(e.profit)}</div>
+      <div class="lb-profit ${e.profit >= 0 ? 'pos' : 'neg'}">${fmt(e.profit)}</div>
     </div>`;
   });
-
-  /* If I'm outside top5, append my row */
   if (myRank && myRank.rank > 5 && myKey) {
-    const me = allSorted[myRank.rank - 1];
     html += `<div class="lb-sep">···  ${myRank.rank - 5}명 더  ···</div>`;
     html += `<div class="lb-row me-row">
       <div class="lb-rank rn">${myRank.rank}</div>
@@ -416,9 +474,7 @@ function renderLB(containerId, top5, allSorted, myRank) {
   el.innerHTML = html;
 }
 
-/* ════════════════════════════════
-   PROGRESS DOTS
-════════════════════════════════ */
+/* ══ 진행 도트 ══ */
 function buildProg(id, current) {
   const el = document.getElementById(id);
   if (!el) return;
@@ -426,16 +482,14 @@ function buildProg(id, current) {
     let c = 'pd';
     if (i < current) c += ' done';
     else if (i === current) c += ' cur';
-    return `<div class="${c}">${i < current ? '<i class="ti ti-check"></i>' : (i+1)}</div>`;
+    return `<div class="${c}">${i < current ? '<i class="ti ti-check"></i>' : (i + 1)}</div>`;
   }).join('');
 }
 
-/* ════════════════════════════════
-   INTRO — static leaderboard snapshot
-════════════════════════════════ */
+/* ══ 인트로 리더보드 ══ */
 async function loadIntroLB() {
   const snap = await get(ref(db, 'leaderboard'));
-  const data  = snap.val() || {};
+  const data = snap.val() || {};
   const sorted = Object.entries(data)
     .map(([k, v]) => ({ key: k, ...v }))
     .sort((a, b) => b.profit - a.profit || b.rounds - a.rounds);
@@ -443,63 +497,40 @@ async function loadIntroLB() {
 }
 loadIntroLB();
 
-/* ════════════════════════════════
-   START GAME
-════════════════════════════════ */
+/* ══ 게임 시작 ══ */
 window.startGame = async function() {
   const nick = document.getElementById('nick-input').value.trim();
   if (!nick) { alert('닉네임을 입력해 주세요!'); return; }
   myNick = nick;
-  myKey  = 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+  myKey = 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
   cur = 0; cumProfit = 0; history = [];
   await saveScore();
   loadRound();
 };
 
-/* ════════════════════════════════
-   LOAD ROUND
-════════════════════════════════ */
+/* ══ 라운드 로드 ══ */
 function loadRound() {
   const r = ROUNDS[cur];
-  const ratio = getCR(r);
-  const cu = r.price - r.cost, co = r.cost - r.salvage;
-
   buildProg('prog-g', cur);
-  document.getElementById('st-round').textContent = `${cur+1}/4`;
+  document.getElementById('st-round').textContent = `${cur + 1}/10`;
   document.getElementById('st-profit').textContent = fmt(cumProfit);
   document.getElementById('st-profit').style.color = cumProfit >= 0 ? 'var(--green)' : 'var(--red)';
-  document.getElementById('st-cr').textContent = Math.round(ratio * 100) + '%';
-  document.getElementById('rh-title').textContent = r.label;
+  document.getElementById('rh-title').textContent = `${cur + 1}라운드 — ${r.label}`;
   document.getElementById('rh-weather').textContent = r.weather;
   document.getElementById('rh-cost-chip').textContent = '원가 ' + fmt(r.cost);
   document.getElementById('rh-salv-chip').textContent = '잔존가 ' + fmt(r.salvage);
-
   const ev = document.getElementById('rh-event');
-  if (r.event) { ev.textContent = r.event; ev.style.display = ''; }
-  else { ev.style.display = 'none'; }
-
-  document.getElementById('g-hint').innerHTML =
-    `<strong>수요 힌트</strong> — ${r.hint}<br>
-     <span style="display:block;margin-top:5px">
-       과소재고 비용 Cu = <strong>${fmt(cu)}</strong> &nbsp;|&nbsp;
-       과다재고 비용 Co = <strong>${fmt(co)}</strong> &nbsp;|&nbsp;
-       임계비 = <strong>${Math.round(ratio*100)}%</strong>
-     </span>`;
-
+  if (r.event) { ev.textContent = r.event; ev.style.display = ''; } else { ev.style.display = 'none'; }
+  document.getElementById('g-hint').innerHTML = `<strong>수요 힌트</strong> — ${r.hint}`;
   const sl = document.getElementById('o-slider');
-  sl.max   = r.sliderMax;
-  sl.value = Math.round(r.demand.reduce((a,b) => a+b, 0) / r.demand.length);
-  document.getElementById('cr-lbl').textContent = Math.round(ratio * 100) + '%';
-  document.getElementById('cr-fill').style.width = Math.round(ratio * 100) + '%';
+  sl.max = r.sliderMax;
+  sl.value = Math.round(r.demand.reduce((a, b) => a + b, 0) / r.demand.length);
   onSlider();
-
   startLbListener(['game-lb']);
   show('s-game');
 }
 
-/* ════════════════════════════════
-   SLIDER
-════════════════════════════════ */
+/* ══ 슬라이더 ══ */
 window.onSlider = function() {
   const r = ROUNDS[cur];
   const v = parseInt(document.getElementById('o-slider').value);
@@ -507,122 +538,115 @@ window.onSlider = function() {
   document.getElementById('cp-val').textContent = fmt(v * r.cost);
 };
 
-/* ════════════════════════════════
-   CONFIRM ORDER
-════════════════════════════════ */
+/* ══ 주문 확정 ══ */
 window.confirmOrder = async function() {
   const btn = document.getElementById('order-btn');
   btn.disabled = true;
-
-  const r       = ROUNDS[cur];
+  const r = ROUNDS[cur];
   const ordered = parseInt(document.getElementById('o-slider').value);
-  const demand  = randDemand(r.demand);
-  const sold    = Math.min(ordered, demand);
+  const demand = randDemand(r.demand);
+  const sold = Math.min(ordered, demand);
   const leftover = ordered - sold;
-  const revenue  = sold * r.price;
-  const costT    = ordered * r.cost;
-  const salvT    = leftover * r.salvage;
-  const profit   = revenue - costT + salvT;
+  const revenue = sold * r.price;
+  const costT = ordered * r.cost;
+  const salvT = leftover * r.salvage;
+  const profit = revenue - costT + salvT;
   cumProfit += profit;
-
-  history.push({ round: cur+1, weather: r.weather, ordered, demand, sold, leftover, profit, cumulative: cumProfit });
-
+  history.push({ round: cur + 1, weather: r.weather, ordered, demand, sold, leftover, profit, cumulative: cumProfit });
   await saveScore();
 
   buildProg('prog-r', cur);
-  document.getElementById('res-title').textContent = r.label + ' 결과';
-  document.getElementById('r-order').textContent  = ordered + '줄';
-  document.getElementById('r-demand').textContent = demand  + '줄';
-  document.getElementById('r-sold').textContent   = sold    + '줄';
-  document.getElementById('r-left').textContent   = leftover + '줄';
-  document.getElementById('r-rev').textContent    = fmt(revenue);
-  document.getElementById('r-cost').textContent   = fmt(costT);
-  document.getElementById('r-salv').textContent   = fmt(salvT);
-  document.getElementById('r-cum').textContent    = fmt(cumProfit);
+  document.getElementById('res-title').textContent = `${cur + 1}라운드 — ${r.label} 결과`;
+  document.getElementById('r-order').textContent = ordered + '줄';
+  document.getElementById('r-demand').textContent = demand + '줄';
+  document.getElementById('r-sold').textContent = sold + '줄';
+  document.getElementById('r-left').textContent = leftover + '줄';
+  document.getElementById('r-rev').textContent = fmt(revenue);
+  document.getElementById('r-cost').textContent = fmt(costT);
+  document.getElementById('r-salv').textContent = fmt(salvT);
+  document.getElementById('r-cum').textContent = fmt(cumProfit);
 
   const pd = document.getElementById('p-disp');
   pd.className = 'profit-disp ' + (profit >= 0 ? 'pos' : 'neg');
   document.getElementById('p-val').textContent = fmt(profit);
 
-  const ratio = getCR(r);
-  const cu = r.price - r.cost, co = r.cost - r.salvage;
   let ins = '';
   if (demand > ordered) {
-    const m = demand - ordered;
-    ins = `📦 품절! ${m}줄 기회 손실 ${fmt(m * cu)}. Cu(${fmt(cu)}) > Co(${fmt(co)})이면 더 주문하는 게 최적입니다.`;
+    ins = `📦 품절! ${demand - ordered}줄을 더 팔 수 있었지만 재고가 없었습니다. 다음엔 조금 더 주문해보세요!`;
   } else if (leftover > 0) {
-    ins = `🗑️ ${leftover}줄 폐기! 과다재고 손실 ${fmt(leftover * co)}. 임계비 ${Math.round(ratio*100)}%에서 재고 허용 한도를 초과했습니다.`;
+    ins = `🗑️ ${leftover}줄 폐기! 수요보다 많이 주문했습니다. 다음엔 조금 줄여보세요!`;
   } else {
-    ins = `✅ 완판! 주문량 = 수요. 최상의 결과!`;
+    ins = `✅ 완판! 주문량과 수요가 딱 맞았습니다. 최상의 결과!`;
   }
   document.getElementById('ins-box').textContent = ins;
 
   document.getElementById('h-tbody').innerHTML = history.map(h =>
-    `<tr>
-      <td>${h.round}</td>
-      <td style="font-size:11px">${h.weather}</td>
-      <td>${h.ordered}</td><td>${h.demand}</td><td>${h.sold}</td><td>${h.leftover}</td>
-      <td class="${h.profit >= 0 ? 'pos' : 'neg'}">${fmt(h.profit)}</td>
-    </tr>`
+    `<tr><td>${h.round}</td><td style="font-size:11px">${h.weather}</td>
+     <td>${h.ordered}</td><td>${h.demand}</td><td>${h.sold}</td><td>${h.leftover}</td>
+     <td class="${h.profit >= 0 ? 'pos' : 'neg'}">${fmt(h.profit)}</td></tr>`
   ).join('');
 
-  document.getElementById('next-btn').textContent =
-    cur >= ROUNDS.length - 1 ? '최종 결과 보기 →' : '다음 라운드 →';
-
+  document.getElementById('next-btn').textContent = cur >= ROUNDS.length - 1 ? '최종 결과 보기 →' : '다음 라운드 →';
   startLbListener(['result-lb']);
   show('s-result');
   btn.disabled = false;
 };
 
-/* ════════════════════════════════
-   NEXT ROUND
-════════════════════════════════ */
+/* ══ 다음 라운드 ══ */
 window.nextRound = function() {
   cur++;
   if (cur >= ROUNDS.length) showFinal();
   else loadRound();
 };
 
-/* ════════════════════════════════
-   FINAL
-════════════════════════════════ */
+/* ══ 최종 화면 ══ */
 async function showFinal() {
   const fn = document.getElementById('f-num');
   fn.textContent = fmt(cumProfit);
-  fn.className   = 'fn' + (cumProfit < 0 ? ' neg' : '');
+  fn.className = 'fn' + (cumProfit < 0 ? ' neg' : '');
 
   let grade, gs;
-  if      (cumProfit >= 400000) { grade = '🥇 김밥왕 달성!';   gs = 'background:#eaf3de;color:#3B6D11;'; }
-  else if (cumProfit >= 200000) { grade = '🥈 베테랑 사장님';  gs = 'background:#e6f1fb;color:#185FA5;'; }
-  else if (cumProfit >= 0)      { grade = '🥉 신입 사장님';    gs = 'background:#fef3e2;color:#854F0B;'; }
+  if      (cumProfit >= 800000) { grade = '👑 김밥왕 달성!';    gs = 'background:#eaf3de;color:#3B6D11;'; }
+  else if (cumProfit >= 500000) { grade = '🥇 베테랑 사장님';  gs = 'background:#fef3e2;color:#854F0B;'; }
+  else if (cumProfit >= 200000) { grade = '🥈 신입 사장님';    gs = 'background:#e6f1fb;color:#185FA5;'; }
+  else if (cumProfit >= 0)      { grade = '🥉 수습 사장님';    gs = 'background:#f1efe8;color:#5F5E5A;'; }
   else                          { grade = '😢 적자 가게';       gs = 'background:#fcebeb;color:#A32D2D;'; }
   const gb = document.getElementById('f-grade');
   gb.textContent = grade; gb.style.cssText = gs;
 
   document.getElementById('f-tbody').innerHTML = history.map(h =>
-    `<tr>
-      <td>${h.round}</td><td style="font-size:11px">${h.weather}</td>
-      <td>${h.ordered}</td><td>${h.demand}</td><td>${h.sold}</td><td>${h.leftover}</td>
-      <td class="${h.profit >= 0 ? 'pos' : 'neg'}">${fmt(h.profit)}</td>
-    </tr>`
+    `<tr><td>${h.round}</td><td style="font-size:11px">${h.weather}</td>
+     <td>${h.ordered}</td><td>${h.demand}</td><td>${h.sold}</td><td>${h.leftover}</td>
+     <td class="${h.profit >= 0 ? 'pos' : 'neg'}">${fmt(h.profit)}</td></tr>`
   ).join('');
 
   const underO = history.filter(h => h.demand > h.ordered).length;
   const overO  = history.filter(h => h.demand <= h.ordered && h.leftover > 0).length;
   document.getElementById('f-ins').textContent =
-    `4라운드 결산: 품절 ${underO}회, 과다재고 ${overO}회. ` +
-    `임계비가 낮을수록(R1~2, 33%) 적게 주문, 높을수록(R3, 67%) 더 많이 주문하는 것이 최적입니다. ` +
-    `R4는 잔존가 = 원가 → Co = 0 → 임계비 100%, 재고 손실 없음.`;
+    `10라운드 결산 — 품절 ${underO}회, 과다재고 ${overO}회. ` +
+    `날씨와 요일에 따라 수요가 크게 달라집니다. ` +
+    `원가가 낮아질수록, 잔존가치가 높을수록 더 공격적으로 주문하는 것이 유리합니다.`;
 
   startLbListener(['final-lb']);
-  show('s-final');
 
-  /* update rank display from listener */
+  const snap = await (async () => {
+    const { get: fbGet } = await import("https://www.gstatic.com/firebasejs/12.13.0/firebase-database.js");
+    return fbGet(ref(db, 'leaderboard'));
+  })().catch(() => null);
+
+  if (snap) {
+    const sorted = Object.entries(snap.val() || {})
+      .map(([k, v]) => ({ key: k, ...v }))
+      .sort((a, b) => b.profit - a.profit);
+    const myIdx = sorted.findIndex(e => e.key === myKey);
+    if (myIdx !== -1) {
+      document.getElementById('f-rank').textContent = `${myIdx + 1}위 / ${sorted.length}명 참가`;
+    }
+  }
+  show('s-final');
 }
 
-/* ════════════════════════════════
-   RESET
-════════════════════════════════ */
+/* ══ 리셋 ══ */
 window.resetGame = function() {
   if (lbUnsub) { lbUnsub(); lbUnsub = null; }
   cur = 0; cumProfit = 0; history = [];
@@ -633,15 +657,12 @@ window.resetGame = function() {
   show('s-intro');
 };
 
-/* ════════════════════════════════
-   SHARE RESULT
-════════════════════════════════ */
+/* ══ 결과 공유 ══ */
 window.shareResult = function() {
-  const text = `🍱 도전 김밥왕! ${myNick}의 4라운드 최종 이익: ${fmt(cumProfit)}\n` +
-    history.map(h => `R${h.round} | 주문 ${h.ordered} | 수요 ${h.demand} | ${fmt(h.profit)}`).join('\n');
+  const text = `🍱 도전 김밥왕! ${myNick}의 10라운드 최종 이익: ${fmt(cumProfit)}\n` +
+    history.map(h => `${h.round}일차 | 주문 ${h.ordered}줄 | 수요 ${h.demand}줄 | ${fmt(h.profit)}`).join('\n');
   navigator.clipboard.writeText(text).then(() => alert('결과가 클립보드에 복사되었습니다!'));
 };
-
 </script>
 </body>
 </html>

@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🍱 도전, 김밥왕!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Black+Han+Sans&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --red:#E24B4A;--green:#1D9E75;--amber:#BA7517;
+    --bg:#f8f7f4;--surface:#ffffff;--surface2:#f1efe8;
+    --text:#1a1a1a;--text2:#6b6b6b;--text3:#9a9a9a;
+    --border:rgba(0,0,0,0.10);--border2:rgba(0,0,0,0.18);
+    --radius:10px;--radius-lg:14px;
+  }
+  body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+  /* Layout */
+  .page{max-width:600px;margin:0 auto;padding:20px 16px 60px;}
+  .screen{display:none;}.screen.active{display:block;}
+
+  /* Title bar */
+  .title-bar{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
+  .title-bar h1{font-family:'Black Han Sans',sans-serif;font-size:22px;color:var(--text);}
+  .badge{background:var(--red);color:#fff;font-size:11px;font-weight:500;padding:3px 9px;border-radius:20px;}
+  .badge.live{background:var(--green);}
+
+  /* Cards */
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:14px;}
+  .card-title{font-size:13px;font-weight:500;color:var(--text2);margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+
+  /* Stat bar */
+  .stat-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+  .sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;}
+  .sc .lb{font-size:11px;color:var(--text2);margin-bottom:2px;}
+  .sc .vl{font-size:15px;font-weight:500;color:var(--text);}
+
+  /* Round header */
+  .round-hdr{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--red);border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:14px;}
+  .round-hdr h2{font-size:16px;font-weight:500;margin-bottom:8px;}
+  .chip-row{display:flex;flex-wrap:wrap;gap:6px;}
+  .chip{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:3px 10px;font-size:12px;color:var(--text2);}
+  .chip.ev{background:#fef3e2;color:#854F0B;border-color:#f5c842;}
+
+  /* Hint */
+  .hint-box{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:14px;font-size:13px;color:var(--text2);line-height:1.7;}
+  .hint-box strong{color:var(--text);}
+
+  /* Order section */
+  .order-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:14px;}
+  .order-box h3{font-size:14px;font-weight:500;margin-bottom:12px;}
+  .slider-row{display:flex;align-items:center;gap:12px;margin-bottom:8px;}
+  .slider-row input[type=range]{flex:1;height:4px;accent-color:var(--red);cursor:pointer;}
+  .sv{font-size:22px;font-weight:700;min-width:44px;text-align:right;color:var(--text);}
+  .cost-prev{font-size:13px;color:var(--text2);}
+  .cost-prev span{color:var(--red);font-weight:500;}
+  .cr-row{display:flex;align-items:center;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);font-size:12px;color:var(--text2);}
+  .cr-bw{flex:1;height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;}
+  .cr-bf{height:100%;background:var(--green);border-radius:3px;transition:width 0.3s;}
+
+  /* Buttons */
+  .btn-p{display:block;width:100%;padding:13px;background:var(--red);color:#fff;border:none;border-radius:var(--radius);font-size:15px;font-weight:500;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:opacity 0.15s;margin-bottom:8px;}
+  .btn-p:hover{opacity:0.88;}
+  .btn-p:disabled{opacity:0.5;cursor:not-allowed;}
+  .btn-s{display:block;width:100%;padding:12px;background:transparent;color:var(--text);border:1px solid var(--border2);border-radius:var(--radius);font-size:14px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:background 0.15s;margin-bottom:8px;}
+  .btn-s:hover{background:var(--surface2);}
+
+  /* Leaderboard */
+  .lb-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;}
+  .lb-row:last-child{border-bottom:none;}
+  .lb-rank{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;}
+  .r1{background:#fef3e2;color:#854F0B;}
+  .r2{background:#f1efe8;color:#5F5E5A;}
+  .r3{background:#faece7;color:#993C1D;}
+  .rn{background:var(--surface2);color:var(--text2);}
+  .lb-name{flex:1;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .lb-name.me{color:var(--red);}
+  .lb-rounds{font-size:11px;color:var(--text3);min-width:24px;text-align:center;}
+  .lb-bar-wrap{width:70px;height:4px;background:var(--surface2);border-radius:2px;overflow:hidden;}
+  .lb-bar{height:100%;border-radius:2px;}
+  .bar-me{background:var(--red);}
+  .bar-o{background:#B5D4F4;}
+  .lb-profit{font-weight:500;min-width:88px;text-align:right;}
+  .lb-profit.pos{color:var(--green);}
+  .lb-profit.neg{color:var(--red);}
+  .me-row{background:linear-gradient(90deg,rgba(226,75,74,0.06),transparent);border-radius:var(--radius);padding:8px;margin:-8px;}
+  .lb-sep{text-align:center;font-size:11px;color:var(--text3);padding:4px 0;}
+  .lb-empty{text-align:center;padding:16px;font-size:13px;color:var(--text3);}
+
+  /* Live dot */
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
+  .live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 1.5s infinite;display:inline-block;vertical-align:middle;}
+
+  /* Result */
+  .res-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;}
+  .ri{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border);}
+  .ri .k{color:var(--text2);}
+  .ri .v{font-weight:500;}
+  .profit-disp{text-align:center;padding:14px;border-radius:var(--radius);margin-top:12px;}
+  .profit-disp.pos{background:#eaf3de;color:#3B6D11;}
+  .profit-disp.neg{background:#fcebeb;color:#A32D2D;}
+  .profit-disp .pl{font-size:12px;margin-bottom:3px;}
+  .profit-disp .pv{font-size:24px;font-weight:700;}
+  .ins-box{background:var(--surface2);border-radius:var(--radius);padding:11px 13px;font-size:12px;color:var(--text2);margin-top:10px;line-height:1.7;}
+
+  /* History table */
+  .hist-wrap{overflow-x:auto;margin-bottom:14px;}
+  .hist-wrap table{width:100%;font-size:12px;border-collapse:collapse;table-layout:fixed;}
+  .hist-wrap th{text-align:center;padding:7px 4px;color:var(--text2);font-weight:500;border-bottom:1px solid var(--border);background:var(--surface2);}
+  .hist-wrap td{text-align:center;padding:7px 4px;border-bottom:1px solid var(--border);}
+  .hist-wrap td.pos{color:var(--green);font-weight:500;}
+  .hist-wrap td.neg{color:var(--red);font-weight:500;}
+
+  /* Progress dots */
+  .prog{display:flex;gap:6px;justify-content:center;margin-bottom:16px;}
+  .pd{width:30px;height:30px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--text2);}
+  .pd.done{background:var(--green);color:#fff;border-color:var(--green);}
+  .pd.cur{background:var(--red);color:#fff;border-color:var(--red);}
+
+  /* Intro */
+  .hero{text-align:center;padding:20px 0 12px;}
+  .hero .emo{font-size:52px;display:block;margin-bottom:12px;}
+  .hero h2{font-family:'Black Han Sans',sans-serif;font-size:28px;margin-bottom:10px;}
+  .hero p{font-size:14px;color:var(--text2);line-height:1.8;max-width:380px;margin:0 auto;}
+  .rules-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;margin:14px 0;font-size:13px;color:var(--text2);line-height:2.2;}
+  .rule-i{display:flex;gap:8px;align-items:flex-start;}
+  .rule-i i{color:var(--red);margin-top:2px;}
+  .name-row{display:flex;gap:8px;margin-bottom:6px;}
+  .name-row input{flex:1;font-family:'Noto Sans KR',sans-serif;font-size:14px;padding:10px 14px;border:1px solid var(--border2);border-radius:var(--radius);outline:none;background:var(--surface);}
+  .name-row input:focus{border-color:var(--red);}
+  .name-row .btn-p{width:auto;margin:0;padding:0 20px;white-space:nowrap;}
+
+  /* Final */
+  .final-big{text-align:center;padding:20px 0 12px;}
+  .final-big .fn{font-size:40px;font-weight:700;font-family:'Black Han Sans',sans-serif;color:var(--green);}
+  .final-big .fn.neg{color:var(--red);}
+  .grade-b{display:inline-block;padding:6px 22px;border-radius:20px;font-size:14px;font-weight:500;margin:8px 0;}
+
+  /* Responsive */
+  @media(max-width:480px){
+    .stat-bar{grid-template-columns:repeat(2,1fr);}
+    .res-grid{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Title -->
+  <div class="title-bar">
+    <span style="font-size:26px">🍱</span>
+    <h1>도전, 김밥왕!</h1>
+    <span class="badge">4라운드</span>
+    <span class="badge live"><span class="live-dot"></span> 실시간</span>
+  </div>
+
+  <!-- ══════════════ INTRO ══════════════ -->
+  <div class="screen active" id="s-intro">
+    <div class="hero">
+      <span class="emo">🍱</span>
+      <h2>도전, 김밥왕!</h2>
+      <p>학교 축제 김밥 가게 사장이 되어<br>4라운드 최고 이익을 올리세요.<br>반 친구들과 실시간 순위 경쟁!</p>
+    </div>
+    <div class="rules-box">
+      <div class="rule-i"><i class="ti ti-circle-check"></i><span>매일 아침 딱 한 번만 주문 가능 (추가 주문 불가)</span></div>
+      <div class="rule-i"><i class="ti ti-circle-check"></i><span>남은 김밥은 잔존가치로 처리 (라운드마다 다름)</span></div>
+      <div class="rule-i"><i class="ti ti-circle-check"></i><span>순이익 = 매출 − 구매비용 + 잔존가치</span></div>
+      <div class="rule-i"><i class="ti ti-trophy"></i><span>4라운드 누적 이익 Top 5 실시간 공개!</span></div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div style="font-size:13px;font-weight:500;margin-bottom:8px;">닉네임 입력</div>
+      <div class="name-row">
+        <input type="text" id="nick-input" placeholder="예) 김밥왕지망생" maxlength="12" onkeydown="if(event.key==='Enter')startGame()">
+        <button class="btn-p" onclick="startGame()">시작 →</button>
+      </div>
+      <div style="font-size:11px;color:var(--text3);">닉네임은 리더보드에 공개됩니다 (최대 12자)</div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="live-dot"></span> 현재 리더보드 (Top 5)</div>
+      <div id="intro-lb"><div class="lb-empty">불러오는 중...</div></div>
+    </div>
+    <div style="font-size:11px;color:var(--text3);text-align:center;margin-top:4px;">리더보드는 수업 참가자 전원에게 공개됩니다</div>
+  </div>
+
+  <!-- ══════════════ GAME ══════════════ -->
+  <div class="screen" id="s-game">
+    <div class="prog" id="prog-g"></div>
+    <div class="stat-bar">
+      <div class="sc"><div class="lb">라운드</div><div class="vl" id="st-round">1/4</div></div>
+      <div class="sc"><div class="lb">누적 이익</div><div class="vl" id="st-profit" style="color:var(--green)">₩0</div></div>
+      <div class="sc"><div class="lb">내 순위</div><div class="vl" id="st-rank">-</div></div>
+      <div class="sc"><div class="lb">임계비(CR)</div><div class="vl" id="st-cr">-</div></div>
+    </div>
+    <div class="round-hdr">
+      <h2 id="rh-title">라운드 1</h2>
+      <div class="chip-row">
+        <span class="chip" id="rh-weather"></span>
+        <span class="chip">판매가 ₩3,000</span>
+        <span class="chip" id="rh-cost-chip"></span>
+        <span class="chip" id="rh-salv-chip"></span>
+        <span class="chip ev" id="rh-event" style="display:none"></span>
+      </div>
+    </div>
+    <div class="hint-box" id="g-hint"></div>
+    <div class="order-box">
+      <h3>주문량 결정</h3>
+      <div class="slider-row">
+        <input type="range" id="o-slider" min="0" max="200" value="100" step="1" oninput="onSlider()">
+        <span class="sv" id="sv-disp">100</span>
+      </div>
+      <div class="cost-prev">예상 구매 비용: <span id="cp-val">₩200,000</span></div>
+      <div class="cr-row">
+        <span style="white-space:nowrap;">임계비</span>
+        <div class="cr-bw"><div class="cr-bf" id="cr-fill" style="width:33%"></div></div>
+        <span id="cr-lbl" style="font-weight:500;">33%</span>
+        <span style="font-size:11px;">품절 허용 기준</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="live-dot"></span> 실시간 리더보드 (Top 5)</div>
+      <div id="game-lb"><div class="lb-empty">불러오는 중...</div></div>
+    </div>
+    <button class="btn-p" id="order-btn" onclick="confirmOrder()">주문 확정하기 →</button>
+  </div>
+
+  <!-- ══════════════ RESULT ══════════════ -->
+  <div class="screen" id="s-result">
+    <div class="prog" id="prog-r"></div>
+    <div class="card">
+      <div class="card-title" id="res-title">라운드 1 결과</div>
+      <div class="res-grid">
+        <div class="ri"><span class="k">주문량</span><span class="v" id="r-order"></span></div>
+        <div class="ri"><span class="k">실제 수요</span><span class="v" id="r-demand"></span></div>
+        <div class="ri"><span class="k">판매량</span><span class="v" id="r-sold"></span></div>
+        <div class="ri"><span class="k">잔여재고</span><span class="v" id="r-left"></span></div>
+        <div class="ri"><span class="k">매출액</span><span class="v" id="r-rev"></span></div>
+        <div class="ri"><span class="k">구매 비용</span><span class="v" id="r-cost"></span></div>
+        <div class="ri"><span class="k">잔존가치</span><span class="v" id="r-salv"></span></div>
+        <div class="ri"><span class="k">누적 이익</span><span class="v" id="r-cum"></span></div>
+      </div>
+      <div class="profit-disp" id="p-disp">
+        <div class="pl">이번 라운드 순이익</div>
+        <div class="pv" id="p-val"></div>
+      </div>
+      <div class="ins-box" id="ins-box"></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="live-dot"></span> 실시간 리더보드 — 내 순위 포함</div>
+      <div id="result-lb"><div class="lb-empty">불러오는 중...</div></div>
+    </div>
+    <div class="hist-wrap">
+      <table>
+        <thead><tr><th>R</th><th>날씨</th><th>주문</th><th>수요</th><th>판매</th><th>재고</th><th>순이익</th></tr></thead>
+        <tbody id="h-tbody"></tbody>
+      </table>
+    </div>
+    <button class="btn-p" id="next-btn" onclick="nextRound()">다음 라운드 →</button>
+  </div>
+
+  <!-- ══════════════ FINAL ══════════════ -->
+  <div class="screen" id="s-final">
+    <div class="final-big">
+      <div style="font-size:42px;margin-bottom:8px">🏆</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:4px">4라운드 최종 누적 이익</div>
+      <div class="fn" id="f-num"></div>
+      <div class="grade-b" id="f-grade"></div>
+      <div style="font-size:14px;color:var(--text2);margin-top:6px">최종 순위: <strong id="f-rank" style="font-size:17px"></strong></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="live-dot"></span> 최종 리더보드 (Top 5)</div>
+      <div id="final-lb"><div class="lb-empty">불러오는 중...</div></div>
+    </div>
+    <div class="hist-wrap">
+      <table>
+        <thead><tr><th>라운드</th><th>날씨</th><th>주문</th><th>수요</th><th>판매</th><th>재고</th><th>순이익</th></tr></thead>
+        <tbody id="f-tbody"></tbody>
+      </table>
+    </div>
+    <div class="ins-box" id="f-ins" style="margin-bottom:14px;"></div>
+    <button class="btn-p" onclick="resetGame()">다시 도전하기 →</button>
+    <button class="btn-s" onclick="shareResult()">결과 공유하기 📋</button>
+  </div>
+
+</div><!-- /page -->
+
+<!-- ══════════════ Firebase SDK ══════════════ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import { getDatabase, ref, set, get, onValue, query, orderByChild, limitToLast }
+  from "https://www.gstatic.com/firebasejs/12.13.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCgBJ6yt9_TrK7AlgTKhEth7Qt2QdCYADc",
+  authDomain: "newsvendor-game-simulation.firebaseapp.com",
+  databaseURL: "https://newsvendor-game-simulation-default-rtdb.firebaseio.com",
+  projectId: "newsvendor-game-simulation",
+  storageBucket: "newsvendor-game-simulation.firebasestorage.app",
+  messagingSenderId: "213354360321",
+  appId: "1:213354360321:web:4dc63514cc19ba6019da00"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getDatabase(app);
+
+/* ════════════════════════════════
+   GAME DATA
+════════════════════════════════ */
+const ROUNDS = [
+  { label:'라운드 1', weather:'☀️ 맑음/평일', price:3000, cost:2000, salvage:0,
+    demand:[72,74,89,89,89,92,92,93,97,100,101,102,104,113,113],
+    hint:'과거 데이터: 맑음·평일 15일, 평균 95명 (72~113명)', event:null, sliderMax:160 },
+  { label:'라운드 2', weather:'☔ 비/평일', price:3000, cost:2000, salvage:0,
+    demand:[45,46,54,56,61],
+    hint:'과거 데이터: 비 오는 날 5일, 평균 52명 (45~61명). 오늘은 비!', event:null, sliderMax:120 },
+  { label:'라운드 3', weather:'☀️ 맑음/주말', price:3000, cost:1000, salvage:0,
+    demand:[113,119,121,126,139,156],
+    hint:'맑음·주말 6일, 평균 129명 (113~156명). 재료를 싸게 구했다! 원가 ₩1,000으로 인하!',
+    event:'🎉 원가 인하! ₩1,000', sliderMax:200 },
+  { label:'라운드 4', weather:'☁️ 흐림/주말', price:3000, cost:1000, salvage:1000,
+    demand:[97,101,127],
+    hint:'흐림·주말 3일, 평균 108명 (97~127명). 밴드부가 남은 김밥을 ₩1,000에 전부 사준다!',
+    event:'🎸 밴드부 구매! 잔존가 ₩1,000', sliderMax:180 }
+];
+
+/* ════════════════════════════════
+   STATE
+════════════════════════════════ */
+let cur = 0, cumProfit = 0, history = [];
+let myNick = '', myKey = '';
+let lbUnsub = null;   // Firebase listener unsubscribe
+
+/* ════════════════════════════════
+   HELPERS
+════════════════════════════════ */
+const fmt = n => (n < 0 ? '-₩' : '₩') + Math.abs(n).toLocaleString();
+const randDemand = set => set[Math.floor(Math.random() * set.length)];
+const getCR = r => { const cu = r.price - r.cost, co = r.cost - r.salvage; return co === 0 ? 1 : cu / (cu + co); };
+const show  = id => { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); };
+
+/* ════════════════════════════════
+   FIREBASE — write my score
+════════════════════════════════ */
+async function saveScore() {
+  await set(ref(db, 'leaderboard/' + myKey), {
+    nick: myNick,
+    profit: cumProfit,
+    rounds: cur,
+    ts: Date.now()
+  });
+}
+
+/* ════════════════════════════════
+   FIREBASE — real-time leaderboard listener
+════════════════════════════════ */
+function startLbListener(containerIds) {
+  if (lbUnsub) lbUnsub();   // detach previous
+  const lbRef = ref(db, 'leaderboard');
+  lbUnsub = onValue(lbRef, snap => {
+    const data = snap.val() || {};
+    const sorted = Object.entries(data)
+      .map(([k, v]) => ({ key: k, ...v }))
+      .sort((a, b) => b.profit - a.profit || b.rounds - a.rounds);
+    const top5 = sorted.slice(0, 5);
+    const myIdx = sorted.findIndex(e => e.key === myKey);
+    const myRank = myIdx === -1 ? null : { rank: myIdx + 1, total: sorted.length };
+
+    containerIds.forEach(id => renderLB(id, top5, sorted, myRank));
+
+    if (myRank) {
+      document.getElementById('st-rank').textContent = `${myRank.rank}위/${myRank.total}명`;
+    }
+  });
+}
+
+/* ════════════════════════════════
+   RENDER LEADERBOARD
+════════════════════════════════ */
+function renderLB(containerId, top5, allSorted, myRank) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  if (!top5.length) { el.innerHTML = '<div class="lb-empty">아직 참가자가 없습니다</div>'; return; }
+
+  const mx = Math.max(...top5.map(e => Math.abs(e.profit)), 1);
+  let html = '';
+
+  top5.forEach((e, i) => {
+    const isMe = e.key === myKey;
+    const rankCls = i === 0 ? 'r1' : i === 1 ? 'r2' : i === 2 ? 'r3' : 'rn';
+    const medal   = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1);
+    const barW    = Math.max(4, Math.round(Math.abs(e.profit) / mx * 100));
+    const profCls = e.profit >= 0 ? 'pos' : 'neg';
+    html += `<div class="lb-row${isMe ? ' me-row' : ''}">
+      <div class="lb-rank ${rankCls}">${medal}</div>
+      <div class="lb-name${isMe ? ' me' : ''}">${isMe ? '⭐ ' : ''}${e.nick.substring(0,11)}</div>
+      <div class="lb-rounds">${e.rounds}R</div>
+      <div class="lb-bar-wrap"><div class="lb-bar ${isMe ? 'bar-me' : 'bar-o'}" style="width:${barW}%"></div></div>
+      <div class="lb-profit ${profCls}">${fmt(e.profit)}</div>
+    </div>`;
+  });
+
+  /* If I'm outside top5, append my row */
+  if (myRank && myRank.rank > 5 && myKey) {
+    const me = allSorted[myRank.rank - 1];
+    html += `<div class="lb-sep">···  ${myRank.rank - 5}명 더  ···</div>`;
+    html += `<div class="lb-row me-row">
+      <div class="lb-rank rn">${myRank.rank}</div>
+      <div class="lb-name me">⭐ ${myNick.substring(0,11)}</div>
+      <div class="lb-rounds">${cur}R</div>
+      <div class="lb-bar-wrap"><div class="lb-bar bar-me" style="width:4%"></div></div>
+      <div class="lb-profit ${cumProfit >= 0 ? 'pos' : 'neg'}">${fmt(cumProfit)}</div>
+    </div>`;
+  }
+  el.innerHTML = html;
+}
+
+/* ════════════════════════════════
+   PROGRESS DOTS
+════════════════════════════════ */
+function buildProg(id, current) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.innerHTML = ROUNDS.map((_, i) => {
+    let c = 'pd';
+    if (i < current) c += ' done';
+    else if (i === current) c += ' cur';
+    return `<div class="${c}">${i < current ? '<i class="ti ti-check"></i>' : (i+1)}</div>`;
+  }).join('');
+}
+
+/* ════════════════════════════════
+   INTRO — static leaderboard snapshot
+════════════════════════════════ */
+async function loadIntroLB() {
+  const snap = await get(ref(db, 'leaderboard'));
+  const data  = snap.val() || {};
+  const sorted = Object.entries(data)
+    .map(([k, v]) => ({ key: k, ...v }))
+    .sort((a, b) => b.profit - a.profit || b.rounds - a.rounds);
+  renderLB('intro-lb', sorted.slice(0, 5), sorted, null);
+}
+loadIntroLB();
+
+/* ════════════════════════════════
+   START GAME
+════════════════════════════════ */
+window.startGame = async function() {
+  const nick = document.getElementById('nick-input').value.trim();
+  if (!nick) { alert('닉네임을 입력해 주세요!'); return; }
+  myNick = nick;
+  myKey  = 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+  cur = 0; cumProfit = 0; history = [];
+  await saveScore();
+  loadRound();
+};
+
+/* ════════════════════════════════
+   LOAD ROUND
+════════════════════════════════ */
+function loadRound() {
+  const r = ROUNDS[cur];
+  const ratio = getCR(r);
+  const cu = r.price - r.cost, co = r.cost - r.salvage;
+
+  buildProg('prog-g', cur);
+  document.getElementById('st-round').textContent = `${cur+1}/4`;
+  document.getElementById('st-profit').textContent = fmt(cumProfit);
+  document.getElementById('st-profit').style.color = cumProfit >= 0 ? 'var(--green)' : 'var(--red)';
+  document.getElementById('st-cr').textContent = Math.round(ratio * 100) + '%';
+  document.getElementById('rh-title').textContent = r.label;
+  document.getElementById('rh-weather').textContent = r.weather;
+  document.getElementById('rh-cost-chip').textContent = '원가 ' + fmt(r.cost);
+  document.getElementById('rh-salv-chip').textContent = '잔존가 ' + fmt(r.salvage);
+
+  const ev = document.getElementById('rh-event');
+  if (r.event) { ev.textContent = r.event; ev.style.display = ''; }
+  else { ev.style.display = 'none'; }
+
+  document.getElementById('g-hint').innerHTML =
+    `<strong>수요 힌트</strong> — ${r.hint}<br>
+     <span style="display:block;margin-top:5px">
+       과소재고 비용 Cu = <strong>${fmt(cu)}</strong> &nbsp;|&nbsp;
+       과다재고 비용 Co = <strong>${fmt(co)}</strong> &nbsp;|&nbsp;
+       임계비 = <strong>${Math.round(ratio*100)}%</strong>
+     </span>`;
+
+  const sl = document.getElementById('o-slider');
+  sl.max   = r.sliderMax;
+  sl.value = Math.round(r.demand.reduce((a,b) => a+b, 0) / r.demand.length);
+  document.getElementById('cr-lbl').textContent = Math.round(ratio * 100) + '%';
+  document.getElementById('cr-fill').style.width = Math.round(ratio * 100) + '%';
+  onSlider();
+
+  startLbListener(['game-lb']);
+  show('s-game');
+}
+
+/* ════════════════════════════════
+   SLIDER
+════════════════════════════════ */
+window.onSlider = function() {
+  const r = ROUNDS[cur];
+  const v = parseInt(document.getElementById('o-slider').value);
+  document.getElementById('sv-disp').textContent = v;
+  document.getElementById('cp-val').textContent = fmt(v * r.cost);
+};
+
+/* ════════════════════════════════
+   CONFIRM ORDER
+════════════════════════════════ */
+window.confirmOrder = async function() {
+  const btn = document.getElementById('order-btn');
+  btn.disabled = true;
+
+  const r       = ROUNDS[cur];
+  const ordered = parseInt(document.getElementById('o-slider').value);
+  const demand  = randDemand(r.demand);
+  const sold    = Math.min(ordered, demand);
+  const leftover = ordered - sold;
+  const revenue  = sold * r.price;
+  const costT    = ordered * r.cost;
+  const salvT    = leftover * r.salvage;
+  const profit   = revenue - costT + salvT;
+  cumProfit += profit;
+
+  history.push({ round: cur+1, weather: r.weather, ordered, demand, sold, leftover, profit, cumulative: cumProfit });
+
+  await saveScore();
+
+  buildProg('prog-r', cur);
+  document.getElementById('res-title').textContent = r.label + ' 결과';
+  document.getElementById('r-order').textContent  = ordered + '줄';
+  document.getElementById('r-demand').textContent = demand  + '줄';
+  document.getElementById('r-sold').textContent   = sold    + '줄';
+  document.getElementById('r-left').textContent   = leftover + '줄';
+  document.getElementById('r-rev').textContent    = fmt(revenue);
+  document.getElementById('r-cost').textContent   = fmt(costT);
+  document.getElementById('r-salv').textContent   = fmt(salvT);
+  document.getElementById('r-cum').textContent    = fmt(cumProfit);
+
+  const pd = document.getElementById('p-disp');
+  pd.className = 'profit-disp ' + (profit >= 0 ? 'pos' : 'neg');
+  document.getElementById('p-val').textContent = fmt(profit);
+
+  const ratio = getCR(r);
+  const cu = r.price - r.cost, co = r.cost - r.salvage;
+  let ins = '';
+  if (demand > ordered) {
+    const m = demand - ordered;
+    ins = `📦 품절! ${m}줄 기회 손실 ${fmt(m * cu)}. Cu(${fmt(cu)}) > Co(${fmt(co)})이면 더 주문하는 게 최적입니다.`;
+  } else if (leftover > 0) {
+    ins = `🗑️ ${leftover}줄 폐기! 과다재고 손실 ${fmt(leftover * co)}. 임계비 ${Math.round(ratio*100)}%에서 재고 허용 한도를 초과했습니다.`;
+  } else {
+    ins = `✅ 완판! 주문량 = 수요. 최상의 결과!`;
+  }
+  document.getElementById('ins-box').textContent = ins;
+
+  document.getElementById('h-tbody').innerHTML = history.map(h =>
+    `<tr>
+      <td>${h.round}</td>
+      <td style="font-size:11px">${h.weather}</td>
+      <td>${h.ordered}</td><td>${h.demand}</td><td>${h.sold}</td><td>${h.leftover}</td>
+      <td class="${h.profit >= 0 ? 'pos' : 'neg'}">${fmt(h.profit)}</td>
+    </tr>`
+  ).join('');
+
+  document.getElementById('next-btn').textContent =
+    cur >= ROUNDS.length - 1 ? '최종 결과 보기 →' : '다음 라운드 →';
+
+  startLbListener(['result-lb']);
+  show('s-result');
+  btn.disabled = false;
+};
+
+/* ════════════════════════════════
+   NEXT ROUND
+════════════════════════════════ */
+window.nextRound = function() {
+  cur++;
+  if (cur >= ROUNDS.length) showFinal();
+  else loadRound();
+};
+
+/* ════════════════════════════════
+   FINAL
+════════════════════════════════ */
+async function showFinal() {
+  const fn = document.getElementById('f-num');
+  fn.textContent = fmt(cumProfit);
+  fn.className   = 'fn' + (cumProfit < 0 ? ' neg' : '');
+
+  let grade, gs;
+  if      (cumProfit >= 400000) { grade = '🥇 김밥왕 달성!';   gs = 'background:#eaf3de;color:#3B6D11;'; }
+  else if (cumProfit >= 200000) { grade = '🥈 베테랑 사장님';  gs = 'background:#e6f1fb;color:#185FA5;'; }
+  else if (cumProfit >= 0)      { grade = '🥉 신입 사장님';    gs = 'background:#fef3e2;color:#854F0B;'; }
+  else                          { grade = '😢 적자 가게';       gs = 'background:#fcebeb;color:#A32D2D;'; }
+  const gb = document.getElementById('f-grade');
+  gb.textContent = grade; gb.style.cssText = gs;
+
+  document.getElementById('f-tbody').innerHTML = history.map(h =>
+    `<tr>
+      <td>${h.round}</td><td style="font-size:11px">${h.weather}</td>
+      <td>${h.ordered}</td><td>${h.demand}</td><td>${h.sold}</td><td>${h.leftover}</td>
+      <td class="${h.profit >= 0 ? 'pos' : 'neg'}">${fmt(h.profit)}</td>
+    </tr>`
+  ).join('');
+
+  const underO = history.filter(h => h.demand > h.ordered).length;
+  const overO  = history.filter(h => h.demand <= h.ordered && h.leftover > 0).length;
+  document.getElementById('f-ins').textContent =
+    `4라운드 결산: 품절 ${underO}회, 과다재고 ${overO}회. ` +
+    `임계비가 낮을수록(R1~2, 33%) 적게 주문, 높을수록(R3, 67%) 더 많이 주문하는 것이 최적입니다. ` +
+    `R4는 잔존가 = 원가 → Co = 0 → 임계비 100%, 재고 손실 없음.`;
+
+  startLbListener(['final-lb']);
+  show('s-final');
+
+  /* update rank display from listener */
+}
+
+/* ════════════════════════════════
+   RESET
+════════════════════════════════ */
+window.resetGame = function() {
+  if (lbUnsub) { lbUnsub(); lbUnsub = null; }
+  cur = 0; cumProfit = 0; history = [];
+  myNick = ''; myKey = '';
+  document.getElementById('nick-input').value = '';
+  document.getElementById('st-rank').textContent = '-';
+  loadIntroLB();
+  show('s-intro');
+};
+
+/* ════════════════════════════════
+   SHARE RESULT
+════════════════════════════════ */
+window.shareResult = function() {
+  const text = `🍱 도전 김밥왕! ${myNick}의 4라운드 최종 이익: ${fmt(cumProfit)}\n` +
+    history.map(h => `R${h.round} | 주문 ${h.ordered} | 수요 ${h.demand} | ${fmt(h.profit)}`).join('\n');
+  navigator.clipboard.writeText(text).then(() => alert('결과가 클립보드에 복사되었습니다!'));
+};
+
+</script>
+</body>
+</html>

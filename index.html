@@ -240,10 +240,29 @@
       </div>
     </div>
 
-    <div style="margin-bottom:14px;">
+    <!-- STEP 1: 수업 코드 입력 -->
+    <div id="step-code" style="margin-bottom:14px;">
+      <div style="font-size:13px;font-weight:500;margin-bottom:6px;">🔐 수업 코드 입력</div>
+      <div class="name-row">
+        <input type="text" id="code-input" placeholder="예) OM-2026-TEST" maxlength="20"
+          style="letter-spacing:1px;"
+          onkeydown="if(event.key==='Enter')verifyCode()">
+        <button class="btn-p" onclick="verifyCode()">확인 →</button>
+      </div>
+      <div id="code-msg" style="font-size:12px;margin-top:6px;min-height:18px;"></div>
+    </div>
+
+    <!-- STEP 2: 수업 확인 + 닉네임 입력 (코드 인증 후 표시) -->
+    <div id="step-nick" style="display:none;margin-bottom:14px;">
+      <div id="class-banner" style="background:#eaf3de;border:1px solid #b6d89a;border-radius:var(--radius);padding:10px 14px;margin-bottom:12px;font-size:13px;color:#3B6D11;display:flex;align-items:center;gap:8px;">
+        <i class="ti ti-circle-check" style="font-size:16px;"></i>
+        <span id="class-name-display"></span>
+        <span style="margin-left:auto;font-size:11px;color:#5a8a3a;cursor:pointer;" onclick="resetCode()">코드 재입력</span>
+      </div>
       <div style="font-size:13px;font-weight:500;margin-bottom:8px;">닉네임 입력</div>
       <div class="name-row">
-        <input type="text" id="nick-input" placeholder="예) 김밥왕지망생" maxlength="12" onkeydown="if(event.key==='Enter')startGame()">
+        <input type="text" id="nick-input" placeholder="예) 김밥왕지망생" maxlength="12"
+          onkeydown="if(event.key==='Enter')startGame()">
         <button class="btn-p" onclick="startGame()">시작 →</button>
       </div>
       <div style="font-size:11px;color:var(--text3);">닉네임은 리더보드에 공개됩니다 (최대 12자)</div>
@@ -251,9 +270,9 @@
 
     <div class="card">
       <div class="card-title"><span class="live-dot"></span> 현재 리더보드 (Top 5)</div>
-      <div id="intro-lb"><div class="lb-empty">불러오는 중...</div></div>
+      <div id="intro-lb"><div class="lb-empty">수업 코드를 입력하면 해당 반 리더보드가 표시됩니다</div></div>
     </div>
-    <div style="font-size:11px;color:var(--text3);text-align:center;margin-top:4px;">리더보드는 수업 참가자 전원에게 공개됩니다</div>
+    <div style="font-size:11px;color:var(--text3);text-align:center;margin-top:4px;">리더보드는 같은 수업 코드를 사용한 참가자끼리 공개됩니다</div>
   </div>
 
   <!-- ══════════════ GAME ══════════════ -->
@@ -410,7 +429,7 @@ const ROUNDS = [
 
 /* ══ 상태 ══ */
 let cur = 0, cumProfit = 0, history = [];
-let myNick = '', myKey = '';
+let myNick = '', myKey = '', classCode = '', className = '';
 let lbUnsub = null;
 
 /* ══ 유틸 ══ */
@@ -418,9 +437,46 @@ const fmt = n => (n < 0 ? '-₩' : '₩') + Math.abs(n).toLocaleString();
 const randDemand = set => set[Math.floor(Math.random() * set.length)];
 const show = id => { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); };
 
+/* ══ 수업 코드 검증 ══ */
+window.verifyCode = async function() {
+  const code = document.getElementById('code-input').value.trim().toUpperCase();
+  const msgEl = document.getElementById('code-msg');
+  if (!code) { msgEl.style.color='var(--red)'; msgEl.textContent='수업 코드를 입력해 주세요.'; return; }
+  msgEl.style.color='var(--text3)'; msgEl.textContent='확인 중...';
+  try {
+    const snap = await get(ref(db, 'leaderboard/classes/' + code));
+    if (!snap.exists()) {
+      msgEl.style.color='var(--red)';
+      msgEl.textContent='❌ 유효하지 않은 수업 코드입니다. 다시 확인해 주세요.';
+      return;
+    }
+    classCode = code;
+    className = snap.val().name || code;
+    msgEl.textContent = '';
+    document.getElementById('class-name-display').textContent = `✅ ${className} 수업입니다`;
+    document.getElementById('step-code').style.display = 'none';
+    document.getElementById('step-nick').style.display = 'block';
+    // 해당 반 리더보드 미리 로드
+    loadIntroLB();
+  } catch(e) {
+    msgEl.style.color='var(--red)';
+    msgEl.textContent='오류가 발생했습니다. 다시 시도해 주세요.';
+  }
+};
+
+/* ══ 코드 재입력 ══ */
+window.resetCode = function() {
+  classCode = ''; className = '';
+  document.getElementById('code-input').value = '';
+  document.getElementById('code-msg').textContent = '';
+  document.getElementById('step-code').style.display = 'block';
+  document.getElementById('step-nick').style.display = 'none';
+  document.getElementById('intro-lb').innerHTML = '<div class="lb-empty">수업 코드를 입력하면 해당 반 리더보드가 표시됩니다</div>';
+};
+
 /* ══ Firebase 저장 ══ */
 async function saveScore(completed = false) {
-  await set(ref(db, 'leaderboard/' + myKey), {
+  await set(ref(db, `leaderboard/scores/${classCode}/${myKey}`), {
     nick: myNick, profit: cumProfit, rounds: cur,
     completed: completed, ts: Date.now()
   });
@@ -432,7 +488,7 @@ async function saveScore(completed = false) {
 ══ */
 function startLbListener(containerIds, finalMode = false) {
   if (lbUnsub) lbUnsub();
-  lbUnsub = onValue(ref(db, 'leaderboard'), snap => {
+  lbUnsub = onValue(ref(db, `leaderboard/scores/${classCode}`), snap => {
     const data = snap.val() || {};
     const all = Object.entries(data).map(([k, v]) => ({ key: k, ...v }));
 
@@ -556,17 +612,18 @@ function buildProg(id, current) {
 
 /* ══ 인트로 리더보드 ══ */
 async function loadIntroLB() {
-  const snap = await get(ref(db, 'leaderboard'));
+  const snap = await get(ref(db, `leaderboard/scores/${classCode}`));
   const data = snap.val() || {};
   const all = Object.entries(data).map(([k, v]) => ({ key: k, ...v }));
   const completed  = all.filter(e => e.completed).sort((a, b) => b.profit - a.profit);
   const inProgress = all.filter(e => !e.completed).sort((a, b) => b.profit - a.profit || b.rounds - a.rounds);
   renderLB('intro-lb', completed, inProgress, null, false);
 }
-loadIntroLB();
+/* loadIntroLB는 수업 코드 인증 후 자동 호출 */
 
 /* ══ 게임 시작 ══ */
 window.startGame = async function() {
+  if (!classCode) { alert('수업 코드를 먼저 입력해 주세요!'); return; }
   const nick = document.getElementById('nick-input').value.trim();
   if (!nick) { alert('닉네임을 입력해 주세요!'); return; }
   myNick = nick;
@@ -702,7 +759,7 @@ async function showFinal() {
   startLbListener(['final-lb'], true);
 
   // 내 최종 순위 표시
-  const snap = await get(ref(db, 'leaderboard')).catch(() => null);
+  const snap = await get(ref(db, `leaderboard/scores/${classCode}`)).catch(() => null);
   if (snap) {
     const completed = Object.entries(snap.val() || {})
       .map(([k, v]) => ({ key: k, ...v }))
@@ -720,10 +777,14 @@ async function showFinal() {
 window.resetGame = function() {
   if (lbUnsub) { lbUnsub(); lbUnsub = null; }
   cur = 0; cumProfit = 0; history = [];
-  myNick = ''; myKey = '';
+  myNick = ''; myKey = ''; classCode = ''; className = '';
   document.getElementById('nick-input').value = '';
+  document.getElementById('code-input').value = '';
+  document.getElementById('code-msg').textContent = '';
   document.getElementById('st-rank').textContent = '-';
-  loadIntroLB();
+  document.getElementById('step-code').style.display = 'block';
+  document.getElementById('step-nick').style.display = 'none';
+  document.getElementById('intro-lb').innerHTML = '<div class="lb-empty">수업 코드를 입력하면 해당 반 리더보드가 표시됩니다</div>';
   show('s-intro');
 };
 

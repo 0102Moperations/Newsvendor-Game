@@ -419,58 +419,126 @@ const randDemand = set => set[Math.floor(Math.random() * set.length)];
 const show = id => { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); };
 
 /* ══ Firebase 저장 ══ */
-async function saveScore() {
+async function saveScore(completed = false) {
   await set(ref(db, 'leaderboard/' + myKey), {
-    nick: myNick, profit: cumProfit, rounds: cur, ts: Date.now()
+    nick: myNick, profit: cumProfit, rounds: cur,
+    completed: completed, ts: Date.now()
   });
 }
 
-/* ══ 실시간 리더보드 리스너 ══ */
-function startLbListener(containerIds) {
+/* ══ 실시간 리더보드 리스너 ══
+   - 진행 중 화면: 완료자(Top5) + 진행중(Top5) 각각 구분 표시
+   - 최종 화면:    완료자만 표시
+══ */
+function startLbListener(containerIds, finalMode = false) {
   if (lbUnsub) lbUnsub();
   lbUnsub = onValue(ref(db, 'leaderboard'), snap => {
     const data = snap.val() || {};
-    const sorted = Object.entries(data)
-      .map(([k, v]) => ({ key: k, ...v }))
+    const all = Object.entries(data).map(([k, v]) => ({ key: k, ...v }));
+
+    const completed = all
+      .filter(e => e.completed)
+      .sort((a, b) => b.profit - a.profit);
+    const inProgress = all
+      .filter(e => !e.completed)
       .sort((a, b) => b.profit - a.profit || b.rounds - a.rounds);
-    const top5 = sorted.slice(0, 5);
-    const myIdx = sorted.findIndex(e => e.key === myKey);
-    const myRank = myIdx === -1 ? null : { rank: myIdx + 1, total: sorted.length };
-    containerIds.forEach(id => renderLB(id, top5, sorted, myRank));
-    if (myRank) document.getElementById('st-rank').textContent = `${myRank.rank}위/${myRank.total}명`;
+
+    // 순위 계산은 완료자 기준
+    const myIdxC = completed.findIndex(e => e.key === myKey);
+    const myIdxP = inProgress.findIndex(e => e.key === myKey);
+    const myRank = myIdxC !== -1
+      ? { rank: myIdxC + 1, total: completed.length, type: 'completed' }
+      : myIdxP !== -1
+        ? { rank: myIdxP + 1, total: inProgress.length, type: 'progress' }
+        : null;
+
+    containerIds.forEach(id => renderLB(id, completed, inProgress, myRank, finalMode));
+
+    if (myRank && document.getElementById('st-rank')) {
+      if (myRank.type === 'completed') {
+        document.getElementById('st-rank').textContent = `완료 ${myRank.rank}위/${myRank.total}명`;
+      } else {
+        document.getElementById('st-rank').textContent = `진행중 ${myRank.rank}위/${myRank.total}명`;
+      }
+    }
   });
 }
 
 /* ══ 리더보드 렌더 ══ */
-function renderLB(containerId, top5, allSorted, myRank) {
+function renderLB(containerId, completed, inProgress, myRank, finalMode = false) {
   const el = document.getElementById(containerId);
   if (!el) return;
-  if (!top5.length) { el.innerHTML = '<div class="lb-empty">아직 참가자가 없습니다</div>'; return; }
-  const mx = Math.max(...top5.map(e => Math.abs(e.profit)), 1);
+
+  const top5c = completed.slice(0, 5);
+  const top5p = inProgress.slice(0, 5);
+  const hasAny = top5c.length > 0 || (!finalMode && top5p.length > 0);
+
+  if (!hasAny) { el.innerHTML = '<div class="lb-empty">아직 완료한 참가자가 없습니다</div>'; return; }
+
+  const mx = Math.max(
+    ...top5c.map(e => Math.abs(e.profit)),
+    ...(!finalMode ? top5p.map(e => Math.abs(e.profit)) : []),
+    1
+  );
+
   let html = '';
-  top5.forEach((e, i) => {
-    const isMe = e.key === myKey;
-    const rankCls = i === 0 ? 'r1' : i === 1 ? 'r2' : i === 2 ? 'r3' : 'rn';
-    const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1);
-    const barW = Math.max(4, Math.round(Math.abs(e.profit) / mx * 100));
-    html += `<div class="lb-row${isMe ? ' me-row' : ''}">
-      <div class="lb-rank ${rankCls}">${medal}</div>
-      <div class="lb-name${isMe ? ' me' : ''}">${isMe ? '⭐ ' : ''}${e.nick.substring(0,11)}</div>
-      <div class="lb-rounds">${e.rounds}R</div>
-      <div class="lb-bar-wrap"><div class="lb-bar ${isMe ? 'bar-me' : 'bar-o'}" style="width:${barW}%"></div></div>
-      <div class="lb-profit ${e.profit >= 0 ? 'pos' : 'neg'}">${fmt(e.profit)}</div>
-    </div>`;
-  });
-  if (myRank && myRank.rank > 5 && myKey) {
-    html += `<div class="lb-sep">···  ${myRank.rank - 5}명 더  ···</div>`;
-    html += `<div class="lb-row me-row">
-      <div class="lb-rank rn">${myRank.rank}</div>
-      <div class="lb-name me">⭐ ${myNick.substring(0,11)}</div>
-      <div class="lb-rounds">${cur}R</div>
-      <div class="lb-bar-wrap"><div class="lb-bar bar-me" style="width:4%"></div></div>
-      <div class="lb-profit ${cumProfit >= 0 ? 'pos' : 'neg'}">${fmt(cumProfit)}</div>
-    </div>`;
+
+  /* 완료자 섹션 */
+  if (top5c.length > 0) {
+    if (!finalMode) html += `<div class="lb-sep" style="text-align:left;font-weight:500;color:var(--green);padding:4px 0 6px;">✅ 완료</div>`;
+    top5c.forEach((e, i) => {
+      const isMe = e.key === myKey;
+      const rankCls = i === 0 ? 'r1' : i === 1 ? 'r2' : i === 2 ? 'r3' : 'rn';
+      const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1);
+      const barW = Math.max(4, Math.round(Math.abs(e.profit) / mx * 100));
+      html += `<div class="lb-row${isMe ? ' me-row' : ''}">
+        <div class="lb-rank ${rankCls}">${medal}</div>
+        <div class="lb-name${isMe ? ' me' : ''}">${isMe ? '⭐ ' : ''}${e.nick.substring(0,11)}</div>
+        <div class="lb-rounds" style="color:var(--green);font-weight:500;">완료</div>
+        <div class="lb-bar-wrap"><div class="lb-bar ${isMe ? 'bar-me' : 'bar-o'}" style="width:${barW}%"></div></div>
+        <div class="lb-profit ${e.profit >= 0 ? 'pos' : 'neg'}">${fmt(e.profit)}</div>
+      </div>`;
+    });
+    /* 내가 완료자인데 top5 밖인 경우 */
+    if (myRank && myRank.type === 'completed' && myRank.rank > 5) {
+      html += `<div class="lb-sep">···  ${myRank.rank - 5}명 더  ···</div>`;
+      html += `<div class="lb-row me-row">
+        <div class="lb-rank rn">${myRank.rank}</div>
+        <div class="lb-name me">⭐ ${myNick.substring(0,11)}</div>
+        <div class="lb-rounds" style="color:var(--green);font-weight:500;">완료</div>
+        <div class="lb-bar-wrap"><div class="lb-bar bar-me" style="width:4%"></div></div>
+        <div class="lb-profit ${cumProfit >= 0 ? 'pos' : 'neg'}">${fmt(cumProfit)}</div>
+      </div>`;
+    }
   }
+
+  /* 진행중 섹션 (최종 화면에서는 숨김) */
+  if (!finalMode && top5p.length > 0) {
+    html += `<div class="lb-sep" style="text-align:left;font-weight:500;color:var(--text2);padding:8px 0 6px;">🕐 진행 중</div>`;
+    top5p.forEach((e, i) => {
+      const isMe = e.key === myKey;
+      const barW = Math.max(4, Math.round(Math.abs(e.profit) / mx * 100));
+      html += `<div class="lb-row${isMe ? ' me-row' : ''}" style="opacity:0.75;">
+        <div class="lb-rank rn">${i + 1}</div>
+        <div class="lb-name${isMe ? ' me' : ''}">${isMe ? '⭐ ' : ''}${e.nick.substring(0,11)}</div>
+        <div class="lb-rounds">${e.rounds}R</div>
+        <div class="lb-bar-wrap"><div class="lb-bar ${isMe ? 'bar-me' : 'bar-o'}" style="width:${barW}%"></div></div>
+        <div class="lb-profit ${e.profit >= 0 ? 'pos' : 'neg'}">${fmt(e.profit)}</div>
+      </div>`;
+    });
+    /* 내가 진행중인데 top5 밖인 경우 */
+    if (myRank && myRank.type === 'progress' && myRank.rank > 5) {
+      html += `<div class="lb-sep">···  ${myRank.rank - 5}명 더  ···</div>`;
+      html += `<div class="lb-row me-row" style="opacity:0.75;">
+        <div class="lb-rank rn">${myRank.rank}</div>
+        <div class="lb-name me">⭐ ${myNick.substring(0,11)}</div>
+        <div class="lb-rounds">${cur}R</div>
+        <div class="lb-bar-wrap"><div class="lb-bar bar-me" style="width:4%"></div></div>
+        <div class="lb-profit ${cumProfit >= 0 ? 'pos' : 'neg'}">${fmt(cumProfit)}</div>
+      </div>`;
+    }
+  }
+
   el.innerHTML = html;
 }
 
@@ -490,10 +558,10 @@ function buildProg(id, current) {
 async function loadIntroLB() {
   const snap = await get(ref(db, 'leaderboard'));
   const data = snap.val() || {};
-  const sorted = Object.entries(data)
-    .map(([k, v]) => ({ key: k, ...v }))
-    .sort((a, b) => b.profit - a.profit || b.rounds - a.rounds);
-  renderLB('intro-lb', sorted.slice(0, 5), sorted, null);
+  const all = Object.entries(data).map(([k, v]) => ({ key: k, ...v }));
+  const completed  = all.filter(e => e.completed).sort((a, b) => b.profit - a.profit);
+  const inProgress = all.filter(e => !e.completed).sort((a, b) => b.profit - a.profit || b.rounds - a.rounds);
+  renderLB('intro-lb', completed, inProgress, null, false);
 }
 loadIntroLB();
 
@@ -526,7 +594,7 @@ function loadRound() {
   sl.max = r.sliderMax;
   sl.value = Math.round(r.demand.reduce((a, b) => a + b, 0) / r.demand.length);
   onSlider();
-  startLbListener(['game-lb']);
+  startLbListener(['game-lb'], false);
   show('s-game');
 }
 
@@ -587,7 +655,7 @@ window.confirmOrder = async function() {
   ).join('');
 
   document.getElementById('next-btn').textContent = cur >= ROUNDS.length - 1 ? '최종 결과 보기 →' : '다음 라운드 →';
-  startLbListener(['result-lb']);
+  startLbListener(['result-lb'], false);
   show('s-result');
   btn.disabled = false;
 };
@@ -601,6 +669,9 @@ window.nextRound = function() {
 
 /* ══ 최종 화면 ══ */
 async function showFinal() {
+  // 완료 플래그로 저장
+  await saveScore(true);
+
   const fn = document.getElementById('f-num');
   fn.textContent = fmt(cumProfit);
   fn.className = 'fn' + (cumProfit < 0 ? ' neg' : '');
@@ -627,20 +698,19 @@ async function showFinal() {
     `날씨와 요일에 따라 수요가 크게 달라집니다. ` +
     `원가가 낮아질수록, 잔존가치가 높을수록 더 공격적으로 주문하는 것이 유리합니다.`;
 
-  startLbListener(['final-lb']);
+  // 최종 화면: 완료자만 표시 (finalMode=true)
+  startLbListener(['final-lb'], true);
 
-  const snap = await (async () => {
-    const { get: fbGet } = await import("https://www.gstatic.com/firebasejs/12.13.0/firebase-database.js");
-    return fbGet(ref(db, 'leaderboard'));
-  })().catch(() => null);
-
+  // 내 최종 순위 표시
+  const snap = await get(ref(db, 'leaderboard')).catch(() => null);
   if (snap) {
-    const sorted = Object.entries(snap.val() || {})
+    const completed = Object.entries(snap.val() || {})
       .map(([k, v]) => ({ key: k, ...v }))
+      .filter(e => e.completed)
       .sort((a, b) => b.profit - a.profit);
-    const myIdx = sorted.findIndex(e => e.key === myKey);
+    const myIdx = completed.findIndex(e => e.key === myKey);
     if (myIdx !== -1) {
-      document.getElementById('f-rank').textContent = `${myIdx + 1}위 / ${sorted.length}명 참가`;
+      document.getElementById('f-rank').textContent = `${myIdx + 1}위 / ${completed.length}명 완료`;
     }
   }
   show('s-final');

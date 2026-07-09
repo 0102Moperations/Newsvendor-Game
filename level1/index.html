@@ -439,7 +439,7 @@ const show = id => { document.querySelectorAll('.screen').forEach(s => s.classLi
 
 /* ══ 수업 코드 검증 ══ */
 window.verifyCode = async function() {
-  const code = document.getElementById('code-input').value.trim().toUpperCase();
+  const code = document.getElementById('code-input').value.trim();
   const msgEl = document.getElementById('code-msg');
   if (!code) { msgEl.style.color='var(--red)'; msgEl.textContent='수업 코드를 입력해 주세요.'; return; }
   msgEl.style.color='var(--text3)'; msgEl.textContent='확인 중...';

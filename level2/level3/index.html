@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>☕ 카페 점주의 마크다운 전략</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Black+Han+Sans&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --red:#E24B4A;--green:#1D9E75;--blue:#185FA5;--amber:#BA7517;
+    --bg:#f8f7f4;--surface:#ffffff;--surface2:#f1efe8;
+    --text:#1a1a1a;--text2:#6b6b6b;--text3:#9a9a9a;
+    --border:rgba(0,0,0,0.10);--border2:rgba(0,0,0,0.18);
+    --radius:10px;--radius-lg:14px;
+  }
+  body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+  .page{max-width:900px;margin:0 auto;padding:20px 16px 60px;}
+  .screen{display:none;}.screen.active{display:block;}
+
+  .title-bar{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
+  .title-bar h1{font-family:'Black Han Sans',sans-serif;font-size:22px;color:var(--text);}
+  .badge{background:var(--red);color:#fff;font-size:11px;font-weight:500;padding:3px 9px;border-radius:20px;}
+
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:14px;}
+  .card-title{font-size:13px;font-weight:500;color:var(--text2);margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+
+  .stat-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+  .sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;}
+  .sc .lb{font-size:11px;color:var(--text2);margin-bottom:2px;}
+  .sc .vl{font-size:15px;font-weight:500;color:var(--text);}
+
+  .phase-indicator{background:var(--surface2);border-left:3px solid var(--red);padding:12px 14px;border-radius:var(--radius);font-size:13px;margin-bottom:14px;}
+  .phase-indicator.morning{border-left-color:var(--amber);}
+  .phase-indicator.afternoon{border-left-color:var(--blue);}
+  .phase-label{font-weight:500;margin-bottom:4px;}
+
+  .product-decision{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:12px;}
+  .product-header{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-weight:500;font-size:13px;}
+  .product-header .icon{font-size:24px;}
+
+  .decision-row{display:flex;align-items:center;gap:12px;margin-bottom:8px;}
+  .decision-row label{min-width:90px;font-size:12px;color:var(--text2);}
+  .decision-row input[type=range]{flex:1;height:4px;accent-color:var(--red);cursor:pointer;}
+  .decision-row input[type=number]{width:70px;padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius);font-size:12px;}
+  .decision-value{min-width:50px;text-align:right;font-weight:500;color:var(--text);}
+
+  .inventory-box{background:#f0f5ff;border-left:3px solid var(--blue);padding:10px 12px;border-radius:var(--radius);font-size:12px;margin-top:8px;}
+  .inventory-label{color:var(--text2);margin-bottom:4px;}
+  .inventory-value{font-weight:500;color:var(--blue);}
+
+  .markdown-section{background:#fff8f0;border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-top:14px;}
+  .markdown-title{font-weight:500;font-size:13px;color:var(--text);margin-bottom:10px;}
+  .markdown-slider{display:flex;align-items:center;gap:12px;}
+  .markdown-slider input[type=range]{flex:1;}
+  .markdown-info{font-size:11px;color:var(--text2);margin-top:8px;line-height:1.6;}
+
+  .btn-p{display:block;width:100%;padding:13px;background:var(--red);color:#fff;border:none;border-radius:var(--radius);font-size:15px;font-weight:500;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:opacity 0.15s;margin-bottom:8px;}
+  .btn-p:hover{opacity:0.88;}
+  .btn-p:disabled{opacity:0.5;cursor:not-allowed;}
+  .btn-s{display:block;width:100%;padding:12px;background:transparent;color:var(--text);border:1px solid var(--border2);border-radius:var(--radius);font-size:14px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:background 0.15s;margin-bottom:8px;}
+  .btn-s:hover{background:var(--surface2);}
+
+  .lb-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;}
+  .lb-row:last-child{border-bottom:none;}
+  .lb-rank{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;}
+  .r1{background:#fef3e2;color:#854F0B;}
+  .r2{background:#f1efe8;color:#5F5E5A;}
+  .r3{background:#faece7;color:#993C1D;}
+  .rn{background:var(--surface2);color:var(--text2);}
+  .lb-name{flex:1;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .lb-name.me{color:var(--red);}
+  .lb-profit{font-weight:500;min-width:88px;text-align:right;}
+  .lb-profit.pos{color:var(--green);}
+  .lb-profit.neg{color:var(--red);}
+  .me-row{background:linear-gradient(90deg,rgba(226,75,74,0.06),transparent);border-radius:var(--radius);padding:8px;margin:-8px;}
+
+  .result-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0;}
+  .ri{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border);}
+  .ri .k{color:var(--text2);}
+  .ri .v{font-weight:500;}
+  .profit-disp{text-align:center;padding:14px;border-radius:var(--radius);margin-top:12px;}
+  .profit-disp.pos{background:#eaf3de;color:#3B6D11;}
+  .profit-disp.neg{background:#fcebeb;color:#A32D2D;}
+  .profit-disp .pl{font-size:12px;margin-bottom:3px;}
+  .profit-disp .pv{font-size:24px;font-weight:700;}
+
+  .prog{display:flex;gap:6px;justify-content:center;margin-bottom:16px;}
+  .pd{width:30px;height:30px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--text2);}
+  .pd.done{background:var(--green);color:#fff;border-color:var(--green);}
+  .pd.cur{background:var(--red);color:#fff;border-color:var(--red);}
+
+  .hero{text-align:center;padding:20px 0 12px;}
+  .hero .emo{font-size:52px;display:block;margin-bottom:12px;}
+  .hero h2{font-family:'Black Han Sans',sans-serif;font-size:28px;margin-bottom:10px;}
+  .hero p{font-size:14px;color:var(--text2);line-height:1.8;max-width:480px;margin:0 auto;}
+  .rules-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;margin:14px 0;font-size:13px;color:var(--text2);line-height:2.0;}
+  .rule-i{display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;}
+  .rule-i:last-child{margin-bottom:0;}
+  .rule-i i{color:var(--red);margin-top:2px;flex-shrink:0;}
+  .name-row{display:flex;gap:8px;margin-bottom:6px;}
+  .name-row input{flex:1;font-family:'Noto Sans KR',sans-serif;font-size:14px;padding:10px 14px;border:1px solid var(--border2);border-radius:var(--radius);outline:none;background:var(--surface);}
+  .name-row input:focus{border-color:var(--red);}
+  .name-row .btn-p{width:auto;margin:0;padding:0 20px;white-space:nowrap;}
+
+  .info-box{background:var(--surface2);border-left:3px solid var(--blue);padding:12px 14px;border-radius:var(--radius);font-size:12px;color:var(--text2);margin-bottom:14px;line-height:1.7;}
+
+  @media(max-width:768px){
+    .stat-bar{grid-template-columns:repeat(2,1fr);}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="title-bar">
+    <span style="font-size:26px">☕</span>
+    <h1>카페 점주의 마크다운 전략</h1>
+    <span class="badge">4주</span>
+  </div>
+
+  <!-- ══════════════ INTRO ══════════════ -->
+  <div class="screen active" id="s-intro">
+    <div class="hero">
+      <span class="emo">☕</span>
+      <h2>카페 점주의 마크다운 전략</h2>
+      <p>아침은 프리미엄, 오후는 세일!<br>고객 세분화를 이용해 폐기 손실을 최소화하면서<br>4주 동안 최대 이익을 올리세요.</p>
+    </div>
+    <div class="info-box">
+      <strong>📚 Level 3 고급 과정</strong><br>
+      이번에는 <strong>시간대별 고객 세분화</strong>와 <strong>마크다운 전략</strong>을 배웁니다.
+      아침 고객(직장인, 프리미엄 선호)과 오후 고객(학생, 가격민감)의 특성을 파악하고,
+      남은 재고를 효율적으로 처분하는 마크다운 타이밍과 규모를 결정합니다.
+    </div>
+    <div class="rules-box">
+      <div class="rule-i"><i class="ti ti-circle-check"></i><span><strong>매일 아침 발주</strong> - 3개 상품의 수량만 결정 (가격은 기본가)</span></div>
+      <div class="rule-i"><i class="ti ti-circle-check"></i><span><strong>오후 4시 마크다운</strong> - 남은 재고에 대해 얼마나 할인할지 결정</span></div>
+      <div class="rule-i"><i class="ti ti-circle-check"></i><span><strong>고객 세분화</strong> - 아침(직장인)과 오후(학생) 고객 특성 다름</span></div>
+      <div class="rule-i"><i class="ti ti-circle-check"></i><span><strong>유통기한</strong> - 저녁 마감 시 팔지 못한 상품은 폐기</span></div>
+      <div class="rule-i"><i class="ti ti-trophy"></i><span><strong>4주 누적 이익</strong> - 20일 운영 후 최종 순이익 계산</span></div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div style="font-size:13px;font-weight:500;margin-bottom:8px;">닉네임 입력</div>
+      <div class="name-row">
+        <input type="text" id="nick-input" placeholder="예) 마크다운 마스터" maxlength="12" onkeydown="if(event.key==='Enter')startGame()">
+        <button class="btn-p" onclick="startGame()">시작 →</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">📊 현재 리더보드</div>
+      <div id="intro-lb"><div style="text-align:center;color:var(--text3);padding:16px;">불러오는 중...</div></div>
+    </div>
+  </div>
+
+  <!-- ══════════════ MORNING ══════════════ -->
+  <div class="screen" id="s-morning">
+    <div class="prog" id="prog-g"></div>
+    <div class="stat-bar">
+      <div class="sc"><div class="lb">날짜</div><div class="vl" id="st-day">Day 1/20</div></div>
+      <div class="sc"><div class="lb">누적 이익</div><div class="vl" id="st-profit" style="color:var(--green)">₩0</div></div>
+      <div class="sc"><div class="lb">순위</div><div class="vl" id="st-rank">-</div></div>
+      <div class="sc"><div class="lb">이번주</div><div class="vl" id="st-week">Week 1</div></div>
+    </div>
+
+    <div class="phase-indicator morning">
+      <div class="phase-label">🌅 아침 (7-9시)</div>
+      <div style="font-size:11px;color:var(--text2);">직장인 고객들이 몰려옵니다. 프리미엄 가격에 판매합니다.</div>
+    </div>
+
+    <div class="info-box">
+      <strong>📋 오늘 발주 계획</strong><br>
+      3개 상품의 수량을 결정하세요. 아침에는 기본 가격으로 판매되고,
+      남은 상품은 오후에 마크다운 기회를 갖습니다.
+    </div>
+
+    <div class="card">
+      <div class="product-decision">
+        <div class="product-header"><span class="icon">🥐</span>크로와상</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:10px;">원가 ₩1,200 · 아침 판가 ₩4,000</div>
+        <div class="decision-row">
+          <label>발주량:</label>
+          <input type="range" id="q-croissant" min="0" max="100" value="30" step="1" oninput="onMorningChange()">
+          <span class="decision-value" id="qv-croissant">30개</span>
+        </div>
+        <div class="inventory-box">
+          <div class="inventory-label">오후 남은 재고 예상</div>
+          <div class="inventory-value" id="inv-croissant">~8-12개</div>
+        </div>
+      </div>
+
+      <div class="product-decision">
+        <div class="product-header"><span class="icon">🍵</span>단호박라떼</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:10px;">원가 ₩900 · 아침 판가 ₩4,500</div>
+        <div class="decision-row">
+          <label>발주량:</label>
+          <input type="range" id="q-latte" min="0" max="150" value="50" step="1" oninput="onMorningChange()">
+          <span class="decision-value" id="qv-latte">50개</span>
+        </div>
+        <div class="inventory-box">
+          <div class="inventory-label">오후 남은 재고 예상</div>
+          <div class="inventory-value" id="inv-latte">~15-25개</div>
+        </div>
+      </div>
+
+      <div class="product-decision">
+        <div class="product-header"><span class="icon">🍰</span>초콜릿 케이크</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:10px;">원가 ₩3,000 · 아침 판가 ₩8,000</div>
+        <div class="decision-row">
+          <label>발주량:</label>
+          <input type="range" id="q-cake" min="0" max="50" value="15" step="1" oninput="onMorningChange()">
+          <span class="decision-value" id="qv-cake">15개</span>
+        </div>
+        <div class="inventory-box">
+          <div class="inventory-label">오후 남은 재고 예상</div>
+          <div class="inventory-value" id="inv-cake">~5-10개</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🏆 현재 리더보드 (Top 5)</div>
+      <div id="game-lb"><div style="text-align:center;color:var(--text3);padding:16px;">불러오는 중...</div></div>
+    </div>
+
+    <button class="btn-p" onclick="goAfternoon()">오후 진행 →</button>
+  </div>
+
+  <!-- ══════════════ AFTERNOON ══════════════ -->
+  <div class="screen" id="s-afternoon">
+    <div class="stat-bar">
+      <div class="sc"><div class="lb">시간</div><div class="vl">오후 4시</div></div>
+      <div class="sc"><div class="lb">누적 이익</div><div class="vl" id="st-profit-pm" style="color:var(--green)">₩0</div></div>
+      <div class="sc"><div class="lb">아침 판매액</div><div class="vl" id="am-sales">₩0</div></div>
+      <div class="sc"><div class="lb">남은 재고</div><div class="vl" id="leftover-cnt">0개</div></div>
+    </div>
+
+    <div class="phase-indicator afternoon">
+      <div class="phase-label">🌆 오후 (4-6시 마감 전)</div>
+      <div style="font-size:11px;color:var(--text2);">학생과 일반 고객들이 오는 시간. 아침에 팔지 못한 상품을 마크다운합니다.</div>
+    </div>
+
+    <div class="info-box">
+      <strong>📋 마크다운 결정</strong><br>
+      남은 재고를 어느 정도 할인할까요? 마진 손실 vs 폐기 손실을 비교하며 결정하세요.
+    </div>
+
+    <div class="card">
+      <div id="markdown-section"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📊 오늘의 손익 예상</div>
+      <div id="profit-preview"></div>
+    </div>
+
+    <button class="btn-p" onclick="completeDay()">마크다운 확정 →</button>
+  </div>
+
+  <!-- ══════════════ RESULT ══════════════ -->
+  <div class="screen" id="s-result">
+    <div class="prog" id="prog-r"></div>
+    <div class="card">
+      <div class="card-title" id="res-title">Day 1 최종 결과</div>
+      <div id="daily-results" style="margin-bottom:16px;"></div>
+      <div class="profit-disp" id="p-disp">
+        <div class="pl">오늘 순이익</div>
+        <div class="pv" id="p-val">₩0</div>
+      </div>
+      <div class="info-box" id="analysis-box"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🏆 현재 리더보드</div>
+      <div id="result-lb"><div style="text-align:center;color:var(--text3);padding:16px;">불러오는 중...</div></div>
+    </div>
+
+    <button class="btn-p" id="next-btn" onclick="nextDay()">다음 날 →</button>
+  </div>
+
+  <!-- ══════════════ FINAL ══════════════ -->
+  <div class="screen" id="s-final">
+    <div style="text-align:center;padding:20px 0 12px;">
+      <div style="font-size:42px;margin-bottom:8px">🏆</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:4px">4주(20일) 최종 누적 이익</div>
+      <div style="font-size:40px;font-weight:700;font-family:'Black Han Sans',sans-serif;margin-bottom:6px;" id="f-num"></div>
+      <div style="font-size:14px;color:var(--text2);margin-top:6px">최종 순위: <strong id="f-rank" style="font-size:17px;color:var(--blue)"></strong></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🎓 학습 내용 정리</div>
+      <div class="info-box">
+        <strong>마크다운의 가치:</strong><br>
+        폐기 손실은 순이익을 0으로 만들지만, 마크다운 손실은 부분적인 마진만 손실시킵니다.
+        따라서 적절한 마크다운은 전체 수익성을 높이는 전략입니다.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🏆 최종 리더보드 (Top 5)</div>
+      <div id="final-lb"><div style="text-align:center;color:var(--text3);padding:16px;">불러오는 중...</div></div>
+    </div>
+
+    <button class="btn-p" onclick="resetGame()">다시 도전하기 →</button>
+    <button class="btn-s" onclick="shareResult()">결과 공유하기 📋</button>
+  </div>
+
+</div><!-- /page -->
+
+<!-- ══════════════ Firebase SDK ══════════════ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import { getDatabase, ref, set, get, onValue } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCgBJ6yt9_TrK7AlgTKhEth7Qt2QdCYADc",
+  authDomain: "newsvendor-game-simulation.firebaseapp.com",
+  databaseURL: "https://newsvendor-game-simulation-default-rtdb.firebaseio.com",
+  projectId: "newsvendor-game-simulation",
+  storageBucket: "newsvendor-game-simulation.firebasestorage.app",
+  messagingSenderId: "213354360321",
+  appId: "1:213354360321:web:4dc63514cc19ba6019da00"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const PRODUCTS = {
+  croissant: { icon: '🥐', name: '크로와상', cost: 1200, amPrice: 4000, pmPrice: 2000, morningDemand: 22, afternoonDemand: [8, 12] },
+  latte: { icon: '🍵', name: '단호박라떼', cost: 900, amPrice: 4500, pmPrice: 3150, morningDemand: 35, afternoonDemand: [15, 25] },
+  cake: { icon: '🍰', name: '초콜릿 케이크', cost: 3000, amPrice: 8000, pmPrice: 4800, morningDemand: 10, afternoonDemand: [5, 10] }
+};
+
+const fmt = n => (n < 0 ? '-₩' : '₩') + Math.abs(n).toLocaleString();
+const show = id => { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); };
+
+let day = 0, cumProfit = 0, history = [], myNick = '', myKey = '';
+let currentDayData = {}, morningOrders = {};
+let lbUnsub = null;
+
+function calcLeftover(product, ordered) {
+  const morning = calcMorningDemand(product, ordered);
+  return Math.max(0, ordered - morning);
+}
+
+function calcMorningDemand(product, ordered) {
+  const p = PRODUCTS[product];
+  const demand = p.morningDemand + Math.random() * 8 - 4; // ±4 variation
+  return Math.min(Math.round(demand), ordered);
+}
+
+window.onMorningChange = function() {
+  Object.keys(PRODUCTS).forEach(prod => {
+    const q = parseInt(document.getElementById(`q-${prod}`).value);
+    document.getElementById(`qv-${prod}`).textContent = q + '개';
+    const p = PRODUCTS[prod];
+    const leftover = calcLeftover(prod, q);
+    const min = Math.round(leftover * 0.8);
+    const max = Math.round(leftover * 1.2);
+    document.getElementById(`inv-${prod}`).textContent = `~${min}-${max}개`;
+  });
+};
+
+async function saveScore() {
+  await set(ref(db, 'leaderboard-level3/' + myKey), {
+    nick: myNick,
+    profit: cumProfit,
+    day: day,
+    ts: Date.now()
+  });
+}
+
+function startLbListener(containerIds) {
+  if(lbUnsub) lbUnsub();
+  const lbRef = ref(db, 'leaderboard-level3');
+  lbUnsub = onValue(lbRef, snap => {
+    const data = snap.val() || {};
+    const sorted = Object.entries(data)
+      .map(([k, v]) => ({ key: k, ...v }))
+      .sort((a, b) => b.profit - a.profit);
+    const top5 = sorted.slice(0, 5);
+    const myIdx = sorted.findIndex(e => e.key === myKey);
+    const myRank = myIdx === -1 ? null : { rank: myIdx + 1, total: sorted.length };
+
+    containerIds.forEach(id => renderLB(id, top5, sorted, myRank));
+
+    if(myRank) {
+      document.getElementById('st-rank').textContent = `${myRank.rank}위/${myRank.total}명`;
+    }
+  });
+}
+
+function renderLB(containerId, top5, allSorted, myRank) {
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  if(!top5.length) { el.innerHTML = '<div style="text-align:center;color:var(--text3);padding:16px;">아직 참가자가 없습니다</div>'; return; }
+
+  const mx = Math.max(...top5.map(e => Math.abs(e.profit)), 1);
+  let html = '';
+
+  top5.forEach((e, i) => {
+    const isMe = e.key === myKey;
+    const rankCls = i === 0 ? 'r1' : i === 1 ? 'r2' : i === 2 ? 'r3' : 'rn';
+    const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1);
+    const profCls = e.profit >= 0 ? 'pos' : 'neg';
+    html += `<div class="lb-row${isMe ? ' me-row' : ''}">
+      <div class="lb-rank ${rankCls}">${medal}</div>
+      <div class="lb-name${isMe ? ' me' : ''}">${isMe ? '⭐ ' : ''}${e.nick.substring(0,11)}</div>
+      <div style="font-size:11px;color:var(--text3);">${e.day}일</div>
+      <div class="lb-profit ${profCls}">${fmt(e.profit)}</div>
+    </div>`;
+  });
+
+  el.innerHTML = html;
+}
+
+window.startGame = async function() {
+  const nick = document.getElementById('nick-input').value.trim();
+  if(!nick) { alert('닉네임을 입력해 주세요!'); return; }
+  myNick = nick;
+  myKey = 'l3_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+  day = 0; cumProfit = 0; history = [];
+  await saveScore();
+  loadMorning();
+};
+
+function loadMorning() {
+  const week = Math.floor(day / 5) + 1;
+  const dayInWeek = day % 5 + 1;
+  document.getElementById('st-day').textContent = `Day ${day + 1}/20`;
+  document.getElementById('st-profit').textContent = fmt(cumProfit);
+  document.getElementById('st-profit').style.color = cumProfit >= 0 ? 'var(--green)' : 'var(--red)';
+  document.getElementById('st-week').textContent = `Week ${week}`;
+
+  buildProg('prog-g', day, 20);
+  onMorningChange();
+  startLbListener(['game-lb']);
+  show('s-morning');
+}
+
+function buildProg(id, current, total) {
+  const el = document.getElementById(id);
+  if(!el) return;
+  const dots = [];
+  for(let i = 0; i < 4; i++) {
+    let c = 'pd';
+    if(i < Math.floor(current / 5)) c += ' done';
+    else if(i === Math.floor(current / 5)) c += ' cur';
+    dots.push(`<div class="${c}">${i < Math.floor(current / 5) ? '✓' : (i+1)}</div>`);
+  }
+  el.innerHTML = dots.join('');
+}
+
+window.goAfternoon = async function() {
+  // Simulate morning sales
+  morningOrders = {};
+  let amSales = 0;
+  currentDayData = { products: {} };
+
+  Object.keys(PRODUCTS).forEach(prod => {
+    const q = parseInt(document.getElementById(`q-${prod}`).value);
+    const p = PRODUCTS[prod];
+    const amDemand = calcMorningDemand(prod, q);
+    const amRevenue = amDemand * p.amPrice;
+    const leftover = q - amDemand;
+    amSales += amRevenue;
+
+    morningOrders[prod] = q;
+    currentDayData.products[prod] = {
+      ordered: q,
+      amDemand, amRevenue, leftover,
+      amCost: q * p.cost,
+      pmMarkdown: 0, pmDemand: 0, pmRevenue: 0, wasteQty: 0
+    };
+  });
+
+  currentDayData.amSales = amSales;
+
+  // Build afternoon markdown section
+  let markdownHtml = '';
+  Object.keys(PRODUCTS).forEach(prod => {
+    const p = PRODUCTS[prod];
+    const leftover = currentDayData.products[prod].leftover;
+    const mdDefault = Math.round((p.amPrice - p.pmPrice) / p.amPrice * 100);
+
+    markdownHtml += `
+      <div class="markdown-section">
+        <div class="markdown-title">${p.icon} ${p.name}</div>
+        <div style="font-size:11px;color:var(--text2);margin-bottom:10px;">남은재고: ${leftover}개 | 원가 ₩${p.cost} | 기본 세일 ${mdDefault}%</div>
+        <div class="markdown-slider">
+          <input type="range" id="md-${prod}" min="0" max="100" value="${mdDefault}" step="5" oninput="onMarkdownChange()">
+          <span style="min-width:40px;font-weight:500;text-align:right;" id="md-pct-${prod}">${mdDefault}%</span>
+        </div>
+        <div class="markdown-info" id="md-info-${prod}"></div>
+      </div>
+    `;
+  });
+  document.getElementById('markdown-section').innerHTML = markdownHtml;
+
+  document.getElementById('st-profit-pm').textContent = fmt(cumProfit);
+  document.getElementById('am-sales').textContent = fmt(amSales);
+  let totalLeftover = Object.keys(PRODUCTS).reduce((sum, prod) => sum + currentDayData.products[prod].leftover, 0);
+  document.getElementById('leftover-cnt').textContent = totalLeftover + '개';
+
+  onMarkdownChange();
+  show('s-afternoon');
+};
+
+window.onMarkdownChange = function() {
+  Object.keys(PRODUCTS).forEach(prod => {
+    const p = PRODUCTS[prod];
+    const mdPct = parseInt(document.getElementById(`md-${prod}`).value);
+    const markdownPrice = Math.round(p.amPrice * (1 - mdPct / 100));
+    const leftover = currentDayData.products[prod].leftover;
+    const [minDemand, maxDemand] = p.afternoonDemand;
+    const pmDemand = Math.min(Math.round(minDemand + (maxDemand - minDemand) * mdPct / 100), leftover);
+    const pmRevenue = pmDemand * markdownPrice;
+    const wasteQty = leftover - pmDemand;
+
+    document.getElementById(`md-pct-${prod}`).textContent = mdPct + '%';
+
+    let infoText = `판매가 ${fmt(markdownPrice)} | `;
+    infoText += `예상 판매: ${pmDemand}개 | `;
+    infoText += `폐기: ${wasteQty}개 | `;
+    infoText += `오후 수익: ${fmt(pmRevenue)}`;
+    document.getElementById(`md-info-${prod}`).textContent = infoText;
+
+    currentDayData.products[prod].pmMarkdown = mdPct;
+    currentDayData.products[prod].pmPrice = markdownPrice;
+    currentDayData.products[prod].pmDemand = pmDemand;
+    currentDayData.products[prod].pmRevenue = pmRevenue;
+    currentDayData.products[prod].wasteQty = wasteQty;
+  });
+
+  updateProfitPreview();
+};
+
+function updateProfitPreview() {
+  let totalCost = 0, totalPM = 0, totalWaste = 0;
+
+  Object.keys(PRODUCTS).forEach(prod => {
+    const d = currentDayData.products[prod];
+    const p = PRODUCTS[prod];
+    totalCost += d.amCost;
+    totalPM += d.pmRevenue;
+    totalWaste += d.wasteQty * p.cost;
+  });
+
+  const dayProfit = currentDayData.amSales + totalPM - totalCost - totalWaste;
+  const profitHtml = `
+    <div class="result-grid">
+      <div class="ri"><span class="k">아침 판매액</span><span class="v">${fmt(currentDayData.amSales)}</span></div>
+      <div class="ri"><span class="k">오후 판매액</span><span class="v">${fmt(totalPM)}</span></div>
+      <div class="ri"><span class="k">총 구매비</span><span class="v">${fmt(totalCost)}</span></div>
+      <div class="ri"><span class="k">폐기손실</span><span class="v" style="color:var(--red);">-${fmt(totalWaste)}</span></div>
+    </div>
+    <div style="background:#f0f5ff;border-radius:var(--radius);padding:12px;margin-top:12px;text-align:center;">
+      <div style="font-size:12px;color:var(--text2);margin-bottom:4px;">오늘 예상 순이익</div>
+      <div style="font-size:20px;font-weight:700;color:${dayProfit >= 0 ? 'var(--green)' : 'var(--red)'};">${fmt(dayProfit)}</div>
+    </div>
+  `;
+  document.getElementById('profit-preview').innerHTML = profitHtml;
+}
+
+window.completeDay = async function() {
+  // Calculate actual profit
+  let dayProfit = currentDayData.amSales;
+  let totalCost = 0, totalPM = 0, totalWaste = 0;
+
+  Object.keys(PRODUCTS).forEach(prod => {
+    const d = currentDayData.products[prod];
+    const p = PRODUCTS[prod];
+    dayProfit += d.pmRevenue;
+    totalCost += d.amCost;
+    totalPM += d.pmRevenue;
+    totalWaste += d.wasteQty * p.cost;
+  });
+
+  dayProfit -= totalCost + totalWaste;
+  cumProfit += dayProfit;
+  currentDayData.dayProfit = dayProfit;
+  currentDayData.totalWaste = totalWaste;
+
+  history.push({ day: day + 1, ...currentDayData });
+
+  // Display results
+  let resultsHtml = '';
+  Object.keys(PRODUCTS).forEach(prod => {
+    const d = currentDayData.products[prod];
+    const p = PRODUCTS[prod];
+    const prodProfit = d.amRevenue + d.pmRevenue - d.amCost - (d.wasteQty * p.cost);
+    resultsHtml += `
+      <div style="border-bottom:1px solid var(--border);padding:12px 0;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div style="font-weight:500;">${p.icon} ${p.name}</div>
+          <div style="font-weight:500;color:${prodProfit >= 0 ? 'var(--green)' : 'var(--red)'};">${fmt(prodProfit)}</div>
+        </div>
+        <div style="font-size:11px;color:var(--text2);line-height:1.6;">
+          아침: ${d.amDemand}개 판매 ${fmt(d.amRevenue)} |
+          오후: ${d.pmDemand}개 세일 ${fmt(d.pmRevenue)} |
+          폐기: ${d.wasteQty}개
+        </div>
+      </div>
+    `;
+  });
+  document.getElementById('daily-results').innerHTML = resultsHtml;
+
+  document.getElementById('res-title').textContent = `Day ${day + 1} 최종 결과`;
+  const pd = document.getElementById('p-disp');
+  pd.className = 'profit-disp ' + (dayProfit >= 0 ? 'pos' : 'neg');
+  document.getElementById('p-val').textContent = fmt(dayProfit);
+
+  let analysis = `<strong>마크다운 분석:</strong><br>`;
+  let wasteTotal = 0;
+  Object.keys(PRODUCTS).forEach(prod => {
+    const d = currentDayData.products[prod];
+    if(d.wasteQty > 0) {
+      wasteTotal += d.wasteQty;
+      analysis += `${PRODUCTS[prod].name}: ${d.wasteQty}개 폐기 손실<br>`;
+    }
+  });
+  if(wasteTotal === 0) {
+    analysis += `✅ 폐기 손실 없음! 완판 또는 마크다운 최적화 성공`;
+  }
+  document.getElementById('analysis-box').innerHTML = analysis;
+
+  buildProg('prog-r', day, 20);
+  await saveScore();
+  document.getElementById('next-btn').textContent = day >= 19 ? '최종 결과 보기 →' : '다음 날 →';
+  startLbListener(['result-lb']);
+  show('s-result');
+};
+
+window.nextDay = function() {
+  day++;
+  if(day >= 20) showFinal();
+  else loadMorning();
+};
+
+async function showFinal() {
+  document.getElementById('f-num').textContent = fmt(cumProfit);
+  document.getElementById('f-num').style.color = cumProfit >= 0 ? 'var(--green)' : 'var(--red)';
+
+  const snap = await get(ref(db, 'leaderboard-level3'));
+  const data = snap.val() || {};
+  const sorted = Object.entries(data)
+    .map(([k, v]) => ({ key: k, ...v }))
+    .sort((a, b) => b.profit - a.profit);
+  const myIdx = sorted.findIndex(e => e.key === myKey);
+  document.getElementById('f-rank').textContent = `${myIdx + 1}위 / ${sorted.length}명`;
+
+  renderLB('final-lb', sorted.slice(0, 5), sorted, null);
+  show('s-final');
+}
+
+window.resetGame = function() {
+  if(lbUnsub) { lbUnsub(); lbUnsub = null; }
+  day = 0; cumProfit = 0; history = [];
+  myNick = ''; myKey = '';
+  document.getElementById('nick-input').value = '';
+  show('s-intro');
+};
+
+window.shareResult = function() {
+  const text = `☕ 카페 점주의 마크다운 전략 - ${myNick}의 4주(20일) 최종 이익: ${fmt(cumProfit)}`;
+  navigator.clipboard.writeText(text).then(() => alert('결과가 클립보드에 복사되었습니다!'));
+};
+
+async function loadIntroLB() {
+  const snap = await get(ref(db, 'leaderboard-level3'));
+  const data = snap.val() || {};
+  const sorted = Object.entries(data)
+    .map(([k, v]) => ({ key: k, ...v }))
+    .sort((a, b) => b.profit - a.profit);
+  renderLB('intro-lb', sorted.slice(0, 5), sorted, null);
+}
+loadIntroLB();
+
+</script>
+</body>
+</html>

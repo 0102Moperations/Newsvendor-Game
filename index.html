@@ -3,797 +3,744 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🍱 도전, 김밥왕!</title>
+<title>🎮 경영학 게임화 학습 플랫폼</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Black+Han+Sans&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
 <style>
-  *{box-sizing:border-box;margin:0;padding:0;}
-  :root{
-    --red:#E24B4A;--green:#1D9E75;--amber:#BA7517;
-    --bg:#f8f7f4;--surface:#ffffff;--surface2:#f1efe8;
-    --text:#1a1a1a;--text2:#6b6b6b;--text3:#9a9a9a;
-    --border:rgba(0,0,0,0.10);--border2:rgba(0,0,0,0.18);
-    --radius:10px;--radius-lg:14px;
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --primary: #185FA5;
+    --red: #E24B4A;
+    --green: #1D9E75;
+    --amber: #BA7517;
+    --bg: #f8f7f4;
+    --surface: #ffffff;
+    --surface2: #f1efe8;
+    --text: #1a1a1a;
+    --text2: #6b6b6b;
+    --text3: #9a9a9a;
+    --border: rgba(0,0,0,0.10);
+    --radius: 10px;
+    --radius-lg: 14px;
   }
-  body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
-  .page{max-width:600px;margin:0 auto;padding:20px 16px 60px;}
-  .screen{display:none;}.screen.active{display:block;}
 
-  /* Title bar */
-  .title-bar{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
-  .title-bar h1{font-family:'Black Han Sans',sans-serif;font-size:22px;color:var(--text);}
-  .badge{background:var(--red);color:#fff;font-size:11px;font-weight:500;padding:3px 9px;border-radius:20px;}
-  .badge.live{background:var(--green);}
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
 
-  /* Cards */
-  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:14px;}
-  .card-title{font-size:13px;font-weight:500;color:var(--text2);margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+  .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
 
-  /* Stat bar */
-  .stat-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
-  .sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;}
-  .sc .lb{font-size:11px;color:var(--text2);margin-bottom:2px;}
-  .sc .vl{font-size:15px;font-weight:500;color:var(--text);}
+  /* Header */
+  .header {
+    background: var(--primary);
+    color: white;
+    padding: 40px 20px;
+    text-align: center;
+    border-radius: var(--radius-lg);
+    margin-bottom: 40px;
+  }
 
-  /* Round header */
-  .round-hdr{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--red);border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:14px;}
-  .round-hdr h2{font-size:16px;font-weight:500;margin-bottom:8px;}
-  .chip-row{display:flex;flex-wrap:wrap;gap:6px;}
-  .chip{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:3px 10px;font-size:12px;color:var(--text2);}
-  .chip.ev{background:#fef3e2;color:#854F0B;border-color:#f5c842;}
+  .header h1 {
+    font-family: 'Black Han Sans', sans-serif;
+    font-size: 32px;
+    margin-bottom: 8px;
+  }
 
-  /* Hint */
-  .hint-box{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:14px;font-size:13px;color:var(--text2);line-height:1.7;}
-  .hint-box strong{color:var(--text);}
+  .header p { font-size: 16px; opacity: 0.9; }
 
-  /* Order section */
-  .order-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:14px;}
-  .order-box h3{font-size:14px;font-weight:500;margin-bottom:12px;}
-  .slider-row{display:flex;align-items:center;gap:12px;margin-bottom:8px;}
-  .slider-row input[type=range]{flex:1;height:4px;accent-color:var(--red);cursor:pointer;}
-  .sv{font-size:22px;font-weight:700;min-width:44px;text-align:right;color:var(--text);}
-  .cost-prev{font-size:13px;color:var(--text2);}
-  .cost-prev span{color:var(--red);font-weight:500;}
+  /* Screen */
+  .screen { display: none; }
+  .screen.active { display: block; }
 
-  /* Buttons */
-  .btn-p{display:block;width:100%;padding:13px;background:var(--red);color:#fff;border:none;border-radius:var(--radius);font-size:15px;font-weight:500;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:opacity 0.15s;margin-bottom:8px;}
-  .btn-p:hover{opacity:0.88;}
-  .btn-p:disabled{opacity:0.5;cursor:not-allowed;}
-  .btn-s{display:block;width:100%;padding:12px;background:transparent;color:var(--text);border:1px solid var(--border2);border-radius:var(--radius);font-size:14px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:background 0.15s;margin-bottom:8px;}
-  .btn-s:hover{background:var(--surface2);}
+  /* Login Screen */
+  .login-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    max-width: 400px;
+    margin: 60px auto;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+
+  .login-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 24px;
+    text-align: center;
+    color: var(--primary);
+  }
+
+  .form-group {
+    margin-bottom: 16px;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text2);
+    margin-bottom: 6px;
+  }
+
+  .form-group input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 14px;
+    font-family: 'Noto Sans KR', sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .form-group input:focus {
+    border-color: var(--primary);
+  }
+
+  .btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'Noto Sans KR', sans-serif;
+    transition: opacity 0.2s;
+    margin-top: 20px;
+  }
+
+  .btn:hover { opacity: 0.9; }
+
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .role-selector {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .role-btn {
+    padding: 14px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface2);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    text-align: center;
+    transition: all 0.2s;
+  }
+
+  .role-btn.selected {
+    border-color: var(--primary);
+    background: #e8f1ff;
+    color: var(--primary);
+  }
+
+  /* Dashboard */
+  .dashboard {
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    gap: 20px;
+  }
+
+  .sidebar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    height: fit-content;
+  }
+
+  .sidebar-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .sidebar-item {
+    padding: 12px 14px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: 13px;
+    margin-bottom: 8px;
+    transition: background 0.2s;
+    border-left: 3px solid transparent;
+  }
+
+  .sidebar-item:hover { background: var(--surface2); }
+
+  .sidebar-item.active {
+    background: #e8f1ff;
+    border-left-color: var(--primary);
+    color: var(--primary);
+    font-weight: 500;
+  }
+
+  .main-content {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 30px;
+  }
+
+  /* Module Cards */
+  .modules-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+
+  .module-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+
+  .module-card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(24, 95, 165, 0.1);
+  }
+
+  .module-card.locked {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .module-card.locked:hover {
+    border-color: var(--border);
+    box-shadow: none;
+  }
+
+  .module-icon { font-size: 48px; margin-bottom: 12px; }
+
+  .module-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+
+  .module-subtitle {
+    font-size: 12px;
+    color: var(--text2);
+    margin-bottom: 16px;
+  }
+
+  .module-progress {
+    background: var(--surface2);
+    border-radius: 20px;
+    height: 8px;
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+
+  .module-progress-fill {
+    height: 100%;
+    background: var(--green);
+    transition: width 0.3s;
+  }
+
+  .module-status {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text3);
+  }
+
+  .module-card.completed .module-status { color: var(--green); }
+  .module-card.in-progress .module-status { color: var(--amber); }
+  .module-card.locked .module-status { color: var(--text3); }
+
+  /* Student Dashboard */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .stat-card {
+    background: linear-gradient(135deg, #e8f1ff 0%, #f5f9ff 100%);
+    border: 1px solid #d0e1f9;
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    text-align: center;
+  }
+
+  .stat-label { font-size: 12px; color: var(--text2); margin-bottom: 8px; }
+  .stat-value { font-size: 28px; font-weight: 700; color: var(--primary); }
 
   /* Leaderboard */
-  .lb-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;}
-  .lb-row:last-child{border-bottom:none;}
-  .lb-rank{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;}
-  .r1{background:#fef3e2;color:#854F0B;}
-  .r2{background:#f1efe8;color:#5F5E5A;}
-  .r3{background:#faece7;color:#993C1D;}
-  .rn{background:var(--surface2);color:var(--text2);}
-  .lb-name{flex:1;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  .lb-name.me{color:var(--red);}
-  .lb-rounds{font-size:11px;color:var(--text3);min-width:24px;text-align:center;}
-  .lb-bar-wrap{width:70px;height:4px;background:var(--surface2);border-radius:2px;overflow:hidden;}
-  .lb-bar{height:100%;border-radius:2px;}
-  .bar-me{background:var(--red);}
-  .bar-o{background:#B5D4F4;}
-  .lb-profit{font-weight:500;min-width:88px;text-align:right;}
-  .lb-profit.pos{color:var(--green);}
-  .lb-profit.neg{color:var(--red);}
-  .me-row{background:linear-gradient(90deg,rgba(226,75,74,0.06),transparent);border-radius:var(--radius);padding:8px;margin:-8px;}
-  .lb-sep{text-align:center;font-size:11px;color:var(--text3);padding:4px 0;}
-  .lb-empty{text-align:center;padding:16px;font-size:13px;color:var(--text3);}
+  .leaderboard {
+    margin-top: 24px;
+    background: var(--surface2);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+  }
 
-  /* Live dot */
-  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
-  .live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 1.5s infinite;display:inline-block;vertical-align:middle;}
+  .leaderboard-title {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: var(--text);
+  }
 
-  /* Result */
-  .res-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;}
-  .ri{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border);}
-  .ri .k{color:var(--text2);}
-  .ri .v{font-weight:500;}
-  .profit-disp{text-align:center;padding:14px;border-radius:var(--radius);margin-top:12px;}
-  .profit-disp.pos{background:#eaf3de;color:#3B6D11;}
-  .profit-disp.neg{background:#fcebeb;color:#A32D2D;}
-  .profit-disp .pl{font-size:12px;margin-bottom:3px;}
-  .profit-disp .pv{font-size:24px;font-weight:700;}
-  .ins-box{background:var(--surface2);border-radius:var(--radius);padding:11px 13px;font-size:12px;color:var(--text2);margin-top:10px;line-height:1.7;}
+  .lb-row {
+    display: flex;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
 
-  /* History table */
-  .hist-wrap{overflow-x:auto;margin-bottom:14px;}
-  .hist-wrap table{width:100%;font-size:12px;border-collapse:collapse;table-layout:fixed;}
-  .hist-wrap th{text-align:center;padding:7px 4px;color:var(--text2);font-weight:500;border-bottom:1px solid var(--border);background:var(--surface2);}
-  .hist-wrap td{text-align:center;padding:7px 4px;border-bottom:1px solid var(--border);}
-  .hist-wrap td.pos{color:var(--green);font-weight:500;}
-  .hist-wrap td.neg{color:var(--red);font-weight:500;}
+  .lb-row:last-child { border-bottom: none; }
 
-  /* Progress dots */
-  .prog{display:flex;gap:4px;justify-content:center;margin-bottom:16px;flex-wrap:wrap;}
-  .pd{width:28px;height:28px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--text2);}
-  .pd.done{background:var(--green);color:#fff;border-color:var(--green);}
-  .pd.cur{background:var(--red);color:#fff;border-color:var(--red);}
+  .lb-rank {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    margin-right: 12px;
+    color: white;
+  }
 
-  /* Intro */
-  .hero{text-align:center;padding:16px 0 12px;}
-  .hero h2{font-family:'Black Han Sans',sans-serif;font-size:28px;margin-bottom:10px;}
-  .hero p{font-size:14px;color:var(--text2);line-height:1.9;max-width:400px;margin:0 auto;}
-  .story-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;margin:14px 0;font-size:14px;color:var(--text);line-height:2.1;}
-  .story-box .story-line{display:flex;gap:10px;align-items:flex-start;margin-bottom:4px;}
-  .story-box .story-line i{color:var(--red);margin-top:3px;flex-shrink:0;}
-  .story-rule{background:var(--surface2);border-radius:var(--radius);padding:12px 14px;margin-top:12px;font-size:13px;color:var(--text2);line-height:2;}
-  .name-row{display:flex;gap:8px;margin-bottom:6px;}
-  .name-row input{flex:1;font-family:'Noto Sans KR',sans-serif;font-size:14px;padding:10px 14px;border:1px solid var(--border2);border-radius:var(--radius);outline:none;background:var(--surface);}
-  .name-row input:focus{border-color:var(--red);}
-  .name-row .btn-p{width:auto;margin:0;padding:0 20px;white-space:nowrap;}
+  .lb-rank.top1 { background: #FFD700; color: #333; }
+  .lb-rank.top2 { background: #C0C0C0; color: #333; }
+  .lb-rank.top3 { background: #CD7F32; color: white; }
+  .lb-rank.other { background: var(--text3); }
 
-  /* Kimbap SVG */
-  .kimbap-hero{display:flex;justify-content:center;margin:8px 0 16px;}
+  .lb-name { flex: 1; font-weight: 500; }
+  .lb-module { font-size: 11px; color: var(--text3); min-width: 60px; }
+  .lb-profit { font-weight: 600; color: var(--green); min-width: 80px; text-align: right; }
 
-  /* Final */
-  .final-big{text-align:center;padding:20px 0 12px;}
-  .final-big .fn{font-size:40px;font-weight:700;font-family:'Black Han Sans',sans-serif;color:var(--green);}
-  .final-big .fn.neg{color:var(--red);}
-  .grade-b{display:inline-block;padding:6px 22px;border-radius:20px;font-size:14px;font-weight:500;margin:8px 0;}
+  /* Teacher Dashboard */
+  .class-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
 
-  @media(max-width:480px){
-    .stat-bar{grid-template-columns:repeat(3,1fr);}
-    .res-grid{grid-template-columns:1fr;}
+  .class-stat {
+    background: var(--surface2);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    text-align: center;
+  }
+
+  .class-stat-title { font-size: 12px; color: var(--text2); margin-bottom: 8px; }
+  .class-stat-value { font-size: 32px; font-weight: 700; color: var(--primary); }
+
+  .student-list {
+    background: var(--surface2);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+  }
+
+  .student-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    background: var(--surface);
+    border-radius: var(--radius);
+    margin-bottom: 12px;
+  }
+
+  .student-item:last-child { margin-bottom: 0; }
+
+  .student-name {
+    flex: 1;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  .student-progress {
+    display: flex;
+    gap: 4px;
+    margin-right: 12px;
+  }
+
+  .progress-dot {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .progress-dot.pending { background: var(--surface2); color: var(--text3); }
+  .progress-dot.in-progress { background: var(--amber); color: white; }
+  .progress-dot.completed { background: var(--green); color: white; }
+
+  @media (max-width: 1024px) {
+    .modules-grid { grid-template-columns: repeat(2, 1fr); }
+    .dashboard { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 640px) {
+    .modules-grid { grid-template-columns: 1fr; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* Tooltip */
+  .tooltip {
+    position: relative;
+    display: inline-block;
+  }
+
+  .tooltip .tooltiptext {
+    visibility: hidden;
+    width: 200px;
+    background-color: var(--text);
+    color: white;
+    text-align: center;
+    padding: 8px;
+    border-radius: var(--radius);
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -100px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 12px;
+  }
+
+  .tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
   }
 </style>
 </head>
 <body>
-<div class="page">
 
-  <div class="title-bar">
-    <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="30" height="30" rx="6" fill="#1a1a1a"/>
-      <rect x="4" y="13" width="22" height="4" rx="2" fill="white"/>
-      <rect x="7" y="10" width="16" height="10" rx="1.5" fill="#f5c842"/>
-      <rect x="9" y="12" width="12" height="6" rx="1" fill="#e8f5e8"/>
-      <ellipse cx="12" cy="15" rx="1.5" ry="1.2" fill="#e24b4a"/>
-      <ellipse cx="15" cy="15" rx="1.5" ry="1.2" fill="#f5a623"/>
-      <ellipse cx="18" cy="15" rx="1.5" ry="1.2" fill="#4caf50"/>
-      <rect x="4" y="13" width="22" height="1.5" rx="0.75" fill="#1a1a1a" opacity="0.3"/>
-      <rect x="4" y="15.5" width="22" height="1.5" rx="0.75" fill="#1a1a1a" opacity="0.3"/>
-    </svg>
-    <h1>도전, 김밥왕!</h1>
-    <span class="badge">10라운드</span>
-    <span class="badge live"><span class="live-dot"></span> 실시간</span>
+<div class="container">
+  <!-- Header -->
+  <div class="header">
+    <h1>🎮 경영학 게임화 학습</h1>
+    <p>불확실성 하의 의사결정을 배우는 게임 기반 학습 플랫폼</p>
   </div>
 
-  <!-- ══════════════ INTRO ══════════════ -->
-  <div class="screen active" id="s-intro">
-    <div class="hero">
-      <!-- Korean Kimbap SVG Illustration -->
-      <div class="kimbap-hero">
-        <svg width="200" height="110" viewBox="0 0 200 110" xmlns="http://www.w3.org/2000/svg">
-          <!-- 접시 -->
-          <ellipse cx="100" cy="98" rx="88" ry="10" fill="#e8e0d4"/>
-          <ellipse cx="100" cy="96" rx="85" ry="8" fill="#f0e8dc"/>
-          <!-- 김밥 롤 3개 (비스듬히) -->
-          <!-- 뒤 김밥 -->
-          <ellipse cx="68" cy="72" rx="18" ry="18" fill="#1a1a1a"/>
-          <ellipse cx="68" cy="72" rx="14" ry="14" fill="#f5f0e8"/>
-          <ellipse cx="68" cy="72" rx="10" ry="10" fill="#e8c84a"/>
-          <ellipse cx="65" cy="70" rx="3" ry="2.5" fill="#e24b4a"/>
-          <ellipse cx="71" cy="73" rx="3" ry="2.5" fill="#4caf50"/>
-          <ellipse cx="68" cy="76" rx="2.5" ry="2" fill="#f5a623"/>
-          <!-- 김밥 옆면 (뒤) -->
-          <rect x="50" y="54" width="36" height="38" rx="2" fill="#1a1a1a" opacity="0.0"/>
-          <!-- 가운데 김밥 -->
-          <rect x="42" y="48" width="116" height="32" rx="4" fill="#1a1a1a"/>
-          <rect x="45" y="51" width="110" height="26" rx="3" fill="#f5f0e8"/>
-          <rect x="48" y="54" width="104" height="20" rx="2" fill="#e8c84a"/>
-          <!-- 속재료 줄 -->
-          <rect x="52" y="58" width="96" height="4" rx="2" fill="#e24b4a" opacity="0.85"/>
-          <rect x="52" y="63" width="96" height="3" rx="1.5" fill="#4caf50" opacity="0.85"/>
-          <rect x="52" y="67" width="96" height="3" rx="1.5" fill="#f5a623" opacity="0.85"/>
-          <!-- 앞 김밥 단면 (왼쪽 끝) -->
-          <ellipse cx="47" cy="64" rx="14" ry="13" fill="#1a1a1a"/>
-          <ellipse cx="47" cy="64" rx="11" ry="10" fill="#f5f0e8"/>
-          <ellipse cx="47" cy="64" rx="8" ry="7" fill="#e8c84a"/>
-          <ellipse cx="45" cy="62" rx="2.5" ry="2" fill="#e24b4a"/>
-          <ellipse cx="49" cy="66" rx="2.5" ry="2" fill="#4caf50"/>
-          <ellipse cx="46" cy="67" rx="2" ry="1.8" fill="#f5a623"/>
-          <!-- 앞 김밥 단면 (오른쪽 끝) -->
-          <ellipse cx="153" cy="64" rx="14" ry="13" fill="#1a1a1a"/>
-          <ellipse cx="153" cy="64" rx="11" ry="10" fill="#f5f0e8"/>
-          <ellipse cx="153" cy="64" rx="8" ry="7" fill="#e8c84a"/>
-          <ellipse cx="151" cy="62" rx="2.5" ry="2" fill="#e24b4a"/>
-          <ellipse cx="155" cy="66" rx="2.5" ry="2" fill="#4caf50"/>
-          <ellipse cx="152" cy="67" rx="2" ry="1.8" fill="#f5a623"/>
-          <!-- 참깨 -->
-          <circle cx="70" cy="57" r="1" fill="#c8b98a"/>
-          <circle cx="85" cy="59" r="1" fill="#c8b98a"/>
-          <circle cx="100" cy="57" r="1" fill="#c8b98a"/>
-          <circle cx="115" cy="59" r="1" fill="#c8b98a"/>
-          <circle cx="130" cy="57" r="1" fill="#c8b98a"/>
-          <!-- 단무지 슬라이스 -->
-          <ellipse cx="175" cy="80" rx="12" ry="12" fill="#f5e642"/>
-          <ellipse cx="175" cy="80" rx="9" ry="9" fill="#f7ec6e"/>
-          <line x1="175" y1="69" x2="175" y2="91" stroke="#e8d43a" stroke-width="1"/>
-          <line x1="164" y1="80" x2="186" y2="80" stroke="#e8d43a" stroke-width="1"/>
-          <!-- 가격표 느낌 작은 장식 -->
-          <rect x="155" y="20" width="38" height="20" rx="4" fill="#e24b4a"/>
-          <text x="174" y="34" font-size="11" fill="white" text-anchor="middle" font-family="sans-serif" font-weight="bold">₩3,000</text>
-        </svg>
-      </div>
-      <h2>도전, 김밥왕!</h2>
-      <p>수요를 예측하고, 최고의 이익을 올려라!</p>
-    </div>
+  <!-- Login Screen -->
+  <div class="screen active" id="s-login">
+    <div class="login-box">
+      <div class="login-title">로그인</div>
 
-    <div class="story-box">
-      <div style="font-weight:500;font-size:15px;margin-bottom:12px;color:var(--text);">📖 스토리</div>
-      <div class="story-line"><i class="ti ti-map-pin"></i><span>여러분은 학교 축제에서 <strong>김밥 가게</strong>를 열었습니다.</span></div>
-      <div class="story-line"><i class="ti ti-calendar"></i><span>축제는 <strong>딱 10일간</strong> — 매일 아침 김밥을 주문하고 하루를 시작합니다.</span></div>
-      <div class="story-line"><i class="ti ti-clock"></i><span>하루가 끝나면 남은 김밥은 <strong>전량 폐기</strong>. 다음 날로 넘길 수 없습니다.</span></div>
-      <div class="story-line"><i class="ti ti-trending-up"></i><span>날씨, 요일, 원가 변화에 따라 전략을 바꿔가며 <strong>10일 누적 이익을 최대화</strong>하세요!</span></div>
-      <div class="story-line"><i class="ti ti-trophy"></i><span>과연 당신은 <strong>김밥왕 👑</strong>이 될 수 있을까요?</span></div>
-      <div class="story-rule">
-        <strong>게임 규칙</strong><br>
-        • 매일 아침 딱 한 번만 주문 가능 (추가 주문 불가)<br>
-        • 남은 김밥은 잔존가치로 처리 (라운드마다 다름)<br>
-        • 순이익 = 매출 − 구매비용 + 잔존가치<br>
-        • 10라운드 누적 이익 Top 5 실시간 공개!
+      <div class="form-group">
+        <label>사용자 유형</label>
+        <div class="role-selector">
+          <div class="role-btn" onclick="selectRole('student')">👤 학생</div>
+          <div class="role-btn" onclick="selectRole('teacher')">👨‍🏫 강사</div>
+        </div>
       </div>
-    </div>
 
-    <!-- STEP 1: 수업 코드 입력 -->
-    <div id="step-code" style="margin-bottom:14px;">
-      <div style="font-size:13px;font-weight:500;margin-bottom:6px;">🔐 수업 코드 입력</div>
-      <div class="name-row">
-        <input type="text" id="code-input" placeholder="예) OM-2026-TEST" maxlength="20"
-          style="letter-spacing:1px;"
-          onkeydown="if(event.key==='Enter')verifyCode()">
-        <button class="btn-p" onclick="verifyCode()">확인 →</button>
+      <div id="student-form" style="display:none;">
+        <div class="form-group">
+          <label>학번</label>
+          <input type="text" id="student-id" placeholder="예) 2023-12345">
+        </div>
+        <div class="form-group">
+          <label>이름</label>
+          <input type="text" id="student-name" placeholder="홍길동">
+        </div>
       </div>
-      <div id="code-msg" style="font-size:12px;margin-top:6px;min-height:18px;"></div>
-    </div>
 
-    <!-- STEP 2: 수업 확인 + 닉네임 입력 (코드 인증 후 표시) -->
-    <div id="step-nick" style="display:none;margin-bottom:14px;">
-      <div id="class-banner" style="background:#eaf3de;border:1px solid #b6d89a;border-radius:var(--radius);padding:10px 14px;margin-bottom:12px;font-size:13px;color:#3B6D11;display:flex;align-items:center;gap:8px;">
-        <i class="ti ti-circle-check" style="font-size:16px;"></i>
-        <span id="class-name-display"></span>
-        <span style="margin-left:auto;font-size:11px;color:#5a8a3a;cursor:pointer;" onclick="resetCode()">코드 재입력</span>
+      <div id="teacher-form" style="display:none;">
+        <div class="form-group">
+          <label>강사 ID</label>
+          <input type="text" id="teacher-id" placeholder="예) prof_kim">
+        </div>
+        <div class="form-group">
+          <label>비밀번호</label>
+          <input type="password" id="teacher-pw" placeholder="">
+        </div>
+        <div class="form-group">
+          <label>학급명</label>
+          <input type="text" id="class-name" placeholder="예) 2024-1학기 경영과학">
+        </div>
       </div>
-      <div style="font-size:13px;font-weight:500;margin-bottom:8px;">닉네임 입력</div>
-      <div class="name-row">
-        <input type="text" id="nick-input" placeholder="예) 김밥왕지망생" maxlength="12"
-          onkeydown="if(event.key==='Enter')startGame()">
-        <button class="btn-p" onclick="startGame()">시작 →</button>
-      </div>
-      <div style="font-size:11px;color:var(--text3);">닉네임은 리더보드에 공개됩니다 (최대 12자)</div>
-    </div>
 
-    <div class="card">
-      <div class="card-title"><span class="live-dot"></span> 현재 리더보드 (Top 5)</div>
-      <div id="intro-lb"><div class="lb-empty">수업 코드를 입력하면 해당 반 리더보드가 표시됩니다</div></div>
+      <button class="btn" onclick="login()">로그인 →</button>
+
+      <div style="text-align: center; margin-top: 16px; font-size: 12px; color: var(--text3);">
+        테스트: 학번 <strong>2024-001</strong>, 이름 <strong>테스트</strong> 입력 후 로그인
+      </div>
     </div>
-    <div style="font-size:11px;color:var(--text3);text-align:center;margin-top:4px;">리더보드는 같은 수업 코드를 사용한 참가자끼리 공개됩니다</div>
   </div>
 
-  <!-- ══════════════ GAME ══════════════ -->
-  <div class="screen" id="s-game">
-    <div class="prog" id="prog-g"></div>
-    <div class="stat-bar">
-      <div class="sc"><div class="lb">라운드</div><div class="vl" id="st-round">1/10</div></div>
-      <div class="sc"><div class="lb">누적 이익</div><div class="vl" id="st-profit" style="color:var(--green)">₩0</div></div>
-      <div class="sc"><div class="lb">내 순위</div><div class="vl" id="st-rank">-</div></div>
+  <!-- Student Dashboard -->
+  <div class="screen" id="s-student-dashboard">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+      <div>
+        <h2 id="student-welcome" style="font-size: 24px; margin-bottom: 4px;"></h2>
+        <p style="color: var(--text2); font-size: 13px;">최근 업데이트: <span id="last-update"></span></p>
+      </div>
+      <button class="btn" style="width: 120px; padding: 10px;" onclick="logout()">로그아웃</button>
     </div>
-    <div class="round-hdr">
-      <h2 id="rh-title">라운드 1</h2>
-      <div class="chip-row">
-        <span class="chip" id="rh-weather"></span>
-        <span class="chip">판매가 ₩3,000</span>
-        <span class="chip" id="rh-cost-chip"></span>
-        <span class="chip" id="rh-salv-chip"></span>
-        <span class="chip ev" id="rh-event" style="display:none"></span>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">현재 진행 Level</div>
+        <div class="stat-value" id="current-level">1</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">누적 학습시간</div>
+        <div class="stat-value" id="total-hours">4h 20m</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">달성률</div>
+        <div class="stat-value" id="completion">33%</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">전체 순위</div>
+        <div class="stat-value" id="my-rank">42/145</div>
       </div>
     </div>
-    <div class="hint-box" id="g-hint"></div>
-    <div class="order-box">
-      <h3>오늘 김밥 주문량을 결정하세요</h3>
-      <div class="slider-row">
-        <input type="range" id="o-slider" min="0" max="200" value="100" step="1" oninput="onSlider()">
-        <span class="sv" id="sv-disp">100</span><span style="font-size:13px;color:var(--text2);margin-left:2px;">줄</span>
+
+    <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;">📚 학습 모듈</h3>
+    <div class="modules-grid">
+      <!-- Level 1 -->
+      <div class="module-card in-progress" onclick="startModule('level1')">
+        <div class="module-icon">🍱</div>
+        <div class="module-title">Level 1</div>
+        <div class="module-subtitle">도전, 김밥왕!</div>
+        <div class="module-progress">
+          <div class="module-progress-fill" style="width: 100%;"></div>
+        </div>
+        <div class="module-status">✅ 완료</div>
       </div>
-      <div class="cost-prev">예상 구매 비용: <span id="cp-val">₩200,000</span></div>
+
+      <!-- Level 2 -->
+      <div class="module-card in-progress" onclick="startModule('level2')">
+        <div class="module-icon">🏪</div>
+        <div class="module-title">Level 2</div>
+        <div class="module-subtitle">편의점 가격 전략</div>
+        <div class="module-progress">
+          <div class="module-progress-fill" style="width: 50%;"></div>
+        </div>
+        <div class="module-status">⏳ 진행 중 (2/4주)</div>
+      </div>
+
+      <!-- Level 3 -->
+      <div class="module-card locked">
+        <div class="module-icon">☕</div>
+        <div class="module-title">Level 3</div>
+        <div class="module-subtitle">카페 마크다운 전략</div>
+        <div class="module-progress">
+          <div class="module-progress-fill" style="width: 0%;"></div>
+        </div>
+        <div class="module-status">🔒 Level 2 완료 후 시작</div>
+      </div>
     </div>
-    <div class="card">
-      <div class="card-title"><span class="live-dot"></span> 실시간 리더보드 (Top 5)</div>
-      <div id="game-lb"><div class="lb-empty">불러오는 중...</div></div>
+
+    <div class="leaderboard">
+      <div class="leaderboard-title">🏆 전체 순위 (현재까지 누적 이익)</div>
+      <div class="lb-row">
+        <div class="lb-rank top1">1</div>
+        <div class="lb-name">김민준</div>
+        <div class="lb-module">Level 2</div>
+        <div class="lb-profit">₩1,850,000</div>
+      </div>
+      <div class="lb-row">
+        <div class="lb-rank top2">2</div>
+        <div class="lb-name">이수진</div>
+        <div class="lb-module">Level 2</div>
+        <div class="lb-profit">₩1,720,000</div>
+      </div>
+      <div class="lb-row">
+        <div class="lb-rank top3">3</div>
+        <div class="lb-name">박지현</div>
+        <div class="lb-module">Level 1</div>
+        <div class="lb-profit">₩1,650,000</div>
+      </div>
+      <div class="lb-row">
+        <div class="lb-rank other">42</div>
+        <div class="lb-name">⭐ 나 (테스트)</div>
+        <div class="lb-module">Level 2</div>
+        <div class="lb-profit">₩980,000</div>
+      </div>
     </div>
-    <button class="btn-p" id="order-btn" onclick="confirmOrder()">주문 확정하기 →</button>
   </div>
 
-  <!-- ══════════════ RESULT ══════════════ -->
-  <div class="screen" id="s-result">
-    <div class="prog" id="prog-r"></div>
-    <div class="card">
-      <div class="card-title" id="res-title">라운드 1 결과</div>
-      <div class="res-grid">
-        <div class="ri"><span class="k">주문량</span><span class="v" id="r-order"></span></div>
-        <div class="ri"><span class="k">실제 수요</span><span class="v" id="r-demand"></span></div>
-        <div class="ri"><span class="k">판매량</span><span class="v" id="r-sold"></span></div>
-        <div class="ri"><span class="k">잔여재고</span><span class="v" id="r-left"></span></div>
-        <div class="ri"><span class="k">매출액</span><span class="v" id="r-rev"></span></div>
-        <div class="ri"><span class="k">구매 비용</span><span class="v" id="r-cost"></span></div>
-        <div class="ri"><span class="k">잔존가치</span><span class="v" id="r-salv"></span></div>
-        <div class="ri"><span class="k">누적 이익</span><span class="v" id="r-cum"></span></div>
+  <!-- Teacher Dashboard -->
+  <div class="screen" id="s-teacher-dashboard">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+      <div>
+        <h2 id="teacher-welcome" style="font-size: 24px; margin-bottom: 4px;"></h2>
+        <p style="color: var(--text2); font-size: 13px;">학급: <span id="teacher-class"></span></p>
       </div>
-      <div class="profit-disp" id="p-disp">
-        <div class="pl">이번 라운드 순이익</div>
-        <div class="pv" id="p-val"></div>
+      <button class="btn" style="width: 120px; padding: 10px;" onclick="logout()">로그아웃</button>
+    </div>
+
+    <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;">📊 학급 통계</h3>
+    <div class="class-stats">
+      <div class="class-stat">
+        <div class="class-stat-title">총 학생 수</div>
+        <div class="class-stat-value">145</div>
       </div>
-      <div class="ins-box" id="ins-box"></div>
+      <div class="class-stat">
+        <div class="class-stat-title">Level 1 완료율</div>
+        <div class="class-stat-value">87%</div>
+      </div>
+      <div class="class-stat">
+        <div class="class-stat-title">평균 이익</div>
+        <div class="class-stat-value">₩1.2M</div>
+      </div>
     </div>
-    <div class="card">
-      <div class="card-title"><span class="live-dot"></span> 실시간 리더보드 — 내 순위 포함</div>
-      <div id="result-lb"><div class="lb-empty">불러오는 중...</div></div>
-    </div>
-    <div class="hist-wrap">
-      <table>
-        <thead><tr><th>R</th><th>날씨</th><th>주문</th><th>수요</th><th>판매</th><th>재고</th><th>순이익</th></tr></thead>
-        <tbody id="h-tbody"></tbody>
-      </table>
-    </div>
-    <button class="btn-p" id="next-btn" onclick="nextRound()">다음 라운드 →</button>
-  </div>
 
-  <!-- ══════════════ FINAL ══════════════ -->
-  <div class="screen" id="s-final">
-    <div class="final-big">
-      <div style="font-size:42px;margin-bottom:8px">🏆</div>
-      <div style="font-size:13px;color:var(--text2);margin-bottom:4px">10라운드 최종 누적 이익</div>
-      <div class="fn" id="f-num"></div>
-      <div class="grade-b" id="f-grade"></div>
-      <div style="font-size:14px;color:var(--text2);margin-top:6px">최종 순위: <strong id="f-rank" style="font-size:17px"></strong></div>
+    <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;">👥 학생 진행 현황</h3>
+    <div class="student-list">
+      <div class="student-item">
+        <div class="student-name">김민준</div>
+        <div class="student-progress">
+          <div class="progress-dot completed">L1</div>
+          <div class="progress-dot completed">L2</div>
+          <div class="progress-dot in-progress">L3</div>
+        </div>
+        <div style="font-size: 12px; color: var(--text2);">₩1.85M</div>
+      </div>
+      <div class="student-item">
+        <div class="student-name">이수진</div>
+        <div class="student-progress">
+          <div class="progress-dot completed">L1</div>
+          <div class="progress-dot in-progress">L2</div>
+          <div class="progress-dot pending">L3</div>
+        </div>
+        <div style="font-size: 12px; color: var(--text2);">₩1.72M</div>
+      </div>
+      <div class="student-item">
+        <div class="student-name">박지현</div>
+        <div class="student-progress">
+          <div class="progress-dot completed">L1</div>
+          <div class="progress-dot pending">L2</div>
+          <div class="progress-dot pending">L3</div>
+        </div>
+        <div style="font-size: 12px; color: var(--text2);">₩1.65M</div>
+      </div>
     </div>
-    <div class="card">
-      <div class="card-title"><span class="live-dot"></span> 최종 리더보드 (Top 5)</div>
-      <div id="final-lb"><div class="lb-empty">불러오는 중...</div></div>
-    </div>
-    <div class="hist-wrap">
-      <table>
-        <thead><tr><th>R</th><th>날씨</th><th>주문</th><th>수요</th><th>판매</th><th>재고</th><th>순이익</th></tr></thead>
-        <tbody id="f-tbody"></tbody>
-      </table>
-    </div>
-    <div class="ins-box" id="f-ins" style="margin-bottom:14px;"></div>
-    <button class="btn-p" onclick="resetGame()">다시 도전하기 →</button>
-    <button class="btn-s" onclick="shareResult()">결과 공유하기 📋</button>
-  </div>
 
+    <div style="background: var(--surface2); border-radius: var(--radius-lg); padding: 20px; margin-top: 24px;">
+      <h4 style="font-size: 14px; font-weight: 700; margin-bottom: 12px;">⚙️ 관리 도구</h4>
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+        <button class="btn" style="padding: 12px; background: var(--green);">📊 상세 분석 보고서</button>
+        <button class="btn" style="padding: 12px; background: var(--amber);">🔧 게임 설정 조정</button>
+        <button class="btn" style="padding: 12px; background: var(--red);">📢 공지사항 발송</button>
+        <button class="btn" style="padding: 12px; background: var(--primary);">💾 데이터 다운로드</button>
+      </div>
+    </div>
+  </div>
 </div>
 
-<!-- ══════════════ Firebase ══════════════ -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-import { getDatabase, ref, set, get, onValue }
-  from "https://www.gstatic.com/firebasejs/12.13.0/firebase-database.js";
+<script>
+  let currentUser = null;
+  let selectedRole = null;
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCgBJ6yt9_TrK7AlgTKhEth7Qt2QdCYADc",
-  authDomain: "newsvendor-game-simulation.firebaseapp.com",
-  databaseURL: "https://newsvendor-game-simulation-default-rtdb.firebaseio.com",
-  projectId: "newsvendor-game-simulation",
-  storageBucket: "newsvendor-game-simulation.firebasestorage.app",
-  messagingSenderId: "213354360321",
-  appId: "1:213354360321:web:4dc63514cc19ba6019da00"
-};
+  function selectRole(role) {
+    selectedRole = role;
+    document.querySelectorAll('.role-btn').forEach(btn => btn.classList.remove('selected'));
+    event.target.closest('.role-btn').classList.add('selected');
 
-const app = initializeApp(firebaseConfig);
-const db  = getDatabase(app);
+    document.getElementById('student-form').style.display = role === 'student' ? 'block' : 'none';
+    document.getElementById('teacher-form').style.display = role === 'teacher' ? 'block' : 'none';
+  }
 
-/* ══ 10라운드 구성 (PDF 기준) ══ */
-const ROUNDS = [
-  { label:'1일차', weather:'☀️ 맑음/평일', price:3000, cost:2000, salvage:0,
-    demand:[72,74,89,89,89,92,92,93,97,100,101,102,104,113,113],
-    hint:'과거 데이터: 맑음·평일 평균 95명 (72~113명)', event:null, sliderMax:160 },
-  { label:'2일차', weather:'☀️ 맑음/평일', price:3000, cost:2000, salvage:0,
-    demand:[72,74,89,89,89,92,92,93,97,100,101,102,104,113,113],
-    hint:'과거 데이터: 맑음·평일 평균 95명 (72~113명)', event:null, sliderMax:160 },
-  { label:'3일차', weather:'☔ 비/평일', price:3000, cost:2000, salvage:0,
-    demand:[45,46,54,56,61],
-    hint:'과거 데이터: 비 오는 날 평균 52명 (45~61명). 오늘은 비!', event:null, sliderMax:120 },
-  { label:'4일차', weather:'☁️ 흐림/평일', price:3000, cost:1000, salvage:0,
-    demand:[60,63,68,69,72,75,76,78],
-    hint:'과거 데이터: 흐림·평일 평균 70명 (60~78명). 재료를 싸게 구했습니다!',
-    event:'🎉 원가 인하! ₩2,000 → ₩1,000', sliderMax:150 },
-  { label:'5일차', weather:'☀️ 맑음/주말', price:3000, cost:1000, salvage:0,
-    demand:[113,119,121,126,139,156],
-    hint:'과거 데이터: 맑음·주말 평균 129명 (113~156명). 주말이라 손님이 많습니다!', event:null, sliderMax:200 },
-  { label:'6일차', weather:'☔ 비/평일', price:3000, cost:1000, salvage:0,
-    demand:[45,46,54,56,61],
-    hint:'과거 데이터: 비 오는 날 평균 52명 (45~61명). 또 비가 옵니다!', event:null, sliderMax:120 },
-  { label:'7일차', weather:'☁️ 흐림/주말', price:3000, cost:1000, salvage:1000,
-    demand:[97,101,127],
-    hint:'과거 데이터: 흐림·주말 평균 108명 (97~127명). 밴드부가 남은 김밥을 사준답니다!',
-    event:'🎸 밴드부 구매! 잔존가 ₩1,000', sliderMax:180 },
-  { label:'8일차', weather:'☀️ 맑음/평일', price:3000, cost:1000, salvage:1000,
-    demand:[72,74,89,89,89,92,92,93,97,100,101,102,104,113,113],
-    hint:'과거 데이터: 맑음·평일 평균 95명 (72~113명). 밴드부가 오늘도 남은 김밥을 사줍니다!',
-    event:'🎸 밴드부 구매! 잔존가 ₩1,000', sliderMax:160 },
-  { label:'9일차', weather:'☀️ 맑음/주말', price:3000, cost:1000, salvage:-500,
-    demand:[113,119,121,126,139,156],
-    hint:'과거 데이터: 맑음·주말 평균 129명 (113~156명). 주의! 음식물 처리비가 발생합니다.',
-    event:'⚠️ 폐기비용 발생! 잔존가 -₩500', sliderMax:200 },
-  { label:'10일차 (최종)', weather:'☀️ 맑음/주말', price:3000, cost:1000, salvage:-500,
-    demand:[113,119,121,126,139,156],
-    hint:'과거 데이터: 맑음·주말 평균 129명 (113~156명). 축제 마지막 날! 마지막 기회입니다!',
-    event:'⚠️ 폐기비용 발생! 잔존가 -₩500', sliderMax:200 }
-];
-
-/* ══ 상태 ══ */
-let cur = 0, cumProfit = 0, history = [];
-let myNick = '', myKey = '', classCode = '', className = '';
-let lbUnsub = null;
-
-/* ══ 유틸 ══ */
-const fmt = n => (n < 0 ? '-₩' : '₩') + Math.abs(n).toLocaleString();
-const randDemand = set => set[Math.floor(Math.random() * set.length)];
-const show = id => { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); };
-
-/* ══ 수업 코드 검증 ══ */
-window.verifyCode = async function() {
-  const code = document.getElementById('code-input').value.trim().toUpperCase();
-  const msgEl = document.getElementById('code-msg');
-  if (!code) { msgEl.style.color='var(--red)'; msgEl.textContent='수업 코드를 입력해 주세요.'; return; }
-  msgEl.style.color='var(--text3)'; msgEl.textContent='확인 중...';
-  try {
-    const snap = await get(ref(db, 'leaderboard/classes/' + code));
-    if (!snap.exists()) {
-      msgEl.style.color='var(--red)';
-      msgEl.textContent='❌ 유효하지 않은 수업 코드입니다. 다시 확인해 주세요.';
+  function login() {
+    if (!selectedRole) {
+      alert('사용자 유형을 선택해주세요');
       return;
     }
-    classCode = code;
-    className = snap.val().name || code;
-    msgEl.textContent = '';
-    document.getElementById('class-name-display').textContent = `✅ ${className} 수업입니다`;
-    document.getElementById('step-code').style.display = 'none';
-    document.getElementById('step-nick').style.display = 'block';
-    // 해당 반 리더보드 미리 로드
-    loadIntroLB();
-  } catch(e) {
-    msgEl.style.color='var(--red)';
-    msgEl.textContent='오류가 발생했습니다. 다시 시도해 주세요.';
-  }
-};
 
-/* ══ 코드 재입력 ══ */
-window.resetCode = function() {
-  classCode = ''; className = '';
-  document.getElementById('code-input').value = '';
-  document.getElementById('code-msg').textContent = '';
-  document.getElementById('step-code').style.display = 'block';
-  document.getElementById('step-nick').style.display = 'none';
-  document.getElementById('intro-lb').innerHTML = '<div class="lb-empty">수업 코드를 입력하면 해당 반 리더보드가 표시됩니다</div>';
-};
-
-/* ══ Firebase 저장 ══ */
-async function saveScore(completed = false) {
-  await set(ref(db, `leaderboard/scores/${classCode}/${myKey}`), {
-    nick: myNick, profit: cumProfit, rounds: cur,
-    completed: completed, ts: Date.now()
-  });
-}
-
-/* ══ 실시간 리더보드 리스너 ══
-   - 진행 중 화면: 완료자(Top5) + 진행중(Top5) 각각 구분 표시
-   - 최종 화면:    완료자만 표시
-══ */
-function startLbListener(containerIds, finalMode = false) {
-  if (lbUnsub) lbUnsub();
-  lbUnsub = onValue(ref(db, `leaderboard/scores/${classCode}`), snap => {
-    const data = snap.val() || {};
-    const all = Object.entries(data).map(([k, v]) => ({ key: k, ...v }));
-
-    const completed = all
-      .filter(e => e.completed)
-      .sort((a, b) => b.profit - a.profit);
-    const inProgress = all
-      .filter(e => !e.completed)
-      .sort((a, b) => b.profit - a.profit || b.rounds - a.rounds);
-
-    // 순위 계산은 완료자 기준
-    const myIdxC = completed.findIndex(e => e.key === myKey);
-    const myIdxP = inProgress.findIndex(e => e.key === myKey);
-    const myRank = myIdxC !== -1
-      ? { rank: myIdxC + 1, total: completed.length, type: 'completed' }
-      : myIdxP !== -1
-        ? { rank: myIdxP + 1, total: inProgress.length, type: 'progress' }
-        : null;
-
-    containerIds.forEach(id => renderLB(id, completed, inProgress, myRank, finalMode));
-
-    if (myRank && document.getElementById('st-rank')) {
-      if (myRank.type === 'completed') {
-        document.getElementById('st-rank').textContent = `완료 ${myRank.rank}위/${myRank.total}명`;
-      } else {
-        document.getElementById('st-rank').textContent = `진행중 ${myRank.rank}위/${myRank.total}명`;
+    if (selectedRole === 'student') {
+      const id = document.getElementById('student-id').value;
+      const name = document.getElementById('student-name').value;
+      if (!id || !name) {
+        alert('학번과 이름을 입력해주세요');
+        return;
       }
-    }
-  });
-}
-
-/* ══ 리더보드 렌더 ══ */
-function renderLB(containerId, completed, inProgress, myRank, finalMode = false) {
-  const el = document.getElementById(containerId);
-  if (!el) return;
-
-  const top5c = completed.slice(0, 5);
-  const top5p = inProgress.slice(0, 5);
-  const hasAny = top5c.length > 0 || (!finalMode && top5p.length > 0);
-
-  if (!hasAny) { el.innerHTML = '<div class="lb-empty">아직 완료한 참가자가 없습니다</div>'; return; }
-
-  const mx = Math.max(
-    ...top5c.map(e => Math.abs(e.profit)),
-    ...(!finalMode ? top5p.map(e => Math.abs(e.profit)) : []),
-    1
-  );
-
-  let html = '';
-
-  /* 완료자 섹션 */
-  if (top5c.length > 0) {
-    if (!finalMode) html += `<div class="lb-sep" style="text-align:left;font-weight:500;color:var(--green);padding:4px 0 6px;">✅ 완료</div>`;
-    top5c.forEach((e, i) => {
-      const isMe = e.key === myKey;
-      const rankCls = i === 0 ? 'r1' : i === 1 ? 'r2' : i === 2 ? 'r3' : 'rn';
-      const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1);
-      const barW = Math.max(4, Math.round(Math.abs(e.profit) / mx * 100));
-      html += `<div class="lb-row${isMe ? ' me-row' : ''}">
-        <div class="lb-rank ${rankCls}">${medal}</div>
-        <div class="lb-name${isMe ? ' me' : ''}">${isMe ? '⭐ ' : ''}${e.nick.substring(0,11)}</div>
-        <div class="lb-rounds" style="color:var(--green);font-weight:500;">완료</div>
-        <div class="lb-bar-wrap"><div class="lb-bar ${isMe ? 'bar-me' : 'bar-o'}" style="width:${barW}%"></div></div>
-        <div class="lb-profit ${e.profit >= 0 ? 'pos' : 'neg'}">${fmt(e.profit)}</div>
-      </div>`;
-    });
-    /* 내가 완료자인데 top5 밖인 경우 */
-    if (myRank && myRank.type === 'completed' && myRank.rank > 5) {
-      html += `<div class="lb-sep">···  ${myRank.rank - 5}명 더  ···</div>`;
-      html += `<div class="lb-row me-row">
-        <div class="lb-rank rn">${myRank.rank}</div>
-        <div class="lb-name me">⭐ ${myNick.substring(0,11)}</div>
-        <div class="lb-rounds" style="color:var(--green);font-weight:500;">완료</div>
-        <div class="lb-bar-wrap"><div class="lb-bar bar-me" style="width:4%"></div></div>
-        <div class="lb-profit ${cumProfit >= 0 ? 'pos' : 'neg'}">${fmt(cumProfit)}</div>
-      </div>`;
+      currentUser = { type: 'student', id, name };
+      showStudentDashboard();
+    } else {
+      const id = document.getElementById('teacher-id').value;
+      const pw = document.getElementById('teacher-pw').value;
+      const className = document.getElementById('class-name').value;
+      if (!id || !pw || !className) {
+        alert('모든 필드를 입력해주세요');
+        return;
+      }
+      currentUser = { type: 'teacher', id, className };
+      showTeacherDashboard();
     }
   }
 
-  /* 진행중 섹션 (최종 화면에서는 숨김) */
-  if (!finalMode && top5p.length > 0) {
-    html += `<div class="lb-sep" style="text-align:left;font-weight:500;color:var(--text2);padding:8px 0 6px;">🕐 진행 중</div>`;
-    top5p.forEach((e, i) => {
-      const isMe = e.key === myKey;
-      const barW = Math.max(4, Math.round(Math.abs(e.profit) / mx * 100));
-      html += `<div class="lb-row${isMe ? ' me-row' : ''}" style="opacity:0.75;">
-        <div class="lb-rank rn">${i + 1}</div>
-        <div class="lb-name${isMe ? ' me' : ''}">${isMe ? '⭐ ' : ''}${e.nick.substring(0,11)}</div>
-        <div class="lb-rounds">${e.rounds}R</div>
-        <div class="lb-bar-wrap"><div class="lb-bar ${isMe ? 'bar-me' : 'bar-o'}" style="width:${barW}%"></div></div>
-        <div class="lb-profit ${e.profit >= 0 ? 'pos' : 'neg'}">${fmt(e.profit)}</div>
-      </div>`;
-    });
-    /* 내가 진행중인데 top5 밖인 경우 */
-    if (myRank && myRank.type === 'progress' && myRank.rank > 5) {
-      html += `<div class="lb-sep">···  ${myRank.rank - 5}명 더  ···</div>`;
-      html += `<div class="lb-row me-row" style="opacity:0.75;">
-        <div class="lb-rank rn">${myRank.rank}</div>
-        <div class="lb-name me">⭐ ${myNick.substring(0,11)}</div>
-        <div class="lb-rounds">${cur}R</div>
-        <div class="lb-bar-wrap"><div class="lb-bar bar-me" style="width:4%"></div></div>
-        <div class="lb-profit ${cumProfit >= 0 ? 'pos' : 'neg'}">${fmt(cumProfit)}</div>
-      </div>`;
+  function showStudentDashboard() {
+    document.getElementById('s-login').classList.remove('active');
+    document.getElementById('s-student-dashboard').classList.add('active');
+    document.getElementById('student-welcome').textContent = `안녕하세요, ${currentUser.name}님!`;
+    document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+  }
+
+  function showTeacherDashboard() {
+    document.getElementById('s-login').classList.remove('active');
+    document.getElementById('s-teacher-dashboard').classList.add('active');
+    document.getElementById('teacher-welcome').textContent = `${currentUser.id}`;
+    document.getElementById('teacher-class').textContent = currentUser.className;
+  }
+
+  function startModule(level) {
+    if (level === 'level3' && document.querySelector('.module-card.locked')) {
+      alert('Level 2를 완료한 후에 시작할 수 있습니다');
+      return;
+    }
+    const urls = {
+      'level1': 'index.html',
+      'level2': 'level2_convenience_pricing.html',
+      'level3': 'level3_cafe_markdown.html'
+    };
+    window.open(urls[level], '_blank');
+  }
+
+  function logout() {
+    if (confirm('로그아웃하시겠습니까?')) {
+      currentUser = null;
+      document.getElementById('s-student-dashboard').classList.remove('active');
+      document.getElementById('s-teacher-dashboard').classList.remove('active');
+      document.getElementById('s-login').classList.add('active');
+      document.querySelectorAll('.role-btn').forEach(btn => btn.classList.remove('selected'));
+      document.getElementById('student-form').style.display = 'none';
+      document.getElementById('teacher-form').style.display = 'none';
+      document.getElementById('student-id').value = '';
+      document.getElementById('student-name').value = '';
+      document.getElementById('teacher-id').value = '';
+      document.getElementById('teacher-pw').value = '';
+      document.getElementById('class-name').value = '';
     }
   }
-
-  el.innerHTML = html;
-}
-
-/* ══ 진행 도트 ══ */
-function buildProg(id, current) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.innerHTML = ROUNDS.map((_, i) => {
-    let c = 'pd';
-    if (i < current) c += ' done';
-    else if (i === current) c += ' cur';
-    return `<div class="${c}">${i < current ? '<i class="ti ti-check"></i>' : (i + 1)}</div>`;
-  }).join('');
-}
-
-/* ══ 인트로 리더보드 ══ */
-async function loadIntroLB() {
-  const snap = await get(ref(db, `leaderboard/scores/${classCode}`));
-  const data = snap.val() || {};
-  const all = Object.entries(data).map(([k, v]) => ({ key: k, ...v }));
-  const completed  = all.filter(e => e.completed).sort((a, b) => b.profit - a.profit);
-  const inProgress = all.filter(e => !e.completed).sort((a, b) => b.profit - a.profit || b.rounds - a.rounds);
-  renderLB('intro-lb', completed, inProgress, null, false);
-}
-/* loadIntroLB는 수업 코드 인증 후 자동 호출 */
-
-/* ══ 게임 시작 ══ */
-window.startGame = async function() {
-  if (!classCode) { alert('수업 코드를 먼저 입력해 주세요!'); return; }
-  const nick = document.getElementById('nick-input').value.trim();
-  if (!nick) { alert('닉네임을 입력해 주세요!'); return; }
-  myNick = nick;
-  myKey = 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
-  cur = 0; cumProfit = 0; history = [];
-  await saveScore();
-  loadRound();
-};
-
-/* ══ 라운드 로드 ══ */
-function loadRound() {
-  const r = ROUNDS[cur];
-  buildProg('prog-g', cur);
-  document.getElementById('st-round').textContent = `${cur + 1}/10`;
-  document.getElementById('st-profit').textContent = fmt(cumProfit);
-  document.getElementById('st-profit').style.color = cumProfit >= 0 ? 'var(--green)' : 'var(--red)';
-  document.getElementById('rh-title').textContent = `${cur + 1}라운드 — ${r.label}`;
-  document.getElementById('rh-weather').textContent = r.weather;
-  document.getElementById('rh-cost-chip').textContent = '원가 ' + fmt(r.cost);
-  document.getElementById('rh-salv-chip').textContent = '잔존가 ' + fmt(r.salvage);
-  const ev = document.getElementById('rh-event');
-  if (r.event) { ev.textContent = r.event; ev.style.display = ''; } else { ev.style.display = 'none'; }
-  document.getElementById('g-hint').innerHTML = `<strong>수요 힌트</strong> — ${r.hint}`;
-  const sl = document.getElementById('o-slider');
-  sl.max = r.sliderMax;
-  sl.value = Math.round(r.demand.reduce((a, b) => a + b, 0) / r.demand.length);
-  onSlider();
-  startLbListener(['game-lb'], false);
-  show('s-game');
-}
-
-/* ══ 슬라이더 ══ */
-window.onSlider = function() {
-  const r = ROUNDS[cur];
-  const v = parseInt(document.getElementById('o-slider').value);
-  document.getElementById('sv-disp').textContent = v;
-  document.getElementById('cp-val').textContent = fmt(v * r.cost);
-};
-
-/* ══ 주문 확정 ══ */
-window.confirmOrder = async function() {
-  const btn = document.getElementById('order-btn');
-  btn.disabled = true;
-  const r = ROUNDS[cur];
-  const ordered = parseInt(document.getElementById('o-slider').value);
-  const demand = randDemand(r.demand);
-  const sold = Math.min(ordered, demand);
-  const leftover = ordered - sold;
-  const revenue = sold * r.price;
-  const costT = ordered * r.cost;
-  const salvT = leftover * r.salvage;
-  const profit = revenue - costT + salvT;
-  cumProfit += profit;
-  history.push({ round: cur + 1, weather: r.weather, ordered, demand, sold, leftover, profit, cumulative: cumProfit });
-  await saveScore();
-
-  buildProg('prog-r', cur);
-  document.getElementById('res-title').textContent = `${cur + 1}라운드 — ${r.label} 결과`;
-  document.getElementById('r-order').textContent = ordered + '줄';
-  document.getElementById('r-demand').textContent = demand + '줄';
-  document.getElementById('r-sold').textContent = sold + '줄';
-  document.getElementById('r-left').textContent = leftover + '줄';
-  document.getElementById('r-rev').textContent = fmt(revenue);
-  document.getElementById('r-cost').textContent = fmt(costT);
-  document.getElementById('r-salv').textContent = fmt(salvT);
-  document.getElementById('r-cum').textContent = fmt(cumProfit);
-
-  const pd = document.getElementById('p-disp');
-  pd.className = 'profit-disp ' + (profit >= 0 ? 'pos' : 'neg');
-  document.getElementById('p-val').textContent = fmt(profit);
-
-  let ins = '';
-  if (demand > ordered) {
-    ins = `📦 품절! ${demand - ordered}줄을 더 팔 수 있었지만 재고가 없었습니다. 다음엔 조금 더 주문해보세요!`;
-  } else if (leftover > 0) {
-    ins = `🗑️ ${leftover}줄 폐기! 수요보다 많이 주문했습니다. 다음엔 조금 줄여보세요!`;
-  } else {
-    ins = `✅ 완판! 주문량과 수요가 딱 맞았습니다. 최상의 결과!`;
-  }
-  document.getElementById('ins-box').textContent = ins;
-
-  document.getElementById('h-tbody').innerHTML = history.map(h =>
-    `<tr><td>${h.round}</td><td style="font-size:11px">${h.weather}</td>
-     <td>${h.ordered}</td><td>${h.demand}</td><td>${h.sold}</td><td>${h.leftover}</td>
-     <td class="${h.profit >= 0 ? 'pos' : 'neg'}">${fmt(h.profit)}</td></tr>`
-  ).join('');
-
-  document.getElementById('next-btn').textContent = cur >= ROUNDS.length - 1 ? '최종 결과 보기 →' : '다음 라운드 →';
-  startLbListener(['result-lb'], false);
-  show('s-result');
-  btn.disabled = false;
-};
-
-/* ══ 다음 라운드 ══ */
-window.nextRound = function() {
-  cur++;
-  if (cur >= ROUNDS.length) showFinal();
-  else loadRound();
-};
-
-/* ══ 최종 화면 ══ */
-async function showFinal() {
-  // 완료 플래그로 저장
-  await saveScore(true);
-
-  const fn = document.getElementById('f-num');
-  fn.textContent = fmt(cumProfit);
-  fn.className = 'fn' + (cumProfit < 0 ? ' neg' : '');
-
-  let grade, gs;
-  if      (cumProfit >= 800000) { grade = '👑 김밥왕 달성!';    gs = 'background:#eaf3de;color:#3B6D11;'; }
-  else if (cumProfit >= 500000) { grade = '🥇 베테랑 사장님';  gs = 'background:#fef3e2;color:#854F0B;'; }
-  else if (cumProfit >= 200000) { grade = '🥈 신입 사장님';    gs = 'background:#e6f1fb;color:#185FA5;'; }
-  else if (cumProfit >= 0)      { grade = '🥉 수습 사장님';    gs = 'background:#f1efe8;color:#5F5E5A;'; }
-  else                          { grade = '😢 적자 가게';       gs = 'background:#fcebeb;color:#A32D2D;'; }
-  const gb = document.getElementById('f-grade');
-  gb.textContent = grade; gb.style.cssText = gs;
-
-  document.getElementById('f-tbody').innerHTML = history.map(h =>
-    `<tr><td>${h.round}</td><td style="font-size:11px">${h.weather}</td>
-     <td>${h.ordered}</td><td>${h.demand}</td><td>${h.sold}</td><td>${h.leftover}</td>
-     <td class="${h.profit >= 0 ? 'pos' : 'neg'}">${fmt(h.profit)}</td></tr>`
-  ).join('');
-
-  const underO = history.filter(h => h.demand > h.ordered).length;
-  const overO  = history.filter(h => h.demand <= h.ordered && h.leftover > 0).length;
-  document.getElementById('f-ins').textContent =
-    `10라운드 결산 — 품절 ${underO}회, 과다재고 ${overO}회. ` +
-    `날씨와 요일에 따라 수요가 크게 달라집니다. ` +
-    `원가가 낮아질수록, 잔존가치가 높을수록 더 공격적으로 주문하는 것이 유리합니다.`;
-
-  // 최종 화면: 완료자만 표시 (finalMode=true)
-  startLbListener(['final-lb'], true);
-
-  // 내 최종 순위 표시
-  const snap = await get(ref(db, `leaderboard/scores/${classCode}`)).catch(() => null);
-  if (snap) {
-    const completed = Object.entries(snap.val() || {})
-      .map(([k, v]) => ({ key: k, ...v }))
-      .filter(e => e.completed)
-      .sort((a, b) => b.profit - a.profit);
-    const myIdx = completed.findIndex(e => e.key === myKey);
-    if (myIdx !== -1) {
-      document.getElementById('f-rank').textContent = `${myIdx + 1}위 / ${completed.length}명 완료`;
-    }
-  }
-  show('s-final');
-}
-
-/* ══ 리셋 ══ */
-window.resetGame = function() {
-  if (lbUnsub) { lbUnsub(); lbUnsub = null; }
-  cur = 0; cumProfit = 0; history = [];
-  myNick = ''; myKey = ''; classCode = ''; className = '';
-  document.getElementById('nick-input').value = '';
-  document.getElementById('code-input').value = '';
-  document.getElementById('code-msg').textContent = '';
-  document.getElementById('st-rank').textContent = '-';
-  document.getElementById('step-code').style.display = 'block';
-  document.getElementById('step-nick').style.display = 'none';
-  document.getElementById('intro-lb').innerHTML = '<div class="lb-empty">수업 코드를 입력하면 해당 반 리더보드가 표시됩니다</div>';
-  show('s-intro');
-};
-
-/* ══ 결과 공유 ══ */
-window.shareResult = function() {
-  const text = `🍱 도전 김밥왕! ${myNick}의 10라운드 최종 이익: ${fmt(cumProfit)}\n` +
-    history.map(h => `${h.round}일차 | 주문 ${h.ordered}줄 | 수요 ${h.demand}줄 | ${fmt(h.profit)}`).join('\n');
-  navigator.clipboard.writeText(text).then(() => alert('결과가 클립보드에 복사되었습니다!'));
-};
 </script>
+
 </body>
 </html>

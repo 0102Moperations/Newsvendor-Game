@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🏪 편의점 점주의 가격 전략</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Black+Han+Sans&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --red:#E24B4A;--green:#1D9E75;--blue:#185FA5;--amber:#BA7517;
+    --bg:#f8f7f4;--surface:#ffffff;--surface2:#f1efe8;
+    --text:#1a1a1a;--text2:#6b6b6b;--text3:#9a9a9a;
+    --border:rgba(0,0,0,0.10);--border2:rgba(0,0,0,0.18);
+    --radius:10px;--radius-lg:14px;
+  }
+  body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+  .page{max-width:900px;margin:0 auto;padding:20px 16px 60px;}
+  .screen{display:none;}.screen.active{display:block;}
+  .title-bar{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
+  .title-bar h1{font-family:'Black Han Sans',sans-serif;font-size:22px;color:var(--text);}
+  .badge{background:var(--red);color:#fff;font-size:11px;font-weight:500;padding:3px 9px;border-radius:20px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:14px;}
+  .card-title{font-size:13px;font-weight:500;color:var(--text2);margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+  .stat-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+  .sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;}
+  .sc .lb{font-size:11px;color:var(--text2);margin-bottom:2px;}
+  .sc .vl{font-size:15px;font-weight:500;color:var(--text);}
+  .decision-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:14px;}
+  .product-decision{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:12px;}
+  .decision-row{display:flex;align-items:center;gap:12px;margin-bottom:8px;}
+  .decision-row label{min-width:90px;font-size:12px;color:var(--text2);}
+  .decision-row input[type=range]{flex:1;height:4px;accent-color:var(--red);cursor:pointer;}
+  .decision-row input[type=number]{width:70px;padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius);font-size:12px;}
+  .decision-value{min-width:50px;text-align:right;font-weight:500;color:var(--text);}
+  .btn-p{display:block;width:100%;padding:13px;background:var(--red);color:#fff;border:none;border-radius:var(--radius);font-size:15px;font-weight:500;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:opacity 0.15s;margin-bottom:8px;}
+  .btn-p:hover{opacity:0.88;}
+  .btn-p:disabled{opacity:0.5;cursor:not-allowed;}
+  .btn-s{display:block;width:100%;padding:12px;background:transparent;color:var(--text);border:1px solid var(--border2);border-radius:var(--radius);font-size:14px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:background 0.15s;margin-bottom:8px;}
+  .btn-s:hover{background:var(--surface2);}
+  .lb-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;}
+  .lb-row:last-child{border-bottom:none;}
+  .lb-rank{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;}
+  .r1{background:#fef3e2;color:#854F0B;}
+  .r2{background:#f1efe8;color:#5F5E5A;}
+  .r3{background:#faece7;color:#993C1D;}
+  .rn{background:var(--surface2);color:var(--text2);}
+  .lb-name{flex:1;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .lb-name.me{color:var(--red);}
+  .lb-profit{font-weight:500;min-width:88px;text-align:right;}
+  .lb-profit.pos{color:var(--green);}
+  .lb-profit.neg{color:var(--red);}
+  .me-row{background:linear-gradient(90deg,rgba(226,75,74,0.06),transparent);border-radius:var(--radius);padding:8px;margin:-8px;}
+  .hero{text-align:center;padding:20px 0 12px;}
+  .hero .emo{font-size:52px;display:block;margin-bottom:12px;}
+  .hero h2{font-family:'Black Han Sans',sans-serif;font-size:28px;margin-bottom:10px;}
+  .hero p{font-size:14px;color:var(--text2);line-height:1.8;max-width:480px;margin:0 auto;}
+  .info-box{background:var(--surface2);border-left:3px solid var(--blue);padding:12px 14px;border-radius:var(--radius);font-size:12px;color:var(--text2);margin-bottom:14px;line-height:1.7;}
+  .rules-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;margin:14px 0;font-size:13px;color:var(--text2);line-height:2.0;}
+  .rule-i{display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;}
+  .rule-i:last-child{margin-bottom:0;}
+  .rule-i i{color:var(--red);margin-top:2px;flex-shrink:0;}
+  .name-row{display:flex;gap:8px;margin-bottom:6px;}
+  .name-row input{flex:1;font-family:'Noto Sans KR',sans-serif;font-size:14px;padding:10px 14px;border:1px solid var(--border2);border-radius:var(--radius);outline:none;background:var(--surface);}
+  .name-row input:focus{border-color:var(--red);}
+  .name-row .btn-p{width:auto;margin:0;padding:0 20px;white-space:nowrap;}
+  .prog{display:flex;gap:6px;justify-content:center;margin-bottom:16px;}
+  .pd{width:30px;height:30px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--text2);}
+  .pd.done{background:var(--green);color:#fff;border-color:var(--green);}
+  .pd.cur{background:var(--red);color:#fff;border-color:var(--red);}
+  .result-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0;}
+  .ri{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border);}
+  .ri .k{color:var(--text2);}
+  .ri .v{font-weight:500;}
+  .profit-disp{text-align:center;padding:14px;border-radius:var(--radius);margin-top:12px;}
+  .profit-disp.pos{background:#eaf3de;color:#3B6D11;}
+  .profit-disp.neg{background:#fcebeb;color:#A32D2D;}
+  .profit-disp .pl{font-size:12px;margin-bottom:3px;}
+  .profit-disp .pv{font-size:24px;font-weight:700;}
+  @media(max-width:1024px){.stat-bar{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:640px){.stat-bar{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="title-bar">
+    <span style="font-size:26px">🏪</span>
+    <h1>편의점 점주의 가격 전략</h1>
+    <span class="badge">4주</span>
+  </div>
+  <!-- INTRO -->
+  <div class="screen active" id="s-intro">
+    <div class="hero">
+      <span class="emo">🏪</span>
+      <h2>편의점 점주의 가격 전략</h2>
+      <p>24시간 편의점을 운영하며 3개 상품의 가격을 최적화하세요.<br>4주 누적 이익을 최대화하는 게임!</p>
+    </div>
+    <div class="info-box">
+      <strong>📚 Level 2 심화 과정</strong><br>
+      Level 1에서 배운 재고 결정 개념을 확장합니다. 이번에는 <strong>가격을 직접 정하고</strong>, 가격 변화에 따른 수요 변화를 예측하며 이익을 극대화합니다.
+    </div>
+    <div class="rules-box">
+      <div class="rule-i"><i class="ti ti-circle-check"></i><span><strong>매주 1회만 발주</strong> - 3개 상품에 월 ₩100만 예산 배분</span></div>
+      <div class="rule-i"><i class="ti ti-circle-check"></i><span><strong>각 상품별 가격 결정</strong> - 기본가격 대비 ±20% 범위에서 자유 설정</span></div>
+      <div class="rule-i"><i class="ti ti-circle-check"></i><span><strong>수요 탄성치</strong> - 가격 변화에 따라 수요가 달라짐 (상품마다 다름)</span></div>
+      <div class="rule-i"><i class="ti ti-circle-check"></i><span><strong>4주 누적 이익</strong> - 모든 상품의 순이익 합계 최대화</span></div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div style="font-size:13px;font-weight:500;margin-bottom:8px;">닉네임 입력</div>
+      <div class="name-row">
+        <input type="text" id="nick-input" placeholder="예) 가격 마스터" maxlength="12" onkeydown="if(event.key==='Enter')startGame()">
+        <button class="btn-p" onclick="startGame()">시작 →</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">📊 현재 리더보드</div>
+      <div id="intro-lb"><div style="text-align:center;color:var(--text3);padding:16px;">불러오는 중...</div></div>
+    </div>
+  </div>
+  <!-- GAME -->
+  <div class="screen" id="s-game">
+    <div class="prog" id="prog-g"></div>
+    <div class="stat-bar">
+      <div class="sc"><div class="lb">주차</div><div class="vl" id="st-week">1/4</div></div>
+      <div class="sc"><div class="lb">누적 이익</div><div class="vl" id="st-profit" style="color:var(--green)">₩0</div></div>
+      <div class="sc"><div class="lb">순위</div><div class="vl" id="st-rank">-</div></div>
+      <div class="sc"><div class="lb">예산</div><div class="vl" id="st-budget">₩100만</div></div>
+    </div>
+    <div class="info-box">
+      <strong>📋 이번 주 발주 계획</strong><br>
+      월 예산 ₩100만 내에서 3개 상품의 발주량과 판매가격을 결정하세요.
+    </div>
+    <div class="decision-panel">
+      <div style="font-size:14px;font-weight:500;margin-bottom:14px;">3개 상품 발주 & 가격 결정</div>
+      <div class="product-decision">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <span style="font-size:20px;">🍱</span>
+          <div>
+            <div style="font-weight:500;font-size:13px;">김밥</div>
+            <div style="font-size:11px;color:var(--text3);">원가 ₩2,000 · 기본가 ₩3,500 · 탄성치 -0.5</div>
+          </div>
+        </div>
+        <div class="decision-row">
+          <label>발주량:</label>
+          <input type="range" id="q-kimbap" min="0" max="300" value="100" step="1" oninput="onProductChange()">
+          <span class="decision-value" id="qv-kimbap">100개</span>
+        </div>
+        <div class="decision-row">
+          <label>판매가:</label>
+          <input type="number" id="p-kimbap" value="3500" step="100" min="2800" max="4200" oninput="onProductChange()">
+          <span class="decision-value" id="pv-kimbap" style="min-width:80px;text-align:right;">기본가 대비 0%</span>
+        </div>
+        <div style="background:#f0f5ff;border-left:3px solid var(--blue);padding:10px 12px;border-radius:var(--radius);font-size:12px;color:var(--blue);margin-top:8px;" id="eff-kimbap"></div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;margin-top:8px;">
+          <div style="font-size:11px;color:var(--text2);">이 상품 비용</div>
+          <div style="display:flex;gap:8px;align-items:center;font-weight:500;">
+            <span id="cost-kimbap">₩200,000</span>
+            <span style="color:var(--text3);">(예산의 20%)</span>
+          </div>
+        </div>
+      </div>
+      <div class="product-decision">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <span style="font-size:20px;">🍙</span>
+          <div>
+            <div style="font-weight:500;font-size:13px;">주먹밥</div>
+            <div style="font-size:11px;color:var(--text3);">원가 ₩1,500 · 기본가 ₩3,000 · 탄성치 -1.0</div>
+          </div>
+        </div>
+        <div class="decision-row">
+          <label>발주량:</label>
+          <input type="range" id="q-riceball" min="0" max="400" value="150" step="1" oninput="onProductChange()">
+          <span class="decision-value" id="qv-riceball">150개</span>
+        </div>
+        <div class="decision-row">
+          <label>판매가:</label>
+          <input type="number" id="p-riceball" value="3000" step="100" min="2400" max="3600" oninput="onProductChange()">
+          <span class="decision-value" id="pv-riceball" style="min-width:80px;text-align:right;">기본가 대비 0%</span>
+        </div>
+        <div style="background:#f0f5ff;border-left:3px solid var(--blue);padding:10px 12px;border-radius:var(--radius);font-size:12px;color:var(--blue);margin-top:8px;" id="eff-riceball"></div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;margin-top:8px;">
+          <div style="font-size:11px;color:var(--text2);">이 상품 비용</div>
+          <div style="display:flex;gap:8px;align-items:center;font-weight:500;">
+            <span id="cost-riceball">₩225,000</span>
+            <span style="color:var(--text3);">(예산의 22.5%)</span>
+          </div>
+        </div>
+      </div>
+      <div class="product-decision">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <span style="font-size:20px;">🥪</span>
+          <div>
+            <div style="font-weight:500;font-size:13px;">샌드위치</div>
+            <div style="font-size:11px;color:var(--text3);">원가 ₩3,000 · 기본가 ₩6,000 · 탄성치 -1.8</div>
+          </div>
+        </div>
+        <div class="decision-row">
+          <label>발주량:</label>
+          <input type="range" id="q-sandwich" min="0" max="150" value="50" step="1" oninput="onProductChange()">
+          <span class="decision-value" id="qv-sandwich">50개</span>
+        </div>
+        <div class="decision-row">
+          <label>판매가:</label>
+          <input type="number" id="p-sandwich" value="6000" step="100" min="4800" max="7200" oninput="onProductChange()">
+          <span class="decision-value" id="pv-sandwich" style="min-width:80px;text-align:right;">기본가 대비 0%</span>
+        </div>
+        <div style="background:#f0f5ff;border-left:3px solid var(--blue);padding:10px 12px;border-radius:var(--radius);font-size:12px;color:var(--blue);margin-top:8px;" id="eff-sandwich"></div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;margin-top:8px;">
+          <div style="font-size:11px;color:var(--text2);">이 상품 비용</div>
+          <div style="display:flex;gap:8px;align-items:center;font-weight:500;">
+            <span id="cost-sandwich">₩150,000</span>
+            <span style="color:var(--text3);">(예산의 15%)</span>
+          </div>
+        </div>
+      </div>
+      <div style="background:#f0f5ff;border:1px solid var(--border);border-radius:var(--radius);padding:12px;margin-top:14px;">
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px;">
+          <span style="color:var(--text2);">총 발주 비용</span>
+          <span style="font-weight:500;" id="total-cost">₩575,000</span>
+        </div>
+        <div style="background:#dde5f5;border-radius:3px;height:6px;overflow:hidden;">
+          <div style="height:100%;background:var(--blue);width:57.5%;border-radius:3px;transition:width 0.3s;" id="budget-fill"></div>
+        </div>
+        <div style="text-align:right;font-size:11px;color:var(--text3);margin-top:4px;">
+          남은 예산: <span style="font-weight:500;" id="remain-budget">₩425,000</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">🏆 현재 리더보드 (Top 5)</div>
+      <div id="game-lb"><div style="text-align:center;color:var(--text3);padding:16px;">불러오는 중...</div></div>
+    </div>
+    <button class="btn-p" id="submit-btn" onclick="submitWeek()">주문 확정 →</button>
+  </div>
+  <!-- RESULT -->
+  <div class="screen" id="s-result">
+    <div class="prog" id="prog-r"></div>
+    <div class="card">
+      <div class="card-title" id="res-title">1주차 결과</div>
+      <div id="res-products" style="margin-bottom:16px;"></div>
+      <div class="result-grid" id="res-summary">
+        <div class="ri"><span class="k">총 판매액</span><span class="v" id="r-total-revenue">₩0</span></div>
+        <div class="ri"><span class="k">총 구매 비용</span><span class="v" id="r-total-cost">₩0</span></div>
+        <div class="ri"><span class="k">4주 누적</span><span class="v" id="r-cumulative">₩0</span></div>
+        <div class="ri"><span class="k">-</span><span class="v">-</span></div>
+      </div>
+      <div class="profit-disp" id="p-disp">
+        <div class="pl">이번 주 순이익</div>
+        <div class="pv" id="p-val">₩0</div>
+      </div>
+      <div class="info-box" id="analysis-box"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">🏆 현재 리더보드</div>
+      <div id="result-lb"><div style="text-align:center;color:var(--text3);padding:16px;">불러오는 중...</div></div>
+    </div>
+    <button class="btn-p" id="next-btn" onclick="nextWeek()">다음 주 →</button>
+  </div>
+  <!-- FINAL -->
+  <div class="screen" id="s-final">
+    <div style="text-align:center;padding:20px 0 12px;">
+      <div style="font-size:42px;margin-bottom:8px">🏆</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:4px">4주 최종 누적 이익</div>
+      <div style="font-size:40px;font-weight:700;font-family:'Black Han Sans',sans-serif;margin-bottom:6px;" id="f-num"></div>
+      <div style="font-size:14px;color:var(--text2);margin-top:6px">최종 순위: <strong id="f-rank" style="font-size:17px;color:var(--blue)"></strong></div>
+    </div>
+    <div class="card">
+      <div class="card-title">🏆 최종 리더보드 (Top 5)</div>
+      <div id="final-lb"><div style="text-align:center;color:var(--text3);padding:16px;">불러오는 중...</div></div>
+    </div>
+    <button class="btn-p" onclick="resetGame()">다시 도전하기 →</button>
+    <button class="btn-s" onclick="shareResult()">결과 공유하기 📋</button>
+  </div>
+</div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import { getDatabase, ref, set, get, onValue } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-database.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyCgBJ6yt9_TrK7AlgTKhEth7Qt2QdCYADc",
+  authDomain: "newsvendor-game-simulation.firebaseapp.com",
+  databaseURL: "https://newsvendor-game-simulation-default-rtdb.firebaseio.com",
+  projectId: "newsvendor-game-simulation",
+  storageBucket: "newsvendor-game-simulation.firebasestorage.app",
+  messagingSenderId: "213354360321",
+  appId: "1:213354360321:web:4dc63514cc19ba6019da00"
+};
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const PRODUCTS = {
+  kimbap: { icon: '🍱', name: '김밥', cost: 2000, basePrice: 3500, elasticity: -0.5, baseDemand: 60 },
+  riceball: { icon: '🍙', name: '주먹밥', cost: 1500, basePrice: 3000, elasticity: -1.0, baseDemand: 80 },
+  sandwich: { icon: '🥪', name: '샌드위치', cost: 3000, basePrice: 6000, elasticity: -1.8, baseDemand: 35 }
+};
+const fmt = n => (n < 0 ? '-₩' : '₩') + Math.abs(n).toLocaleString();
+const show = id => { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); };
+let cur = 0, cumProfit = 0, history = [];
+let myNick = '', myKey = '';
+let lbUnsub = null;
+function calcDemand(product, setPrice) {
+  const p = PRODUCTS[product];
+  const priceChange = (setPrice - p.basePrice) / p.basePrice;
+  const demandChange = p.elasticity * priceChange;
+  const demand = Math.round(p.baseDemand * (1 + demandChange));
+  return Math.max(0, demand);
+}
+function updatePriceEffects() {
+  Object.keys(PRODUCTS).forEach(prod => {
+    const price = parseInt(document.getElementById(`p-${prod}`).value);
+    const p = PRODUCTS[prod];
+    const pctChange = ((price - p.basePrice) / p.basePrice * 100).toFixed(0);
+    const demand = calcDemand(prod, price);
+    const demandPct = ((demand - p.baseDemand) / p.baseDemand * 100).toFixed(0);
+    document.getElementById(`pv-${prod}`).textContent = `기본가 대비 ${pctChange > 0 ? '+' : ''}${pctChange}%`;
+    let effect = `📊 예상 수요: ${demand}개 `;
+    if(demandPct > 0) effect += `<strong style="color:var(--green);">↑ +${demandPct}%</strong>`;
+    else if(demandPct < 0) effect += `<strong style="color:var(--red);">↓ ${demandPct}%</strong>`;
+    else effect += `(변화 없음)`;
+    document.getElementById(`eff-${prod}`).innerHTML = effect;
+  });
+}
+window.onProductChange = function() {
+  let total = 0;
+  Object.keys(PRODUCTS).forEach(prod => {
+    const q = parseInt(document.getElementById(`q-${prod}`).value);
+    const cost = PRODUCTS[prod].cost;
+    const cost_amt = q * cost;
+    total += cost_amt;
+    document.getElementById(`qv-${prod}`).textContent = q + '개';
+    document.getElementById(`cost-${prod}`).textContent = fmt(cost_amt);
+  });
+  const budget = 1000000;
+  const pct = Math.min(100, total / budget * 100);
+  document.getElementById('total-cost').textContent = fmt(total);
+  document.getElementById('remain-budget').textContent = fmt(budget - total);
+  const fill = document.getElementById('budget-fill');
+  fill.style.width = pct + '%';
+  updatePriceEffects();
+};
+async function saveScore() {
+  await set(ref(db, 'leaderboard-level2/' + myKey), {
+    nick: myNick, profit: cumProfit, week: cur, ts: Date.now()
+  });
+}
+function startLbListener(containerIds) {
+  if(lbUnsub) lbUnsub();
+  const lbRef = ref(db, 'leaderboard-level2');
+  lbUnsub = onValue(lbRef, snap => {
+    const data = snap.val() || {};
+    const sorted = Object.entries(data)
+      .map(([k, v]) => ({ key: k, ...v }))
+      .sort((a, b) => b.profit - a.profit);
+    const top5 = sorted.slice(0, 5);
+    const myIdx = sorted.findIndex(e => e.key === myKey);
+    const myRank = myIdx === -1 ? null : { rank: myIdx + 1, total: sorted.length };
+    containerIds.forEach(id => renderLB(id, top5, sorted, myRank));
+    if(myRank) document.getElementById('st-rank').textContent = `${myRank.rank}위/${myRank.total}명`;
+  });
+}
+function renderLB(containerId, top5, allSorted, myRank) {
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  if(!top5.length) { el.innerHTML = '<div style="text-align:center;color:var(--text3);padding:16px;">아직 참가자가 없습니다</div>'; return; }
+  const mx = Math.max(...top5.map(e => Math.abs(e.profit)), 1);
+  let html = '';
+  top5.forEach((e, i) => {
+    const isMe = e.key === myKey;
+    const rankCls = i === 0 ? 'r1' : i === 1 ? 'r2' : i === 2 ? 'r3' : 'rn';
+    const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1);
+    const profCls = e.profit >= 0 ? 'pos' : 'neg';
+    html += `<div class="lb-row${isMe ? ' me-row' : ''}">
+      <div class="lb-rank ${rankCls}">${medal}</div>
+      <div class="lb-name${isMe ? ' me' : ''}">${isMe ? '⭐ ' : ''}${e.nick.substring(0,11)}</div>
+      <div style="font-size:11px;color:var(--text3);">${e.week}주</div>
+      <div class="lb-profit ${profCls}">${fmt(e.profit)}</div>
+    </div>`;
+  });
+  el.innerHTML = html;
+}
+window.startGame = async function() {
+  const nick = document.getElementById('nick-input').value.trim();
+  if(!nick) { alert('닉네임을 입력해 주세요!'); return; }
+  myNick = nick;
+  myKey = 'l2_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+  cur = 0; cumProfit = 0; history = [];
+  await saveScore();
+  loadWeek();
+};
+function loadWeek() {
+  document.getElementById('st-week').textContent = `${cur + 1}/4`;
+  document.getElementById('st-profit').textContent = fmt(cumProfit);
+  document.getElementById('st-profit').style.color = cumProfit >= 0 ? 'var(--green)' : 'var(--red)';
+  buildProg('prog-g', cur);
+  onProductChange();
+  startLbListener(['game-lb']);
+  show('s-game');
+}
+function buildProg(id, current) {
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.innerHTML = Array(4).fill(0).map((_, i) => {
+    let c = 'pd';
+    if(i < current) c += ' done';
+    else if(i === current) c += ' cur';
+    return `<div class="${c}">${i < current ? '✓' : (i+1)}</div>`;
+  }).join('');
+}
+window.submitWeek = async function() {
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  const orders = {};
+  const prices = {};
+  let totalCost = 0, totalRevenue = 0;
+  const weekData = {};
+  Object.keys(PRODUCTS).forEach(prod => {
+    const q = parseInt(document.getElementById(`q-${prod}`).value);
+    const p = parseInt(document.getElementById(`p-${prod}`).value);
+    const demand = calcDemand(prod, p);
+    const sold = Math.min(q, demand);
+    const revenue = sold * p;
+    const cost = q * PRODUCTS[prod].cost;
+    const profit = revenue - cost;
+    orders[prod] = q;
+    prices[prod] = p;
+    totalCost += cost;
+    totalRevenue += revenue;
+    weekData[prod] = { ordered: q, demand, sold, leftover: q - sold, profit };
+    cumProfit += profit;
+  });
+  history.push({ week: cur + 1, orders, prices, weekData, profit: cumProfit });
+  buildProg('prog-r', cur);
+  document.getElementById('res-title').textContent = `${cur + 1}주차 결과`;
+  let productsHtml = '';
+  Object.keys(PRODUCTS).forEach(prod => {
+    const w = weekData[prod];
+    const p = PRODUCTS[prod];
+    const profit = w.profit;
+    const profitCls = profit >= 0 ? 'pos' : 'neg';
+    productsHtml += `<div style="border-bottom:1px solid var(--border);padding:12px 0;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div style="font-weight:500;font-size:13px;">${p.icon} ${p.name}</div>
+        <div style="font-weight:500;color:var(--${profit >= 0 ? 'green' : 'red'})">${fmt(profit)}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;font-size:11px;color:var(--text2);">
+        <div>주문: ${w.ordered}개</div>
+        <div>수요: ${w.demand}개</div>
+        <div>판매: ${w.sold}개</div>
+        <div>손실: ${w.leftover}개</div>
+      </div>
+    </div>`;
+  });
+  document.getElementById('res-products').innerHTML = productsHtml;
+  document.getElementById('r-total-revenue').textContent = fmt(totalRevenue);
+  document.getElementById('r-total-cost').textContent = fmt(totalCost);
+  document.getElementById('r-cumulative').textContent = fmt(cumProfit);
+  const weekProfit = totalRevenue - totalCost;
+  const pd = document.getElementById('p-disp');
+  pd.className = 'profit-disp ' + (weekProfit >= 0 ? 'pos' : 'neg');
+  document.getElementById('p-val').textContent = fmt(weekProfit);
+  let analysis = `<strong>가격 전략 분석:</strong><br>`;
+  Object.keys(PRODUCTS).forEach(prod => {
+    const p = PRODUCTS[prod];
+    const setPrice = parseInt(document.getElementById(`p-${prod}`).value);
+    const pctChange = ((setPrice - p.basePrice) / p.basePrice * 100).toFixed(0);
+    if(pctChange > 0) analysis += `📈 ${p.name}: 가격 +${pctChange}% → 마진↑ 하지만 수요↓<br>`;
+    else if(pctChange < 0) analysis += `📉 ${p.name}: 가격 ${pctChange}% → 마진↓ 하지만 수요↑<br>`;
+  });
+  document.getElementById('analysis-box').innerHTML = analysis;
+  await saveScore();
+  document.getElementById('next-btn').textContent = cur >= 3 ? '최종 결과 보기 →' : '다음 주 →';
+  startLbListener(['result-lb']);
+  show('s-result');
+  btn.disabled = false;
+};
+window.nextWeek = function() {
+  cur++;
+  if(cur >= 4) showFinal();
+  else loadWeek();
+};
+async function showFinal() {
+  document.getElementById('f-num').textContent = fmt(cumProfit);
+  document.getElementById('f-num').style.color = cumProfit >= 0 ? 'var(--green)' : 'var(--red)';
+  const snap = await get(ref(db, 'leaderboard-level2'));
+  const data = snap.val() || {};
+  const sorted = Object.entries(data)
+    .map(([k, v]) => ({ key: k, ...v }))
+    .sort((a, b) => b.profit - a.profit);
+  const myIdx = sorted.findIndex(e => e.key === myKey);
+  document.getElementById('f-rank').textContent = `${myIdx + 1}위 / ${sorted.length}명`;
+  const top5 = sorted.slice(0, 5);
+  renderLB('final-lb', top5, sorted, null);
+  startLbListener(['final-lb']);
+  show('s-final');
+}
+window.resetGame = function() {
+  if(lbUnsub) { lbUnsub(); lbUnsub = null; }
+  cur = 0; cumProfit = 0; history = [];
+  myNick = ''; myKey = '';
+  document.getElementById('nick-input').value = '';
+  show('s-intro');
+};
+window.shareResult = function() {
+  const text = `🏪 편의점 점주의 가격 전략 - ${myNick}의 4주 최종 이익: ${fmt(cumProfit)}`;
+  navigator.clipboard.writeText(text).then(() => alert('결과가 클립보드에 복사되었습니다!'));
+};
+async function loadIntroLB() {
+  const snap = await get(ref(db, 'leaderboard-level2'));
+  const data = snap.val() || {};
+  const sorted = Object.entries(data)
+    .map(([k, v]) => ({ key: k, ...v }))
+    .sort((a, b) => b.profit - a.profit);
+  renderLB('intro-lb', sorted.slice(0, 5), sorted, null);
+}
+loadIntroLB();
+</script>
+</body>
+</html>

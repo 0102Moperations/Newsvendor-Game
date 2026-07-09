@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>경영학 학습 게임 — Opsera: The New Era of Operations Optimization</title>
+<title>Opsera — The New Era of Operations Optimization</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Black+Han+Sans&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
@@ -30,6 +30,8 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
   letter-spacing:1px;margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:10px;
 }
 .banner p{font-size:13px;color:rgba(255,255,255,.82);}
+.brand-tag{font-size:10px;letter-spacing:2.6px;text-transform:uppercase;color:rgba(255,255,255,.58);margin-bottom:10px;font-weight:500;}
+.banner h1{letter-spacing:3px;}
 
 /* Greeting */
 .greet-row{display:flex;align-items:flex-end;gap:12px;margin-bottom:18px;flex-wrap:wrap;}
@@ -66,8 +68,10 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .mod.locked{opacity:.72;}
 .mod.locked:hover{transform:none;box-shadow:none;}
 .mod .emo{font-size:34px;margin-bottom:12px;line-height:1;}
-.mod .lv{font-size:15px;font-weight:700;margin-bottom:4px;}
-.mod .nm{font-size:12px;color:var(--text2);margin-bottom:16px;}
+.mod .codename{font-size:16px;font-weight:700;letter-spacing:.4px;margin-bottom:3px;}
+.mod .lv{font-size:9px;font-weight:500;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;}
+.mod .nm{font-size:12px;color:var(--text2);margin-bottom:3px;}
+.mod .tagline{font-size:10px;color:var(--text3);font-style:italic;margin-bottom:16px;}
 .mod.locked .nm{color:var(--text3);}
 .bar{width:100%;height:7px;background:var(--surface2);border-radius:4px;overflow:hidden;margin-bottom:12px;}
 .bar > i{display:block;height:100%;border-radius:4px;transition:width .5s cubic-bezier(.3,.9,.3,1);}
@@ -176,7 +180,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
     <div class="rank-box"><div id="ranking"><div class="rk-empty">불러오는 중...</div></div></div>
 
     <div class="foot">
-      <strong style="color:var(--text2);">OpsQuest</strong> · Gamified Business Simulation Platform<br>
+      <strong style="color:var(--text2);">Opsera</strong> · The New Era of Operations Optimization<br>
       경영학 실습용 교육 자료 · 무단 복제 및 배포 금지
     </div>
   </div>
@@ -200,9 +204,12 @@ const app = initializeApp(firebaseConfig);
 const db  = getDatabase(app);
 
 const LEVELS = [
-  { id:1, path:'leaderboard',    href:'./level1/index.html', emo:'🍱', name:'도전, 김밥왕!',      total:10, unit:'라운드' },
-  { id:2, path:'leaderboard_l2', href:'./level2/index.html', emo:'🏪', name:'편의점 가격 전략',   total:4,  unit:'주' },
-  { id:3, path:'leaderboard_l3', href:'./level3/index.html', emo:'☕', name:'카페 마크다운 전략', total:20, unit:'일' }
+  { id:1, path:'leaderboard',    href:'./level1/index.html', emo:'🍱', code:'OpsQuest',
+    name:'도전, 김밥왕!',            tag:'Explore the Challenges',              total:10, unit:'라운드' },
+  { id:2, path:'leaderboard_l2', href:'./level2/index.html', emo:'🏪', code:'OpsFlow',
+    name:'편의점 점주의 가격 전략',   tag:'Streamline the Process',              total:4,  unit:'주' },
+  { id:3, path:'leaderboard_l3', href:'./level3/index.html', emo:'☕', code:'OpsApex',
+    name:'카페 점주의 마크다운 전략', tag:'Reach the Ultimate Peak',             total:20, unit:'일' }
 ];
 
 const LS_KEY = 'opsquest_user';
@@ -315,8 +322,10 @@ function renderModules(results) {
 
     return `<a href="${r.href}" class="mod${locked ? ' locked' : ''}">
       <div class="emo">${r.emo}</div>
+      <div class="codename">${r.code}</div>
       <div class="lv">Level ${r.id}</div>
       <div class="nm">${r.name}</div>
+      <div class="tagline">${r.tag}</div>
       <div class="bar"><i class="${barCls}" style="width:${r.pct}%"></i></div>
       ${status}
     </a>`;
@@ -383,4 +392,4 @@ async function loadRanking() {
 })();
 </script>
 </body>
-</html>  
+</html>

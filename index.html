@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpsQuest — 경영 시뮬레이션 플랫폼</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Black+Han+Sans&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0e0e14;--surface:#181822;--surface2:#20202c;--surface3:#2a2a38;
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.16);
+  --text:#f2f2f7;--text2:#8f8fa8;--text3:#5a5a72;
+  --l1:#f5a623;--l2:#4a9eff;--l3:#c084fc;
+  --green:#3dd68c;--red:#ff5c6c;
+  --radius:12px;--radius-lg:18px;
+}
+body{
+  font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);
+  min-height:100vh;
+  background-image:
+    radial-gradient(circle at 15% 10%, rgba(245,166,35,0.07), transparent 40%),
+    radial-gradient(circle at 85% 20%, rgba(74,158,255,0.07), transparent 40%),
+    radial-gradient(circle at 50% 90%, rgba(192,132,252,0.07), transparent 45%);
+}
+.page{max-width:820px;margin:0 auto;padding:44px 20px 70px;}
+
+/* ── Hero ── */
+.hero{text-align:center;margin-bottom:36px;}
+.logo-mark{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:6px 14px;border:1px solid var(--border2);border-radius:30px;
+  font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text2);
+  margin-bottom:20px;
+}
+.logo-dot{width:7px;height:7px;border-radius:50%;background:var(--green);}
+.hero h1{
+  font-family:'Black Han Sans',sans-serif;
+  font-size:clamp(38px,7vw,60px);line-height:1.05;letter-spacing:-1px;
+  background:linear-gradient(100deg,var(--l1) 0%,var(--l2) 50%,var(--l3) 100%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  margin-bottom:14px;
+}
+.hero .tag{font-size:15px;color:var(--text2);line-height:1.85;max-width:480px;margin:0 auto;}
+.hero .tag strong{color:var(--text);font-weight:500;}
+
+/* ── Class code strip ── */
+.code-strip{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:18px 20px;margin:30px 0 34px;
+}
+.cs-label{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:10px;}
+.cs-row{display:flex;gap:9px;}
+.cs-row input{
+  flex:1;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius);
+  padding:11px 15px;font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--text);outline:none;
+  letter-spacing:1px;
+}
+.cs-row input:focus{border-color:var(--l2);}
+.cs-row input::placeholder{color:var(--text3);letter-spacing:0;font-family:'Noto Sans KR',sans-serif;}
+.cs-btn{
+  padding:0 22px;background:var(--surface3);border:1px solid var(--border2);border-radius:var(--radius);
+  color:var(--text);font-size:13px;font-weight:500;cursor:pointer;font-family:'Noto Sans KR',sans-serif;
+  transition:background .15s,border-color .15s;white-space:nowrap;
+}
+.cs-btn:hover{background:var(--l2);border-color:var(--l2);color:#fff;}
+.cs-msg{font-size:12px;margin-top:9px;min-height:17px;color:var(--text3);}
+.cs-msg.ok{color:var(--green);}
+.cs-msg.err{color:var(--red);}
+.cs-hint{font-size:11px;color:var(--text3);margin-top:8px;line-height:1.6;}
+
+/* ── Section head ── */
+.sec-head{
+  display:flex;align-items:baseline;gap:12px;margin-bottom:16px;
+}
+.sec-head h2{font-size:15px;font-weight:500;letter-spacing:0.3px;}
+.sec-head .sh-line{flex:1;height:1px;background:var(--border);}
+.sec-head .sh-note{font-size:11px;color:var(--text3);}
+
+/* ── Level cards ── */
+.levels{display:flex;flex-direction:column;gap:14px;margin-bottom:40px;}
+.lvl{
+  position:relative;display:block;text-decoration:none;color:inherit;
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:20px 22px;overflow:hidden;
+  transition:transform .18s cubic-bezier(.2,.8,.2,1),border-color .18s,background .18s;
+}
+.lvl::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent);
+}
+.lvl::after{
+  content:'';position:absolute;right:-60px;top:-60px;width:180px;height:180px;border-radius:50%;
+  background:var(--accent);opacity:.05;transition:opacity .18s,transform .18s;
+}
+.lvl:hover{transform:translateY(-2px);border-color:var(--border2);background:var(--surface2);}
+.lvl:hover::after{opacity:.11;transform:scale(1.15);}
+.lvl:hover .go{transform:translateX(3px);opacity:1;}
+
+.lvl-top{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.lvl-num{
+  font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:1.2px;
+  padding:4px 9px;border-radius:20px;background:var(--accent-soft);color:var(--accent);
+  border:1px solid var(--accent-brd);
+}
+.lvl-emoji{font-size:26px;line-height:1;}
+.lvl-title{font-size:17px;font-weight:500;flex:1;letter-spacing:-0.2px;}
+.go{
+  font-size:18px;color:var(--accent);opacity:.55;
+  transition:transform .18s,opacity .18s;
+}
+.lvl-topic{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:14px;padding-right:20px;}
+.lvl-topic .kw{color:var(--accent);font-weight:500;}
+.lvl-meta{display:flex;flex-wrap:wrap;gap:7px;}
+.mchip{
+  font-size:11px;padding:3px 10px;border-radius:20px;
+  background:var(--surface2);border:1px solid var(--border);color:var(--text3);
+}
+.lvl:hover .mchip{background:var(--surface3);}
+.mchip.diff{color:var(--accent);border-color:var(--accent-brd);background:var(--accent-soft);}
+
+.lvl.l1{--accent:var(--l1);--accent-soft:rgba(245,166,35,.1);--accent-brd:rgba(245,166,35,.3);}
+.lvl.l2{--accent:var(--l2);--accent-soft:rgba(74,158,255,.1);--accent-brd:rgba(74,158,255,.3);}
+.lvl.l3{--accent:var(--l3);--accent-soft:rgba(192,132,252,.1);--accent-brd:rgba(192,132,252,.3);}
+
+/* ── Path bar ── */
+.pathbar{
+  display:flex;align-items:center;gap:0;margin-bottom:26px;
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:14px 18px;
+}
+.pstep{display:flex;align-items:center;gap:9px;flex:1;}
+.pdot{
+  width:26px;height:26px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;
+  background:var(--surface2);border:1px solid var(--border2);
+}
+.pdot.d1{color:var(--l1);border-color:rgba(245,166,35,.4);}
+.pdot.d2{color:var(--l2);border-color:rgba(74,158,255,.4);}
+.pdot.d3{color:var(--l3);border-color:rgba(192,132,252,.4);}
+.ptext{font-size:11px;color:var(--text3);line-height:1.4;}
+.ptext b{display:block;color:var(--text2);font-weight:500;font-size:12px;}
+.parrow{color:var(--text3);font-size:13px;padding:0 10px;flex-shrink:0;}
+
+/* ── Docs ── */
+.docs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:36px;}
+.doc{
+  display:flex;align-items:center;gap:11px;text-decoration:none;color:inherit;
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:14px 16px;transition:background .15s,border-color .15s;
+}
+.doc:hover{background:var(--surface2);border-color:var(--border2);}
+.doc i{font-size:17px;color:var(--text3);}
+.doc-txt b{display:block;font-size:13px;font-weight:500;}
+.doc-txt span{font-size:11px;color:var(--text3);}
+
+/* ── Footer ── */
+.foot{text-align:center;font-size:11px;color:var(--text3);line-height:1.9;padding-top:26px;border-top:1px solid var(--border);}
+.foot .brand{color:var(--text2);font-weight:500;}
+
+@media(max-width:560px){
+  .docs{grid-template-columns:1fr;}
+  .pathbar{flex-direction:column;align-items:flex-start;gap:12px;}
+  .parrow{display:none;}
+  .cs-row{flex-direction:column;}
+  .cs-btn{padding:11px;}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="logo-mark"><span class="logo-dot"></span> OpsQuest Platform</div>
+    <h1>운영관리<br>시뮬레이션</h1>
+    <p class="tag">수요는 불확실하고, 재고는 남거나 모자랍니다.<br><strong>3단계 게임</strong>으로 경영 의사결정의 원리를 몸으로 익히세요.</p>
+  </div>
+
+  <!-- CLASS CODE -->
+  <div class="code-strip">
+    <div class="cs-label">🔐 수업 코드 확인</div>
+    <div class="cs-row">
+      <input type="text" id="code-input" placeholder="예) test0" maxlength="24"
+        onkeydown="if(event.key==='Enter')verifyCode()">
+      <button class="cs-btn" onclick="verifyCode()">확인</button>
+    </div>
+    <div class="cs-msg" id="code-msg"></div>
+    <div class="cs-hint">수업 코드는 강의 중 안내됩니다. 코드 없이도 각 레벨을 열 수 있지만, 리더보드 참여는 코드 입력 후 게임 시작 화면에서 진행됩니다.</div>
+  </div>
+
+  <!-- LEARNING PATH -->
+  <div class="sec-head">
+    <h2>학습 경로</h2>
+    <div class="sh-line"></div>
+    <span class="sh-note">순서대로 권장 · 개별 수강 가능</span>
+  </div>
+  <div class="pathbar">
+    <div class="pstep"><div class="pdot d1">1</div><div class="ptext"><b>수량 결정</b>얼마나 주문할까?</div></div>
+    <span class="parrow">→</span>
+    <div class="pstep"><div class="pdot d2">2</div><div class="ptext"><b>가격 결정</b>얼마에 팔까?</div></div>
+    <span class="parrow">→</span>
+    <div class="pstep"><div class="pdot d3">3</div><div class="ptext"><b>동적 가격</b>언제 할인할까?</div></div>
+  </div>
+
+  <!-- LEVELS -->
+  <div class="sec-head">
+    <h2>게임 모듈</h2>
+    <div class="sh-line"></div>
+  </div>
+
+  <div class="levels">
+
+    <a href="./level1/index.html" class="lvl l1">
+      <div class="lvl-top">
+        <span class="lvl-num">LEVEL 01</span>
+        <span class="lvl-emoji">🍱</span>
+        <span class="lvl-title">도전, 김밥왕!</span>
+        <span class="go">→</span>
+      </div>
+      <div class="lvl-topic">
+        학교 축제에서 김밥 가게를 엽니다. 날씨와 요일에 따라 수요가 달라지는 상황에서 <span class="kw">최적 주문량</span>을 찾아 10일간 누적 이익을 최대화하세요.
+      </div>
+      <div class="lvl-meta">
+        <span class="mchip diff">난이도 · 쉬움</span>
+        <span class="mchip">Newsvendor 문제</span>
+        <span class="mchip">10 라운드</span>
+        <span class="mchip">1–2시간</span>
+      </div>
+    </a>
+
+    <a href="./level2/index.html" class="lvl l2">
+      <div class="lvl-top">
+        <span class="lvl-num">LEVEL 02</span>
+        <span class="lvl-emoji">🏪</span>
+        <span class="lvl-title">편의점 점주의 가격 전략</span>
+        <span class="go">→</span>
+      </div>
+      <div class="lvl-topic">
+        3개 상품의 발주량과 판매가를 동시에 결정합니다. <span class="kw">수요 탄성치</span>에 따라 가격을 올리면 마진은 늘지만 수요는 줄어듭니다. 예산 안에서 균형을 찾으세요.
+      </div>
+      <div class="lvl-meta">
+        <span class="mchip diff">난이도 · 중간</span>
+        <span class="mchip">Price Elasticity</span>
+        <span class="mchip">4주 · 3개 상품</span>
+        <span class="mchip">2–3시간</span>
+      </div>
+    </a>
+
+    <a href="./level3/index.html" class="lvl l3">
+      <div class="lvl-top">
+        <span class="lvl-num">LEVEL 03</span>
+        <span class="lvl-emoji">☕</span>
+        <span class="lvl-title">카페 점주의 마크다운 전략</span>
+        <span class="go">→</span>
+      </div>
+      <div class="lvl-topic">
+        아침은 프리미엄, 오후는 세일. 시간대별 <span class="kw">고객 세분화</span>를 활용해 마크다운 타이밍과 폭을 결정하고, 폐기 손실을 최소화하세요.
+      </div>
+      <div class="lvl-meta">
+        <span class="mchip diff">난이도 · 어려움</span>
+        <span class="mchip">Dynamic Pricing</span>
+        <span class="mchip">20일 운영</span>
+        <span class="mchip">2–3시간</span>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- DOCS -->
+  <div class="sec-head">
+    <h2>학습 자료</h2>
+    <div class="sh-line"></div>
+  </div>
+  <div class="docs">
+    <a href="./docs/curriculum.md" class="doc">
+      <i class="ti ti-book"></i>
+      <div class="doc-txt"><b>학생 커리큘럼</b><span>학습 로드맵 및 목표</span></div>
+    </a>
+    <a href="./docs/teachers_guide.md" class="doc">
+      <i class="ti ti-school"></i>
+      <div class="doc-txt"><b>교사 가이드</b><span>지도 방법 및 평가 기준</span></div>
+    </a>
+  </div>
+
+  <div class="foot">
+    <span class="brand">OpsQuest</span> · Gamified Business Simulation Platform<br>
+    경영학 실습용 교육 자료 · 무단 복제 및 배포 금지
+  </div>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCgBJ6yt9_TrK7AlgTKhEth7Qt2QdCYADc",
+  authDomain: "newsvendor-game-simulation.firebaseapp.com",
+  databaseURL: "https://newsvendor-game-simulation-default-rtdb.firebaseio.com",
+  projectId: "newsvendor-game-simulation",
+  storageBucket: "newsvendor-game-simulation.firebasestorage.app",
+  messagingSenderId: "213354360321",
+  appId: "1:213354360321:web:4dc63514cc19ba6019da00"
+};
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+window.verifyCode = async function () {
+  const code = document.getElementById('code-input').value.trim();
+  const msg = document.getElementById('code-msg');
+  if (!code) { msg.className = 'cs-msg err'; msg.textContent = '수업 코드를 입력해 주세요.'; return; }
+  msg.className = 'cs-msg'; msg.textContent = '확인 중...';
+  try {
+    const snap = await get(ref(db, 'leaderboard/classes/' + code));
+    if (!snap.exists()) {
+      msg.className = 'cs-msg err';
+      msg.textContent = '❌ 유효하지 않은 수업 코드입니다. 다시 확인해 주세요.';
+      return;
+    }
+    const name = snap.val().name || code;
+    msg.className = 'cs-msg ok';
+    msg.textContent = `✅ ${name} — 확인되었습니다. 아래에서 레벨을 선택하세요.`;
+  } catch (e) {
+    msg.className = 'cs-msg err';
+    msg.textContent = '오류가 발생했습니다. 다시 시도해 주세요.';
+  }
+};
+</script>
+</body>
+</html>

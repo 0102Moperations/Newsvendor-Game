@@ -794,6 +794,43 @@ window.shareResult = function() {
     history.map(h => `${h.round}일차 | 주문 ${h.ordered}줄 | 수요 ${h.demand}줄 | ${fmt(h.profit)}`).join('\n');
   navigator.clipboard.writeText(text).then(() => alert('결과가 클립보드에 복사되었습니다!'));
 };
+
+/* ══════════════════════════════════════════
+   허브 로그인 이어받기 (localStorage)
+   - 허브를 거쳐 왔으면 코드/닉네임 자동 입력 + 자동 검증
+   - 직접 URL로 접속했으면 아무 일도 일어나지 않음 (기존 흐름 유지)
+   - "다른 계정으로 입력" 으로 언제든 덮어쓰기 가능
+══════════════════════════════════════════ */
+const HUB_LS_KEY = 'opsquest_user';
+
+window.useOtherAccount = function () {
+  localStorage.removeItem(HUB_LS_KEY);
+  const ni = document.getElementById('nick-input');
+  if (ni) ni.value = '';
+  window.resetCode();
+};
+
+(async function prefillFromHub() {
+  let saved = null;
+  try { saved = JSON.parse(localStorage.getItem(HUB_LS_KEY) || 'null'); } catch (e) {}
+  if (!saved || !saved.code || !saved.nick) return;
+
+  const ci = document.getElementById('code-input');
+  const ni = document.getElementById('nick-input');
+  if (ci) ci.value = saved.code;
+  if (ni) ni.value = saved.nick;
+
+  await window.verifyCode();
+
+  const stepNick = document.getElementById('step-nick');
+  if (stepNick && stepNick.style.display !== 'none') {
+    const hint = document.createElement('div');
+    hint.style.cssText = 'font-size:11px;margin-top:8px;color:#9a9aa6;';
+    hint.innerHTML = '허브에서 로그인 정보를 불러왔습니다. ' +
+      '<span style="text-decoration:underline;cursor:pointer;" onclick="useOtherAccount()">다른 계정으로 입력</span>';
+    stepNick.appendChild(hint);
+  }
+})();
 </script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🍱 도전, 김밥왕! OpsQuest; Level 1 </title>
+<title>OpsQuest · Level 1 — 도전, 김밥왕! | Opsera</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Black+Han+Sans&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
@@ -22,9 +22,16 @@
 
   /* Title bar */
   .title-bar{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
-  .title-bar h1{font-family:'Black Han Sans',sans-serif;font-size:22px;color:var(--text);}
-  .badge{background:var(--red);color:#fff;font-size:11px;font-weight:500;padding:3px 9px;border-radius:20px;}
+  .title-bar h1{font-family:'Black Han Sans',sans-serif;font-size:22px;color:var(--text);letter-spacing:.5px;}
+  .tb-title{display:flex;flex-direction:column;line-height:1.15;}
+  .tb-title h1{margin:0;}
+  .tb-sub{font-size:12px;font-weight:400;color:var(--text2);margin-top:3px;letter-spacing:0;}
+
+  .badge{background:var(--red);color:#fff;font-size:11px;font-weight:500;padding:4px 10px;border-radius:6px;letter-spacing:.3px;white-space:nowrap;flex-shrink:0;}
+  .title-bar h1{font-size:20px;}
   .badge.live{background:var(--green);}
+  .hub-link{margin-left:auto;font-size:12px;color:var(--text2);text-decoration:none;display:flex;align-items:center;gap:4px;padding:5px 11px;border:1px solid var(--border);border-radius:20px;background:var(--surface);transition:background .15s;}
+  .hub-link:hover{background:var(--surface2);}
 
   /* Cards */
   .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:14px;}
@@ -158,9 +165,13 @@
       <rect x="4" y="13" width="22" height="1.5" rx="0.75" fill="#1a1a1a" opacity="0.3"/>
       <rect x="4" y="15.5" width="22" height="1.5" rx="0.75" fill="#1a1a1a" opacity="0.3"/>
     </svg>
-    <h1>도전, 김밥왕! OpsQuest; Level 1 </h1>
-    <span class="badge">10라운드</span>
+    <div class="tb-title">
+      <h1>OpsQuest</h1>
+      <div class="tb-sub">도전, 김밥왕!</div>
+    </div>
+    <span class="badge">Level 1</span>
     <span class="badge live"><span class="live-dot"></span> 실시간</span>
+    <a href="../index.html" class="hub-link"><i class="ti ti-home"></i> 허브</a>
   </div>
 
   <!-- ══════════════ INTRO ══════════════ -->
@@ -220,7 +231,7 @@
           <text x="174" y="34" font-size="11" fill="white" text-anchor="middle" font-family="sans-serif" font-weight="bold">₩3,000</text>
         </svg>
       </div>
-      <h2>도전, 김밥왕! OpsQuest; Level 1 </h2>
+      <h2>도전, 김밥왕!</h2>
       <p>수요를 예측하고, 최고의 이익을 올려라!</p>
     </div>
 
@@ -790,7 +801,7 @@ window.resetGame = function() {
 
 /* ══ 결과 공유 ══ */
 window.shareResult = function() {
-  const text = `🍱 도전 김밥왕! ${myNick}의 10라운드 최종 이익: ${fmt(cumProfit)}\n` +
+  const text = `🍱 Opsera · OpsQuest (Lv.1) — ${myNick}의 10라운드 최종 이익: ${fmt(cumProfit)}\n` +
     history.map(h => `${h.round}일차 | 주문 ${h.ordered}줄 | 수요 ${h.demand}줄 | ${fmt(h.profit)}`).join('\n');
   navigator.clipboard.writeText(text).then(() => alert('결과가 클립보드에 복사되었습니다!'));
 };

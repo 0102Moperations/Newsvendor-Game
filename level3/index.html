@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>☕ 카페 점주의 마크다운 전략 — OpsApex; Level 3</title>
+<title>OpsApex · Level 3 — 카페 점주의 마크다운 전략 | Opsera</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Black+Han+Sans&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
@@ -21,8 +21,13 @@
   .screen{display:none;}.screen.active{display:block;}
 
   .topbar{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
-  .topbar h1{font-family:'Black Han Sans',sans-serif;font-size:21px;color:var(--text);}
-  .badge{background:var(--purple);color:#fff;font-size:11px;font-weight:500;padding:3px 9px;border-radius:20px;}
+  .topbar h1{font-family:'Black Han Sans',sans-serif;font-size:21px;color:var(--text);letter-spacing:.5px;}
+  .tb-title{display:flex;flex-direction:column;line-height:1.15;}
+  .tb-title h1{margin:0;}
+  .tb-sub{font-size:12px;font-weight:400;color:var(--text2);margin-top:3px;letter-spacing:0;}
+
+  .badge{background:var(--purple);color:#fff;font-size:11px;font-weight:500;padding:4px 10px;border-radius:6px;letter-spacing:.3px;white-space:nowrap;flex-shrink:0;}
+  .topbar h1{font-size:19px;}
   .hub-link{margin-left:auto;font-size:12px;color:var(--text2);text-decoration:none;display:flex;align-items:center;gap:4px;padding:5px 11px;border:1px solid var(--border);border-radius:20px;background:var(--surface);transition:background .15s;}
   .hub-link:hover{background:var(--surface2);}
 
@@ -135,8 +140,11 @@
 <div class="page">
   <div class="topbar">
     <span style="font-size:26px">☕</span>
-    <h1>카페 점주의 마크다운 전략</h1>
-    <span class="badge">LEVEL 3</span>
+    <div class="tb-title">
+      <h1>OpsApex</h1>
+      <div class="tb-sub">카페 점주의 마크다운 전략</div>
+    </div>
+    <span class="badge">Level 3</span>
     <a href="../index.html" class="hub-link"><i class="ti ti-home"></i> 허브</a>
   </div>
 
@@ -555,7 +563,7 @@ window.verifyCode = async function() {
     classCode = code;
     className = snap.val().name || code;
     msgEl.textContent = '';
-    document.getElementById('class-name-display').textContent = `${className} · Level 3`;
+    document.getElementById('class-name-display').textContent = `${className} · OpsApex (Level 3)`;
     document.getElementById('step-code').style.display = 'none';
     document.getElementById('step-nick').style.display = 'block';
     loadIntroLB();
@@ -879,7 +887,7 @@ window.resetGame = function() {
 /* ══ 공유 ══ */
 window.shareResult = function() {
   const totalWaste = history.reduce((s, h) => s + h.wasteQty, 0);
-  const text = `☕ OpsQuest Level 3 — ${myNick}의 20일 최종 이익: ${fmt(cumProfit)}\n총 폐기: ${totalWaste}개`;
+  const text = `☕ Opsera · OpsApex (Lv.3) — ${myNick}의 20일 최종 이익: ${fmt(cumProfit)}\n총 폐기: ${totalWaste}개`;
   navigator.clipboard.writeText(text).then(() => alert('결과가 클립보드에 복사되었습니다!'));
 };
 

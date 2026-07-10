@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🏪 편의점 점주의 가격 전략 — OpsFlow; Level 2</title>
+<title>OpsFlow · Level 2 — 편의점 점주의 가격 전략 | Opsera</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Black+Han+Sans&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
@@ -22,8 +22,13 @@
 
   /* Top bar */
   .topbar{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
-  .topbar h1{font-family:'Black Han Sans',sans-serif;font-size:21px;color:var(--text);}
-  .badge{background:var(--blue);color:#fff;font-size:11px;font-weight:500;padding:3px 9px;border-radius:20px;}
+  .topbar h1{font-family:'Black Han Sans',sans-serif;font-size:21px;color:var(--text);letter-spacing:.5px;}
+  .tb-title{display:flex;flex-direction:column;line-height:1.15;}
+  .tb-title h1{margin:0;}
+  .tb-sub{font-size:12px;font-weight:400;color:var(--text2);margin-top:3px;letter-spacing:0;}
+
+  .badge{background:var(--blue);color:#fff;font-size:11px;font-weight:500;padding:4px 10px;border-radius:6px;letter-spacing:.3px;white-space:nowrap;flex-shrink:0;}
+  .topbar h1{font-size:19px;}
   .badge.lv{background:var(--red);}
   .hub-link{margin-left:auto;font-size:12px;color:var(--text2);text-decoration:none;display:flex;align-items:center;gap:4px;padding:5px 11px;border:1px solid var(--border);border-radius:20px;background:var(--surface);transition:background .15s;}
   .hub-link:hover{background:var(--surface2);}
@@ -130,8 +135,11 @@
 <div class="page">
   <div class="topbar">
     <span style="font-size:26px">🏪</span>
-    <h1>편의점 점주의 가격 전략</h1>
-    <span class="badge lv">LEVEL 2</span>
+    <div class="tb-title">
+      <h1>OpsFlow</h1>
+      <div class="tb-sub">편의점 점주의 가격 전략</div>
+    </div>
+    <span class="badge lv">Level 2</span>
     <a href="../index.html" class="hub-link"><i class="ti ti-home"></i> 허브</a>
   </div>
 
@@ -539,7 +547,7 @@ window.verifyCode = async function() {
     classCode = code;
     className = snap.val().name || code;
     msgEl.textContent = '';
-    document.getElementById('class-name-display').textContent = `${className} · Level 2`;
+    document.getElementById('class-name-display').textContent = `${className} · OpsFlow (Level 2)`;
     document.getElementById('step-code').style.display = 'none';
     document.getElementById('step-nick').style.display = 'block';
     loadIntroLB();
@@ -744,7 +752,7 @@ window.resetGame = function() {
 
 /* ══ 공유 ══ */
 window.shareResult = function() {
-  const text = `🏪 OpsQuest Level 2 — ${myNick}의 4주 최종 이익: ${fmt(cumProfit)}\n` +
+  const text = `🏪 Opsera · OpsFlow (Lv.2) — ${myNick}의 4주 최종 이익: ${fmt(cumProfit)}\n` +
     history.map(h => `${h.week}주차 | 판매 ${h.totalSold}개 | 폐기 ${h.totalWaste}개 | ${fmt(h.weekProfit)}`).join('\n');
   navigator.clipboard.writeText(text).then(() => alert('결과가 클립보드에 복사되었습니다!'));
 };

@@ -433,7 +433,7 @@ window.onProductChange = function() {
 /* ══ Firebase 저장 ══ */
 async function saveScore(completed = false) {
   await set(ref(db, `leaderboard_l2/scores/${classCode}/${myKey}`), {
-    nick: myNick, profit: cumProfit, weeks: cur, completed, ts: Date.now()
+    nick: myNick, profit: cumProfit, weeks: history.length, completed, ts: Date.now()
   });
 }
 

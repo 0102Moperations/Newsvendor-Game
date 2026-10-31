@@ -452,7 +452,7 @@ window.onMorningChange = function() {
 /* ══ Firebase ══ */
 async function saveScore(completed = false) {
   await set(ref(db, `leaderboard_l3/scores/${classCode}/${myKey}`), {
-    nick: myNick, profit: cumProfit, days: day, completed, ts: Date.now()
+    nick: myNick, profit: cumProfit, days: history.length, completed, ts: Date.now()
   });
 }
 

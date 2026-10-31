@@ -488,7 +488,7 @@ window.resetCode = function() {
 /* ══ Firebase 저장 ══ */
 async function saveScore(completed = false) {
   await set(ref(db, `leaderboard/scores/${classCode}/${myKey}`), {
-    nick: myNick, profit: cumProfit, rounds: cur,
+    nick: myNick, profit: cumProfit, rounds: history.length,
     completed: completed, ts: Date.now()
   });
 }

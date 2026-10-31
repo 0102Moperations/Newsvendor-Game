@@ -65,7 +65,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
   transition:transform .16s,box-shadow .16s,border-color .16s;
 }
 .mod:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.06);border-color:rgba(0,0,0,.16);}
-.mod.locked{opacity:.72;}
+.mod.locked { opacity: 0.72; cursor: not-allowed; }
 .mod.locked:hover{transform:none;box-shadow:none;}
 .mod .emo{font-size:34px;margin-bottom:12px;line-height:1;}
 .mod .codename{font-size:16px;font-weight:700;letter-spacing:.4px;margin-bottom:3px;}
@@ -313,14 +313,18 @@ function renderModules(results) {
       status = `<div class="status"><i class="ti ti-hourglass"></i> 진행 중 (${r.steps}/${r.total}${r.unit})</div>`;
       barCls = 'prog';
     } else if (locked) {
-      status = `<div class="status lock"><i class="ti ti-lock"></i> Level ${r.id - 1} 완료 후 권장</div>`;
+      status = `<div class="status lock"><i class="ti ti-lock"></i> Level ${r.id - 1} 완료 후 열림</div>`;
       barCls = 'zero';
     } else {
       status = `<div class="status"><i class="ti ti-player-play"></i> 시작하기</div>`;
       barCls = 'zero';
     }
 
-    return `<a href="${r.href}" class="mod${locked ? ' locked' : ''}">
+    const tagName = locked ? 'div' : 'a';
+    const attr = locked
+      ? `onclick="alert('Level ${r.id - 1}을(를) 먼저 완료해 주세요.')"`
+      : `href="${r.href}"`;
+    return `<${tagName} ${attr} class="mod${locked ? ' locked' : ''}">
       <div class="emo">${r.emo}</div>
       <div class="codename">${r.code}</div>
       <div class="lv">Level ${r.id}</div>
@@ -328,7 +332,7 @@ function renderModules(results) {
       <div class="tagline">${r.tag}</div>
       <div class="bar"><i class="${barCls}" style="width:${r.pct}%"></i></div>
       ${status}
-    </a>`;
+    </${tagName}>`;
   }).join('');
 }
 

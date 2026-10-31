@@ -570,6 +570,19 @@ window.startGame = async function() {
   if (!classCode) { alert('수업 코드를 먼저 입력해 주세요!'); return; }
   const nick = document.getElementById('nick-input').value.trim();
   if (!nick) { alert('닉네임을 입력해 주세요!'); return; }
+   // 🔒 Level 1 완료 여부 확인
+  try {
+    const prev = await get(ref(db, `leaderboard/scores/${classCode}`));
+    const passed = Object.values(prev.val() || {}).some(r => r.nick === nick && r.completed);
+    if (!passed) {
+      alert(`'${nick}'님은 아직 Level 1(OpsQuest)을 완료하지 않았습니다.\nLevel 1을 먼저 완료해 주세요.`);
+      location.href = '../index.html';
+      return;
+    }
+  } catch (e) {
+    alert('진행 기록을 확인하지 못했습니다. 잠시 후 다시 시도해 주세요.');
+    return;
+  }
   myNick = nick;
   myKey  = 'l2_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
   cur = 0; cumProfit = 0; history = [];

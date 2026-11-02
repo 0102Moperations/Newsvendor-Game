@@ -475,7 +475,7 @@ function startLbListener(ids, finalMode = false) {
   if (lbUnsub) lbUnsub();
   lbUnsub = onValue(ref(db, `leaderboard_l3/scores/${classCode}`), snap => {
     const data = snap.val() || {};
-    const all  = Object.entries(data).map(([k, v]) => ({ key: k, ...v }));
+    const all  = dedupeByNick(Object.entries(data).map(([k, v]) => ({ key: k, ...v })));
     const comp = all.filter(e =>  e.completed).sort((a, b) => b.profit - a.profit);
     const prog = all.filter(e => !e.completed).sort((a, b) => b.profit - a.profit || b.days - a.days);
 
@@ -556,7 +556,7 @@ function renderLB(id, comp, prog, myRank, finalMode) {
 async function loadIntroLB() {
   const snap = await get(ref(db, `leaderboard_l3/scores/${classCode}`));
   const data = snap.val() || {};
-  const all  = Object.entries(data).map(([k, v]) => ({ key: k, ...v }));
+  const all  = dedupeByNick(Object.entries(data).map(([k, v]) => ({ key: k, ...v })));
   const comp = all.filter(e =>  e.completed).sort((a, b) => b.profit - a.profit);
   const prog = all.filter(e => !e.completed).sort((a, b) => b.profit - a.profit || b.days - a.days);
   renderLB('intro-lb', comp, prog, null, false);

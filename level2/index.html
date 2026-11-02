@@ -438,6 +438,22 @@ async function saveScore(completed = false) {
 }
 
 /* ══ 리더보드 리스너 ══ */
+ /* ══ 같은 닉네임은 한 줄로 ══ */
+function dedupeByNick(all) {
+  const done = {}, prog = {};
+  all.forEach(e => {
+    if (!e.nick) return;
+    if (e.completed) {
+      if (!done[e.nick] || e.profit > done[e.nick].profit) done[e.nick] = e;
+    } else if (e.key === myKey) {
+      prog[e.nick] = e;
+    } else if (!prog[e.nick] || (prog[e.nick].key !== myKey && (e.ts || 0) > (prog[e.nick].ts || 0))) {
+      prog[e.nick] = e;
+    }
+  });
+  Object.keys(prog).forEach(n => { if (done[n] && prog[n].key !== myKey) delete prog[n]; });
+  return [...Object.values(done), ...Object.values(prog)];
+}
 function startLbListener(ids, finalMode = false) {
   if (lbUnsub) lbUnsub();
   lbUnsub = onValue(ref(db, `leaderboard_l2/scores/${classCode}`), snap => {

@@ -584,7 +584,28 @@ window.resetCode = function() {
 /* ══ 게임 시작 ══ */
 window.startGame = async function() {
   if (!classCode) { alert('수업 코드를 먼저 입력해 주세요!'); return; }
-  const nick = document.getElementById('nick-input').value.trim();
+  // 🔐 개인 코드 로그인 확인 (메인 화면에서 로그인한 학생만, 명단의 이름으로 기록)
+  let hubUser = null;
+  try { hubUser = JSON.parse(localStorage.getItem('opsquest_user') || 'null'); } catch (e) {}
+  if (!hubUser || !hubUser.sid || hubUser.code !== classCode) {
+    alert('메인 화면에서 수업 코드와 개인 코드로 먼저 로그인해 주세요.');
+    location.href = '../index.html';
+    return;
+  }
+  let nick = '';
+  try {
+    const st = await get(ref(db, `roster/${classCode}/${hubUser.sid}`));
+    if (!st.exists() || !st.val().name) {
+      alert('개인 코드가 더 이상 유효하지 않습니다. 다시 로그인해 주세요.');
+      localStorage.removeItem('opsquest_user');
+      location.href = '../index.html';
+      return;
+    }
+    nick = st.val().name;
+  } catch (e) {
+    alert('로그인 정보를 확인하지 못했습니다. 잠시 후 다시 시도해 주세요.');
+    return;
+  }
   if (!nick) { alert('닉네임을 입력해 주세요!'); return; }
    // 🔒 Level 1 완료 여부 확인
   try {
@@ -809,7 +830,7 @@ window.useOtherAccount = function () {
   const ci = document.getElementById('code-input');
   const ni = document.getElementById('nick-input');
   if (ci) ci.value = saved.code;
-  if (ni) ni.value = saved.nick;
+  if (ni) { ni.value = saved.nick; ni.readOnly = true; }
 
   await window.verifyCode();
 

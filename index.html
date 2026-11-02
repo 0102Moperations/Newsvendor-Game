@@ -142,7 +142,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
   <div id="login-screen" class="login-wrap hidden">
     <div class="login-card">
       <h3>학습 시작하기</h3>
-      <p class="desc">수업 코드와 이름을 입력하세요. 수업 코드는 강의 중 안내됩니다.<br>진행 기록이 이름으로 저장되니, <b>매번 같은 이름(실명)</b>으로 입력해 주세요.</p>
+      <p class="desc">수업 코드와 이름(실명)을 입력하세요. 수업 코드는 강의 중 안내됩니다.<br>수강 명단에 등록된 이름만 로그인할 수 있습니다.</p>
       <div class="field">
         <label for="code-input">수업 코드</label>
         <input type="text" id="code-input" placeholder="예) test0" maxlength="24" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()">
@@ -216,9 +216,9 @@ const LS_KEY = 'opsquest_user';
 const fmt = n => (n < 0 ? '-₩' : '₩') + Math.abs(Math.round(n)).toLocaleString();
 let user = null;
 
-/* ══ 로그인 (수업 코드 + 이름) ══
-   이름 속 띄어쓰기는 모두 없애서 저장 ("김 민준" → "김민준")
-   → 같은 학생의 기록이 띄어쓰기 차이로 나뉘는 것을 방지 */
+/* ══ 로그인 (수업 코드 + 등록된 이름) ══
+   이름 속 띄어쓰기는 모두 없애서 비교·저장 ("김 민준" → "김민준")
+   강사가 Firebase  roster/{수업코드}/{이름}: true  로 등록한 이름만 로그인 가능 */
 window.doLogin = async function () {
   const code = document.getElementById('code-input').value.trim();
   const name = document.getElementById('name-input').value.replace(/\s+/g, '');
@@ -226,6 +226,7 @@ window.doLogin = async function () {
 
   if (!code) { msg.className = 'msg err'; msg.textContent = '수업 코드를 입력해 주세요.'; return; }
   if (!name) { msg.className = 'msg err'; msg.textContent = '이름을 입력해 주세요.'; return; }
+  if (/[.#$\[\]\/]/.test(name)) { msg.className = 'msg err'; msg.textContent = '❌ 이름에 . # $ [ ] / 는 쓸 수 없습니다.'; return; }
 
   msg.className = 'msg'; msg.textContent = '확인 중...';
   try {
@@ -233,6 +234,13 @@ window.doLogin = async function () {
     if (!cls.exists()) {
       msg.className = 'msg err';
       msg.textContent = '❌ 유효하지 않은 수업 코드입니다.';
+      return;
+    }
+    /* 강사가 등록한 명단(roster/{수업코드}/{이름})에 있는 이름만 통과 */
+    const reg = await get(ref(db, `roster/${code}/${name}`));
+    if (!reg.exists()) {
+      msg.className = 'msg err';
+      msg.textContent = `❌ '${name}'은(는) 이 수업 명단에 없습니다. 등록된 실명을 띄어쓰기 없이 입력했는지 확인해 주세요.`;
       return;
     }
     user = { code, className: cls.val().name || code, nick: name };

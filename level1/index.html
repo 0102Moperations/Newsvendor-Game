@@ -517,7 +517,7 @@ function startLbListener(containerIds, finalMode = false) {
   if (lbUnsub) lbUnsub();
   lbUnsub = onValue(ref(db, `leaderboard/scores/${classCode}`), snap => {
     const data = snap.val() || {};
-    const all = Object.entries(data).map(([k, v]) => ({ key: k, ...v }));
+    const all = dedupeByNick(Object.entries(data).map(([k, v]) => ({ key: k, ...v })));
 
     const completed = all
       .filter(e => e.completed)
@@ -641,7 +641,7 @@ function buildProg(id, current) {
 async function loadIntroLB() {
   const snap = await get(ref(db, `leaderboard/scores/${classCode}`));
   const data = snap.val() || {};
-  const all = Object.entries(data).map(([k, v]) => ({ key: k, ...v }));
+  const all = dedupeByNick(Object.entries(data).map(([k, v]) => ({ key: k, ...v })));
   const completed  = all.filter(e => e.completed).sort((a, b) => b.profit - a.profit);
   const inProgress = all.filter(e => !e.completed).sort((a, b) => b.profit - a.profit || b.rounds - a.rounds);
   renderLB('intro-lb', completed, inProgress, null, false);

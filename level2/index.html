@@ -150,10 +150,10 @@
       <p>편의점의 3개 상품에 대해 <strong>판매 가격</strong>과 <strong>발주량</strong>을 함께 정하세요.<br>4주 동안 주 2회, 모두 8번 발주해 누적 이익을 최대화하는 게임입니다.</p>
     </div>
     <div class="info-box">
-      <strong>📚 Level 2: 가격이 바뀌면 발주도 바뀐다</strong><br>
-      Level 1에서는 가격이 정해져 있었습니다. 이번에는 <strong>가격을 직접 정합니다</strong>.
+      <strong>📚 Level 2</strong><br>
+      이번에는 <strong>가격을 직접 정합니다</strong>.
       가격을 올리면 손님은 줄지만 한 개를 팔 때 남는 돈은 커집니다.
-      가격이 바뀌면 <strong>"남으면 얼마를 잃고, 모자라면 얼마를 놓치는지"</strong>도 함께 바뀝니다.
+      가격을 내리면 손님은 늘지만 한 개를 팔 때 남는 돈은 작아집니다.
     </div>
     <div class="rules-box">
       <div class="rule-i"><i class="ti ti-circle-check"></i><span><strong>8회 발주</strong> — 4주 동안 주 2회, 매번 3개 상품의 가격과 발주량 결정</span></div>
@@ -268,7 +268,6 @@
       <div style="font-size:42px;margin-bottom:8px">🏆</div>
       <div style="font-size:13px;color:var(--text2);margin-bottom:4px">8회(4주) 최종 누적 이익</div>
       <div style="font-size:40px;font-weight:700;font-family:'Black Han Sans',sans-serif;" id="f-num"></div>
-      <div class="grade-b" id="f-grade"></div>
       <div style="font-size:14px;color:var(--text2);margin-top:6px">최종 순위: <strong id="f-rank" style="font-size:17px;color:var(--blue)"></strong></div>
     </div>
 
@@ -854,16 +853,6 @@ async function showFinal() {
   const fn = document.getElementById('f-num');
   fn.textContent = fmt(cumProfit);
   fn.style.color = cumProfit >= 0 ? 'var(--green)' : 'var(--red)';
-
-  // 기준: 가장 좋은 결정의 기대이익 약 274만 원, 기본가로 예상 수요만큼 주문하면 약 236만 원
-  let grade, gs;
-  if      (cumProfit >= 2600000) { grade = '👑 가격 전략의 달인'; gs = 'background:#eaf3de;color:#3B6D11;'; }
-  else if (cumProfit >= 2350000) { grade = '🥇 베테랑 점주';      gs = 'background:#fef3e2;color:#854F0B;'; }
-  else if (cumProfit >= 2000000) { grade = '🥈 성장하는 점주';    gs = 'background:#e6f1fb;color:#185FA5;'; }
-  else if (cumProfit >=       0) { grade = '🥉 신입 점주';        gs = 'background:#f1efe8;color:#5F5E5A;'; }
-  else                           { grade = '😢 적자 점포';        gs = 'background:#fcebeb;color:#A32D2D;'; }
-  const gb = document.getElementById('f-grade');
-  gb.textContent = grade; gb.style.cssText = gs;
 
   renderHistory('f-tbody');
   try { renderReference(); } catch (e) {}

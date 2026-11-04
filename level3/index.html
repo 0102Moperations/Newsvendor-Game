@@ -61,6 +61,7 @@
   .markdown-slider{display:flex;align-items:center;gap:12px;}
   .markdown-slider input[type=range]{flex:1;accent-color:var(--amber);}
   .markdown-info{font-size:11px;color:var(--text2);margin-top:8px;line-height:1.8;}
+  .calc-box{display:inline-block;background:#fff;border:1px solid #eadfd0;border-radius:6px;padding:2px 8px;margin-top:4px;color:var(--text);}
   .md-grid{display:grid;grid-template-columns:2fr 3fr;gap:14px;align-items:start;}
   .md-left{background:var(--surface);border:1px solid #eadfd0;border-radius:var(--radius);padding:10px 12px;}
   .md-stat{display:flex;justify-content:space-between;font-size:12px;color:var(--text2);padding:3px 0;}
@@ -278,7 +279,6 @@
         <div class="pl">오늘 순이익</div>
         <div class="pv" id="p-val">₩0</div>
       </div>
-      <div class="info-box" id="analysis-box" style="margin-top:12px;margin-bottom:0;"></div>
     </div>
 
     <div class="card">
@@ -792,7 +792,7 @@ function renderAfternoon() {
     const right = lo === 0
       ? `<div class="md-none">✅ 4시 전에 모두 팔렸습니다. 할인할 재고가 없습니다.</div>`
       : `<div style="font-size:11px;color:var(--text2);margin-bottom:10px;">
-          정가 ${fmt(p.amPrice)} · 할인 0%일 때 오후 손님 약 ${p.pmDemandAt0}명, 60%일 때 약 ${p.pmDemandAtMax}명
+          예상 수요: 할인 0%일 때 오후 손님 약 ${p.pmDemandAt0}명, 60%일 때 약 ${p.pmDemandAtMax}명
         </div>
         <div class="markdown-slider">
           <input type="range" id="md-${key}" min="0" max="90" value="40" step="5" oninput="onMarkdownChange()">
@@ -800,7 +800,7 @@ function renderAfternoon() {
         </div>
         <div class="markdown-info" id="md-info-${key}"></div>`;
     return `<div class="markdown-section">
-      <div class="markdown-title" style="margin-bottom:10px;">${p.icon} ${p.name}</div>
+      <div class="markdown-title" style="margin-bottom:10px;">${p.icon} ${p.name} <span style="font-weight:400;color:var(--text2);font-size:12px;">· 정가 ${fmt(p.amPrice)}</span></div>
       <div class="md-grid"><div>${left}</div><div>${right}</div></div>
     </div>`;
   }).join('');
@@ -835,8 +835,8 @@ window.onMarkdownChange = function() {
     document.getElementById(`md-pct-${key}`).textContent = mdPct + '%';
     document.getElementById(`md-info-${key}`).innerHTML =
       `할인가 <strong>${fmt(mdPrice)}</strong> · 예상 오후 손님 <strong>${expDem}명</strong>${mdPct > MD_SATURATE ? ' <span style="color:var(--red)">(60% 넘게 할인해도 손님은 늘지 않음)</span>' : ''}<br>
-       예상 판매 <strong>${expSold}개</strong> · 예상 폐기 <strong style="color:${expWaste > 0 ? 'var(--red)' : 'var(--text2)'}">${expWaste}개</strong>
-       → 오후 매출 ${fmt(expRev)} − 처리비 ${fmt(expWaste * DISPOSAL_FEE)} = <strong>${fmt(expRev - expWaste * DISPOSAL_FEE)}</strong>`;
+       예상 판매 <strong>${expSold}개</strong> (예상 폐기 <strong style="color:${expWaste > 0 ? 'var(--red)' : 'var(--text2)'}">${expWaste}개</strong>)
+       → <span class="calc-box">오후 매출 ${fmt(expRev)} − 처리비 ${fmt(expWaste * DISPOSAL_FEE)} = <strong>${fmt(expRev - expWaste * DISPOSAL_FEE)}</strong></span>`;
   });
   updateProfitPreview();
 };
@@ -931,18 +931,6 @@ window.completeDay = async function() {
   pd.className = 'profit-disp ' + (dayProfit >= 0 ? 'pos' : 'neg');
   document.getElementById('p-val').textContent = fmt(dayProfit);
 
-  /* 상품별 결과 (판단 문구 없이 사실만) */
-  let analysis = `<strong>상품별 결과</strong><br>`;
-  Object.entries(PRODUCTS).forEach(([key, p]) => {
-    const d = currentDayData.products[key];
-    if (d.leftover === 0) {
-      analysis += `${p.icon} ${p.name}: 4시 전에 모두 팔림 · 못 산 손님 ${Math.max(0, d.amDemand - d.amSold)}명 (개당 놓친 이익 ${fmt(p.amPrice - p.cost)})<br>`;
-    } else {
-      analysis += `${p.icon} ${p.name}: 남은 ${d.leftover}개 → 할인 ${d.mdPct}%로 ${d.pmSold}개 판매 (+${fmt(d.pmRev)})`;
-      analysis += d.waste > 0 ? ` · 폐기 ${d.waste}개 (처리비 −${fmt(d.waste * DISPOSAL_FEE)})<br>` : ` · 폐기 없음<br>`;
-    }
-  });
-  document.getElementById('analysis-box').innerHTML = analysis;
 
   renderHistory('h-tbody');
   buildProg('prog-r', day);

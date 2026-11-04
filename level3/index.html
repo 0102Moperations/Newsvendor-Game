@@ -21,13 +21,11 @@
   .screen{display:none;}.screen.active{display:block;}
 
   .topbar{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
-  .topbar h1{font-family:'Black Han Sans',sans-serif;font-size:21px;color:var(--text);letter-spacing:.5px;}
+  .topbar h1{font-family:'Black Han Sans',sans-serif;font-size:19px;color:var(--text);letter-spacing:.5px;}
   .tb-title{display:flex;flex-direction:column;line-height:1.15;}
   .tb-title h1{margin:0;}
   .tb-sub{font-size:12px;font-weight:400;color:var(--text2);margin-top:3px;letter-spacing:0;}
-
   .badge{background:var(--purple);color:#fff;font-size:11px;font-weight:500;padding:4px 10px;border-radius:6px;letter-spacing:.3px;white-space:nowrap;flex-shrink:0;}
-  .topbar h1{font-size:19px;}
   .hub-link{margin-left:auto;font-size:12px;color:var(--text2);text-decoration:none;display:flex;align-items:center;gap:4px;padding:5px 11px;border:1px solid var(--border);border-radius:20px;background:var(--surface);transition:background .15s;}
   .hub-link:hover{background:var(--surface2);}
 
@@ -101,16 +99,15 @@
   .profit-disp .pl{font-size:12px;margin-bottom:3px;}
   .profit-disp .pv{font-size:24px;font-weight:700;}
 
-  .prog{display:flex;gap:6px;justify-content:center;align-items:center;margin-bottom:16px;}
+  .prog{display:flex;gap:6px;justify-content:center;align-items:center;margin-bottom:16px;flex-wrap:wrap;}
   .pd{width:30px;height:30px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--text2);}
   .pd.done{background:var(--green);color:#fff;border-color:var(--green);}
   .pd.cur{background:var(--red);color:#fff;border-color:var(--red);}
-  .prog-label{font-size:11px;color:var(--text3);margin-left:8px;}
 
   .hero{text-align:center;padding:20px 0 12px;}
   .hero .emo{font-size:52px;display:block;margin-bottom:12px;}
   .hero h2{font-family:'Black Han Sans',sans-serif;font-size:28px;margin-bottom:10px;}
-  .hero p{font-size:14px;color:var(--text2);line-height:1.8;max-width:490px;margin:0 auto;}
+  .hero p{font-size:14px;color:var(--text2);line-height:1.8;max-width:500px;margin:0 auto;}
   .rules-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;margin:14px 0;font-size:13px;color:var(--text2);line-height:2.0;}
   .rule-i{display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;}
   .rule-i:last-child{margin-bottom:0;}
@@ -124,14 +121,17 @@
   .name-row .btn-p{width:auto;margin:0;padding:0 20px;white-space:nowrap;}
   .class-banner{background:#eaf3de;border:1px solid #b6d89a;border-radius:var(--radius);padding:10px 14px;margin-bottom:10px;font-size:13px;color:#3B6D11;display:flex;align-items:center;gap:8px;}
 
-  .hist-wrap{overflow-x:auto;margin-bottom:14px;max-height:280px;overflow-y:auto;}
+  .hist-wrap{overflow-x:auto;margin-bottom:14px;}
   .hist-wrap table{width:100%;font-size:12px;border-collapse:collapse;}
-  .hist-wrap th{padding:7px 4px;color:var(--text2);font-weight:500;border-bottom:1px solid var(--border);background:var(--surface2);text-align:center;position:sticky;top:0;}
+  .hist-wrap th{padding:7px 4px;color:var(--text2);font-weight:500;border-bottom:1px solid var(--border);background:var(--surface2);text-align:center;}
   .hist-wrap td{padding:7px 4px;border-bottom:1px solid var(--border);text-align:center;}
   .hist-wrap td.pos{color:var(--green);font-weight:500;}
   .hist-wrap td.neg{color:var(--red);font-weight:500;}
 
   .grade-b{display:inline-block;padding:6px 22px;border-radius:20px;font-size:14px;font-weight:500;margin:8px 0;}
+  .ref-table{width:100%;font-size:12px;border-collapse:collapse;margin-top:10px;}
+  .ref-table th,.ref-table td{padding:6px 6px;border-bottom:1px solid var(--border);text-align:center;}
+  .ref-table th{color:var(--text2);font-weight:500;background:var(--surface2);}
 
   @media(max-width:768px){.stat-bar{grid-template-columns:repeat(2,1fr);}.result-grid{grid-template-columns:1fr;}}
 </style>
@@ -153,20 +153,19 @@
     <div class="hero">
       <span class="emo">☕</span>
       <h2>카페 점주의 마크다운 전략</h2>
-      <p>아침은 프리미엄, 오후는 세일!<br>고객 세분화를 이용해 폐기 손실을 최소화하면서<br>4주(20일) 동안 최대 이익을 올리세요.</p>
+      <p>아침에는 정가로, 오후에는 할인해서!<br>일주일(7일) 동안 매일 <strong>아침 발주량</strong>과 <strong>오후 할인율</strong>을 정해<br>누적 이익을 최대화하세요.</p>
     </div>
     <div class="info-box">
-      <strong>📚 Level 3 고급 과정</strong><br>
-      이번에는 <strong>시간대별 고객 세분화</strong>와 <strong>마크다운 전략</strong>을 배웁니다.
-      아침 고객(직장인 · 프리미엄 선호)과 오후 고객(학생 · 가격 민감)의 특성을 파악하고,
-      남은 재고를 얼마나 할인해 처분할지 결정합니다.
+      <strong>📚 Level 3: 남은 재고를 다시 돈으로 바꾸기</strong><br>
+      Level 1·2에서는 남은 재고를 그냥 버렸습니다. 이번에는 오후에 <strong>할인해서 팔 수 있습니다</strong>.
+      아침 손님(직장인)은 정가에 사고, 오후 손님(학생)은 할인할수록 많이 삽니다.
+      오후에 남은 재고를 보고 할인율을 정하세요. 할인으로 팔 수 있다면 아침에 얼마나 주문해야 할지도 달라집니다.
     </div>
     <div class="rules-box">
-      <div class="rule-i"><i class="ti ti-circle-check"></i><span><strong>매일 아침 발주</strong> — 3개 상품의 수량 결정 (아침 판매가는 고정)</span></div>
-      <div class="rule-i"><i class="ti ti-circle-check"></i><span><strong>오후 4시 마크다운</strong> — 남은 재고에 할인율 결정. 할인이 클수록 더 많이 팔림</span></div>
-      <div class="rule-i"><i class="ti ti-circle-check"></i><span><strong>고객 세분화</strong> — 오후 고객은 가격에 민감. 할인 없이는 잘 안 팔림</span></div>
-      <div class="rule-i"><i class="ti ti-circle-check"></i><span><strong>마감 폐기</strong> — 못 판 상품은 폐기 + 처리비 ₩200/개 추가 부담</span></div>
-      <div class="rule-i"><i class="ti ti-trophy"></i><span><strong>20일 누적 이익</strong> — Top 5 실시간 공개</span></div>
+      <div class="rule-i"><i class="ti ti-circle-check"></i><span><strong>매일 아침 발주</strong> — 3개 상품의 수량 결정 (아침 판매가는 정가 고정, 수요는 평균의 ±20%)</span></div>
+      <div class="rule-i"><i class="ti ti-circle-check"></i><span><strong>오후 4시 할인</strong> — 남은 재고를 보고 상품별 할인율 결정. 할인할수록 오후 손님이 늘지만, <strong>60%를 넘으면 더 늘지 않습니다</strong></span></div>
+      <div class="rule-i"><i class="ti ti-circle-check"></i><span><strong>마감 폐기</strong> — 오후에도 못 판 상품은 폐기 + 처리비 ₩200/개</span></div>
+      <div class="rule-i"><i class="ti ti-trophy"></i><span><strong>7일 누적 이익</strong> — Top 5 실시간 공개</span></div>
     </div>
 
     <div id="step-code" style="margin-bottom:14px;">
@@ -202,20 +201,20 @@
   <div class="screen" id="s-morning">
     <div class="prog" id="prog-g"></div>
     <div class="stat-bar">
-      <div class="sc"><div class="lb">날짜</div><div class="vl" id="st-day">Day 1/20</div></div>
+      <div class="sc"><div class="lb">날짜</div><div class="vl" id="st-day">Day 1/7</div></div>
       <div class="sc"><div class="lb">누적 이익</div><div class="vl" id="st-profit" style="color:var(--green)">₩0</div></div>
       <div class="sc"><div class="lb">내 순위</div><div class="vl" id="st-rank">-</div></div>
-      <div class="sc"><div class="lb">이번 주</div><div class="vl" id="st-week">Week 1</div></div>
+      <div class="sc"><div class="lb">요일</div><div class="vl" id="st-week">월요일</div></div>
     </div>
 
     <div class="phase-indicator morning">
       <div class="phase-label">🌅 아침 (7–9시)</div>
-      <div style="font-size:11px;color:var(--text2);">직장인 고객이 몰려옵니다. 프리미엄 가격 그대로 판매됩니다.</div>
+      <div style="font-size:11px;color:var(--text2);">직장인 손님이 정가에 사 갑니다.</div>
     </div>
 
     <div class="info-box">
       <strong>📋 오늘 발주 계획</strong><br>
-      3개 상품의 발주 수량을 결정하세요. 아침에 다 팔리지 않으면 오후에 마크다운 기회가 있습니다.
+      3개 상품의 발주량을 정하세요. 아침에 남은 재고는 오후에 할인해서 팔 수 있습니다.
     </div>
 
     <div class="card">
@@ -231,27 +230,27 @@
       <div id="game-lb"><div class="lb-empty">불러오는 중...</div></div>
     </div>
 
-    <button class="btn-p" onclick="goAfternoon()">오후 진행 →</button>
+    <button class="btn-p" id="am-btn" onclick="goAfternoon()">아침 판매 → 오후로</button>
   </div>
 
   <!-- ══════════ AFTERNOON ══════════ -->
   <div class="screen" id="s-afternoon">
     <div class="stat-bar">
-      <div class="sc"><div class="lb">시간</div><div class="vl">오후 4시</div></div>
+      <div class="sc"><div class="lb">시간</div><div class="vl" id="st-pm-day">Day 1 · 오후 4시</div></div>
       <div class="sc"><div class="lb">누적 이익</div><div class="vl" id="st-profit-pm" style="color:var(--green)">₩0</div></div>
-      <div class="sc"><div class="lb">아침 판매액</div><div class="vl" id="am-sales">₩0</div></div>
+      <div class="sc"><div class="lb">오늘 아침 판매액</div><div class="vl" id="am-sales">₩0</div></div>
       <div class="sc"><div class="lb">남은 재고</div><div class="vl" id="leftover-cnt">0개</div></div>
     </div>
 
     <div class="phase-indicator afternoon">
       <div class="phase-label">🌆 오후 (4–6시, 마감 전)</div>
-      <div style="font-size:11px;color:var(--text2);">학생·일반 고객이 오는 시간. 아침에 못 판 상품을 할인 판매합니다.</div>
+      <div style="font-size:11px;color:var(--text2);">학생 손님이 오는 시간입니다. 할인할수록 많이 사 갑니다.</div>
     </div>
 
     <div class="info-box">
-      <strong>📋 마크다운 결정</strong><br>
-      할인을 키우면 더 많이 팔리지만 개당 마진이 줄어듭니다. 안 팔린 재고는 <strong>원가 손실 + 처리비 ₩200/개</strong>가 발생합니다.<br>
-      할인가가 원가 아래로 내려가도, 폐기하는 것보다 나을 수 있습니다.
+      <strong>📋 할인 결정</strong><br>
+      재료비(원가)는 이미 쓴 돈입니다. 지금부터는 <strong>"팔면 할인가만큼 들어오고, 버리면 개당 ₩200이 더 나간다"</strong>만 비교하면 됩니다.<br>
+      할인을 키우면 오후 손님이 늘지만, 할인 없이도 사 갈 손님에게까지 싸게 팔게 됩니다. 할인 60%를 넘으면 손님은 더 늘지 않습니다.
     </div>
 
     <div class="card">
@@ -263,7 +262,7 @@
       <div id="profit-preview"></div>
     </div>
 
-    <button class="btn-p" onclick="completeDay()">마크다운 확정 →</button>
+    <button class="btn-p" id="pm-btn" onclick="completeDay()">할인 확정 → 오늘 마감</button>
   </div>
 
   <!-- ══════════ RESULT ══════════ -->
@@ -304,7 +303,7 @@
   <div class="screen" id="s-final">
     <div style="text-align:center;padding:20px 0 12px;">
       <div style="font-size:42px;margin-bottom:8px">🏆</div>
-      <div style="font-size:13px;color:var(--text2);margin-bottom:4px">4주(20일) 최종 누적 이익</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:4px">7일 최종 누적 이익</div>
       <div style="font-size:40px;font-weight:700;font-family:'Black Han Sans',sans-serif;" id="f-num"></div>
       <div class="grade-b" id="f-grade"></div>
       <div style="font-size:14px;color:var(--text2);margin-top:6px">최종 순위: <strong id="f-rank" style="font-size:17px;color:var(--blue)"></strong></div>
@@ -313,14 +312,16 @@
     <div class="card">
       <div class="card-title">🎓 학습 정리</div>
       <div class="info-box" style="margin-bottom:0;">
-        <strong>마크다운의 가치</strong><br>
-        폐기는 원가 전액을 잃고 처리비까지 부담합니다. 반면 마크다운은 마진의 일부만 포기합니다.
-        <strong>할인가가 원가보다 낮더라도</strong>, 폐기 손실(원가 + 처리비)보다 크다면 파는 편이 유리합니다.<br><br>
-        <strong>핵심 판단 기준:</strong> 할인가 &gt; −(처리비) 이면 파는 것이 이득<br>
-        즉, 재고를 남기느니 거의 공짜로라도 넘기는 것이 합리적일 수 있습니다.<br><br>
-        <strong>고객 세분화:</strong> 아침 고객은 가격에 둔감하므로 정가를 받고, 오후 가격 민감 고객에게만 할인을 제공하면
-        동일 상품에서 <strong>두 개의 서로 다른 마진</strong>을 확보할 수 있습니다. 이것이 동적 가격의 본질입니다.
+        <strong>① 할인할 수 있으면 아침에 더 주문해도 됩니다.</strong>
+        오후에 할인해서 팔 수 있으니 "남았을 때의 손해"가 줄어듭니다. Level 1의 원리대로, 남을 때의 손해가 작아지면 더 많이 주문하는 것이 유리합니다.<br><br>
+        <strong>② 할인 폭은 "남은 양"에 맞춰 정합니다.</strong>
+        조금 남았으면 할인 없이도 오후 손님이 사 갑니다. 많이 남았을 때만 크게 할인하세요. 너무 크게 할인하면 어차피 팔릴 물건까지 싸게 팔게 되고, 60%를 넘으면 손님이 더 늘지도 않습니다.<br><br>
+        <strong>③ 오후에는 원가가 이미 쓴 돈입니다.</strong>
+        할인가가 원가보다 낮아도, 버릴 때(처리비 −₩200)보다는 파는 쪽이 낫습니다. 판단 기준은 원가가 아니라 "지금부터 들어오고 나가는 돈"입니다.<br><br>
+        <strong>④ 같은 상품, 두 개의 가격.</strong>
+        정가를 내는 아침 손님과 할인을 기다리는 오후 손님에게 다른 가격을 받으면, 한 가격으로 팔 때보다 이익이 커집니다.
       </div>
+      <div id="f-ref" style="margin-top:12px;"></div>
     </div>
 
     <div class="card">
@@ -356,23 +357,24 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db  = getDatabase(app);
 
-/* ══════════════════════════════════
-   상품 정의
+/* ══ 게임 설정 ══
    pmDemandAt0  : 할인 0%일 때 오후 수요
-   pmDemandAtMax: 할인 60%일 때 오후 수요 (그 이상은 포화)
-══════════════════════════════════ */
+   pmDemandAtMax: 할인 60%일 때 오후 수요 (그 이상 할인해도 늘지 않음)
+   qInit        : 아침 발주 기본값 = 아침 평균 수요 (Level 1처럼 평균에서 출발) */
 const PRODUCTS = {
-  croissant: { icon:'🥐', name:'크로와상',      cost:1200, amPrice:4000, amDemand:22, qMax:100, qInit:30,
+  croissant: { icon:'🥐', name:'크로와상',      cost:1200, amPrice:4000, amDemand:22, qMax:100, qInit:22,
                pmDemandAt0:3,  pmDemandAtMax:16 },
-  latte:     { icon:'🍵', name:'단호박라떼',    cost:900,  amPrice:4500, amDemand:35, qMax:150, qInit:50,
+  latte:     { icon:'🍵', name:'단호박라떼',    cost:900,  amPrice:4500, amDemand:35, qMax:150, qInit:35,
                pmDemandAt0:6,  pmDemandAtMax:28 },
-  cake:      { icon:'🍰', name:'초콜릿 케이크', cost:3000, amPrice:8000, amDemand:10, qMax:50,  qInit:15,
+  cake:      { icon:'🍰', name:'초콜릿 케이크', cost:3000, amPrice:8000, amDemand:10, qMax:50,  qInit:10,
                pmDemandAt0:2,  pmDemandAtMax:12 }
 };
-const TOTAL_DAYS   = 20;
-const DAYS_PER_WEEK = 5;
+const TOTAL_DAYS   = 7;
+const DAY_NAMES    = ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일'];
 const DISPOSAL_FEE = 200;   // 폐기 1개당 처리비
 const MD_SATURATE  = 60;    // 할인 60%에서 수요 포화
+const AM_NOISE     = 0.20;
+const PM_NOISE     = 0.15;
 
 /* ══ 상태 ══ */
 let day = 0, cumProfit = 0, history = [];
@@ -381,31 +383,66 @@ let currentDayData = {};
 let lbUnsub = null;
 
 /* ══ 유틸 ══ */
-const fmt = n => (n < 0 ? '-₩' : '₩') + Math.abs(n).toLocaleString();
+const fmt = n => (n < 0 ? '-₩' : '₩') + Math.abs(Math.round(n)).toLocaleString();
 const show = id => { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); };
 
 /* ══ 수요 모델 ══
-   아침: 기대수요 고정 → 실제는 ±20% 랜덤
-   오후: 할인율에 따라 선형 증가, 60%에서 포화 → ±15% 랜덤
-══ */
+   아침: 평균 수요 ±20% / 오후: 할인율에 따라 선형 증가, 60%에서 포화, ±15% */
 function expectedMorningDemand(key) { return PRODUCTS[key].amDemand; }
-
 function actualMorningDemand(key) {
-  const base  = PRODUCTS[key].amDemand;
-  const noise = (Math.random() - 0.5) * 0.4;   // ±20%
-  return Math.max(0, Math.round(base * (1 + noise)));
+  const base = PRODUCTS[key].amDemand;
+  const u = (Math.random() * 2 - 1) * AM_NOISE;
+  return Math.max(0, Math.round(base * (1 + u)));
 }
-
 function expectedAfternoonDemand(key, mdPct) {
   const p = PRODUCTS[key];
   const t = Math.min(1, mdPct / MD_SATURATE);
   return Math.round(p.pmDemandAt0 + (p.pmDemandAtMax - p.pmDemandAt0) * t);
 }
-
 function actualAfternoonDemand(key, mdPct) {
-  const base  = expectedAfternoonDemand(key, mdPct);
-  const noise = (Math.random() - 0.5) * 0.3;   // ±15%
-  return Math.max(0, Math.round(base * (1 + noise)));
+  const base = expectedAfternoonDemand(key, mdPct);
+  const u = (Math.random() * 2 - 1) * PM_NOISE;
+  return Math.max(0, Math.round(base * (1 + u)));
+}
+
+/* ══ 기대값 계산 (최종 화면 참고표용) ══ */
+const grid = (n, w) => Array.from({ length: n }, (_, i) => -w + (2 * w) * i / (n - 1));
+const AM_U = grid(81, AM_NOISE), PM_U = grid(61, PM_NOISE);
+const MDS = Array.from({ length: 19 }, (_, i) => i * 5);
+const pmCache = {};
+function bestMarkdown(key, L) {           // 남은 L개에 대한 최적 할인율과 기대값(오후 매출 − 처리비)
+  const ck = key + ':' + L;
+  if (pmCache[ck]) return pmCache[ck];
+  const p = PRODUCTS[key];
+  let best = { v: -L * DISPOSAL_FEE, md: 0 };
+  if (L > 0) {
+    best = null;
+    MDS.forEach(md => {
+      const price = Math.round(p.amPrice * (1 - md / 100));
+      const base = expectedAfternoonDemand(key, md);
+      let v = 0;
+      PM_U.forEach(u => { const d = Math.max(0, Math.round(base * (1 + u))); const s = Math.min(d, L); v += s * price - (L - s) * DISPOSAL_FEE; });
+      v /= PM_U.length;
+      if (!best || v > best.v) best = { v, md };
+    });
+  }
+  return (pmCache[ck] = best);
+}
+function expDay(key, Q, useMarkdown) {
+  const p = PRODUCTS[key];
+  let v = 0;
+  AM_U.forEach(u => {
+    const a = Math.max(0, Math.round(p.amDemand * (1 + u)));
+    const s = Math.min(a, Q), L = Q - s;
+    v += s * p.amPrice - Q * p.cost + (useMarkdown ? bestMarkdown(key, L).v : -L * DISPOSAL_FEE);
+  });
+  return v / AM_U.length;
+}
+function bestQ(key, useMarkdown) {
+  const p = PRODUCTS[key];
+  let best = { Q: 0, v: -Infinity };
+  for (let Q = 0; Q <= p.qMax; Q++) { const v = expDay(key, Q, useMarkdown); if (v > best.v) best = { Q, v }; }
+  return best;
 }
 
 /* ══ 아침 화면 렌더 (1회) ══ */
@@ -415,7 +452,7 @@ function buildMorningCards() {
       <div class="product-decision">
         <div class="product-header"><span class="icon">${p.icon}</span>${p.name}</div>
         <div style="font-size:11px;color:var(--text3);margin-bottom:10px;">
-          원가 ${fmt(p.cost)} · 아침 판가 ${fmt(p.amPrice)} · 아침 평균 수요 ${p.amDemand}개
+          원가 ${fmt(p.cost)} · 아침 정가 ${fmt(p.amPrice)} · 아침 수요 평균 ${p.amDemand}개 (${Math.round(p.amDemand * (1 - AM_NOISE))}~${Math.round(p.amDemand * (1 + AM_NOISE))}개)
         </div>
         <div class="decision-row">
           <label>발주량</label>
@@ -423,7 +460,7 @@ function buildMorningCards() {
           <span class="decision-value" id="qv-${key}">${p.qInit}개</span>
         </div>
         <div class="inventory-box">
-          <div class="inventory-label">오후 남은 재고 예상</div>
+          <div class="inventory-label">오후에 남을 재고 예상</div>
           <div class="inventory-value" id="inv-${key}">-</div>
         </div>
       </div>
@@ -437,24 +474,24 @@ window.onMorningChange = function() {
     const q = parseInt(document.getElementById(`q-${key}`).value) || 0;
     totalCost += q * p.cost;
     document.getElementById(`qv-${key}`).textContent = q + '개';
-
-    /* 결정론적 기대 재고 (랜덤 제거 — 원본 버그 수정) */
-    const expLeft = Math.max(0, q - expectedMorningDemand(key));
-    const lo = Math.max(0, Math.round(q - expectedMorningDemand(key) * 1.2));
-    const hi = Math.max(0, Math.round(q - expectedMorningDemand(key) * 0.8));
+    const m = expectedMorningDemand(key);
+    const lo = Math.max(0, Math.round(q - m * (1 + AM_NOISE)));
+    const hi = Math.max(0, Math.round(q - m * (1 - AM_NOISE)));
     document.getElementById(`inv-${key}`).textContent =
-      expLeft === 0 && hi === 0 ? '재고 없음 (완판 예상)' : `약 ${lo}~${hi}개`;
+      hi === 0 ? '재고 없음 (아침에 다 팔릴 것으로 예상)' : `약 ${lo}~${hi}개`;
   });
   document.getElementById('morning-total-cost').textContent = fmt(totalCost);
 };
 
-/* ══ Firebase ══ */
-async function saveScore(completed = false) {
+/* ══ Firebase ══ (pend: 아침 판매가 끝나고 오후 결정 전인 그날의 상태) */
+async function saveScore(completed = false, pend = null) {
   await set(ref(db, `leaderboard_l3/scores/${classCode}/${myKey}`), {
-    name: myName, nick: myNick, hist: JSON.stringify(history), profit: cumProfit, days: history.length, completed, ts: Date.now()
+    name: myName, nick: myNick, hist: JSON.stringify(history), profit: cumProfit, days: history.length, completed, ts: Date.now(),
+    ...(pend ? { pend: JSON.stringify(pend) } : {})
   });
 }
-/* ══ 같은 닉네임은 한 줄로 ══ */
+
+/* ══ 같은 학생은 한 줄로 ══ */
 function dedupeByNick(all) {
   const done = {}, prog = {};
   all.forEach(e => {
@@ -599,7 +636,7 @@ window.resetCode = function() {
 /* ══ 시작 ══ */
 window.startGame = async function() {
   if (!classCode) { alert('수업 코드를 먼저 입력해 주세요!'); return; }
-    // 🔐 메인 화면 로그인 확인 (메인에서 입력한 이름으로 기록)
+  // 🔐 메인 화면 로그인 확인
   let hubUser = null;
   try { hubUser = JSON.parse(localStorage.getItem('opsquest_user') || 'null'); } catch (e) {}
   if (!hubUser || !hubUser.nick || hubUser.code !== classCode) {
@@ -607,12 +644,11 @@ window.startGame = async function() {
     location.href = '../index.html';
     return;
   }
-  // 🎭 실명은 기록·잠금용, 닉네임은 리더보드 표시용 (익명 플레이)
+  // 🎭 실명은 기록·잠금용, 닉네임은 리더보드 표시용
   myName = hubUser.name || hubUser.nick;
-   // 🚫 이미 완료한 레벨은 다시 할 수 없음 (레벨마다 한 번만 도전)
+  // 🚫 이미 완료한 레벨은 다시 할 수 없음
   try {
-    const lb = { level1: 'leaderboard', level2: 'leaderboard_l2', level3: 'leaderboard_l3' }[(location.pathname.match(/level\d/) || [''])[0]];
-    const mine = await get(ref(db, `${lb}/scores/${classCode}`));
+    const mine = await get(ref(db, `leaderboard_l3/scores/${classCode}`));
     if (Object.values(mine.val() || {}).some(r => (r.name || r.nick) === myName && r.completed)) {
       alert('이미 완료한 레벨입니다. 레벨마다 한 번만 도전할 수 있어요.');
       location.href = '../index.html';
@@ -648,8 +684,7 @@ window.startGame = async function() {
   }
   hubUser.nick = nick;
   localStorage.setItem('opsquest_user', JSON.stringify(hubUser));
-  if (!nick) { alert('닉네임을 입력해 주세요!'); return; }
-   // 🔒 Level 2 완료 여부 확인
+  // 🔒 Level 2 완료 여부 확인
   try {
     const prev = await get(ref(db, `leaderboard_l2/scores/${classCode}`));
     const passed = Object.values(prev.val() || {}).some(r => (r.name || r.nick) === myName && r.completed);
@@ -666,7 +701,8 @@ window.startGame = async function() {
   myKey  = 'l3_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
   day = 0; cumProfit = 0; history = [];
   buildMorningCards();
-   // ⏯️ 중간에 그만둔 기록이 있으면 처음부터가 아니라 이어서 진행
+  // ⏯️ 중간에 그만둔 기록이 있으면 이어서 진행
+  //    아침 판매까지 끝낸 날(pend)이 있으면 그날 오후 화면부터 (아침 결과를 다시 뽑을 수 없음)
   try {
     const snapR = await get(ref(db, `leaderboard_l3/scores/${classCode}`));
     const prev = Object.entries(snapR.val() || {})
@@ -675,8 +711,15 @@ window.startGame = async function() {
     const h = prev ? JSON.parse(prev[1].hist) : null;
     if (Array.isArray(h)) {
       myKey = prev[0]; history = h; cumProfit = prev[1].profit || 0; day = h.length;
+      if (day >= TOTAL_DAYS) { alert(`이어서 진행합니다. ${h.length}일차까지 끝낸 기록을 불러왔어요.`); day = TOTAL_DAYS - 1; nextDay(); return; }
+      const pend = typeof prev[1].pend === 'string' ? JSON.parse(prev[1].pend) : null;
+      if (pend && pend.dayIdx === day && pend.products) {
+        alert(`이어서 진행합니다. Day ${day + 1} 아침 판매가 끝난 상태예요. 오후 할인 결정부터 이어 갑니다.`);
+        currentDayData = pend;
+        renderAfternoon();
+        return;
+      }
       if (h.length) alert(`이어서 진행합니다. ${h.length}일차까지 끝낸 기록을 불러왔어요.`);
-      if (day >= TOTAL_DAYS) { day = TOTAL_DAYS - 1; nextDay(); return; }
     }
   } catch (e) {}
   await saveScore(false);
@@ -685,36 +728,34 @@ window.startGame = async function() {
 
 /* ══ 아침 ══ */
 function loadMorning() {
-  const week = Math.floor(day / DAYS_PER_WEEK) + 1;
   document.getElementById('st-day').textContent    = `Day ${day + 1}/${TOTAL_DAYS}`;
   document.getElementById('st-profit').textContent = fmt(cumProfit);
   document.getElementById('st-profit').style.color = cumProfit >= 0 ? 'var(--green)' : 'var(--red)';
-  document.getElementById('st-week').textContent   = `Week ${week}`;
+  document.getElementById('st-week').textContent   = DAY_NAMES[day] || '';
   buildProg('prog-g', day);
   onMorningChange();
   startLbListener(['game-lb'], false);
+  document.getElementById('am-btn').disabled = false;
   show('s-morning');
 }
 
 function buildProg(id, current) {
   const el = document.getElementById(id);
   if (!el) return;
-  const wk = Math.floor(current / DAYS_PER_WEEK);
-  let dots = '';
-  for (let i = 0; i < 4; i++) {
+  el.innerHTML = Array(TOTAL_DAYS).fill(0).map((_, i) => {
     let c = 'pd';
-    if (i < wk) c += ' done';
-    else if (i === wk) c += ' cur';
-    dots += `<div class="${c}">${i < wk ? '✓' : (i + 1)}</div>`;
-  }
-  dots += `<span class="prog-label">Week ${wk + 1} · Day ${current % DAYS_PER_WEEK + 1}/5</span>`;
-  el.innerHTML = dots;
+    if (i < current) c += ' done';
+    else if (i === current) c += ' cur';
+    return `<div class="${c}">${i < current ? '✓' : (i + 1)}</div>`;
+  }).join('');
 }
 
-/* ══ 오후로 이동 (아침 판매 실현) ══ */
-window.goAfternoon = function() {
+/* ══ 아침 판매 실현 → 저장 → 오후 화면 ══ */
+window.goAfternoon = async function() {
+  const btn = document.getElementById('am-btn');
+  btn.disabled = true;
   let amSales = 0;
-  currentDayData = { products: {}, totalOrdered: 0 };
+  currentDayData = { dayIdx: day, products: {}, totalOrdered: 0 };
 
   Object.entries(PRODUCTS).forEach(([key, p]) => {
     const q        = parseInt(document.getElementById(`q-${key}`).value) || 0;
@@ -733,19 +774,25 @@ window.goAfternoon = function() {
   });
   currentDayData.amSales = amSales;
 
-  /* 마크다운 UI */
+  // 아침 결과를 바로 저장 → 창을 닫았다 와도 이 결과로 오후부터 이어짐
+  try { await saveScore(false, currentDayData); } catch (e) {}
+  renderAfternoon();
+};
+
+/* ══ 오후 화면 렌더 ══ */
+function renderAfternoon() {
   const mdHtml = Object.entries(PRODUCTS).map(([key, p]) => {
     const lo = currentDayData.products[key].leftover;
     if (lo === 0) {
       return `<div class="markdown-section">
         <div class="markdown-title">${p.icon} ${p.name}</div>
-        <div class="md-none">✅ 아침에 완판되었습니다. 마크다운 불필요.</div>
+        <div class="md-none">✅ 아침에 모두 팔렸습니다. 할인할 재고가 없습니다.</div>
       </div>`;
     }
     return `<div class="markdown-section">
       <div class="markdown-title">${p.icon} ${p.name}</div>
       <div style="font-size:11px;color:var(--text2);margin-bottom:10px;">
-        남은 재고 <strong>${lo}개</strong> · 원가 ${fmt(p.cost)} · 정가 ${fmt(p.amPrice)} · 폐기 시 개당 ${fmt(p.cost + DISPOSAL_FEE)} 손실
+        남은 재고 <strong>${lo}개</strong> · 정가 ${fmt(p.amPrice)} · 할인 0%일 때 오후 손님 약 ${p.pmDemandAt0}명, 60% 이상일 때 약 ${p.pmDemandAtMax}명
       </div>
       <div class="markdown-slider">
         <input type="range" id="md-${key}" min="0" max="90" value="40" step="5" oninput="onMarkdownChange()">
@@ -756,37 +803,37 @@ window.goAfternoon = function() {
   }).join('');
   document.getElementById('markdown-section').innerHTML = mdHtml;
 
+  document.getElementById('st-pm-day').textContent    = `Day ${day + 1} · 오후 4시`;
   document.getElementById('st-profit-pm').textContent = fmt(cumProfit);
-  document.getElementById('am-sales').textContent     = fmt(amSales);
+  document.getElementById('am-sales').textContent     = fmt(currentDayData.amSales);
   const totalLeft = Object.values(currentDayData.products).reduce((s, d) => s + d.leftover, 0);
   document.getElementById('leftover-cnt').textContent = totalLeft + '개';
+  document.getElementById('pm-btn').disabled = false;
 
   onMarkdownChange();
   show('s-afternoon');
-};
+}
 
-/* ══ 마크다운 슬라이더 (예상치 표시) ══ */
+/* ══ 할인 슬라이더 (예상치 표시) ══ */
 window.onMarkdownChange = function() {
   Object.entries(PRODUCTS).forEach(([key, p]) => {
     const d = currentDayData.products[key];
     if (d.leftover === 0) { d.mdPct = 0; d.mdPrice = p.amPrice; return; }
 
-    const mdPct   = parseInt(document.getElementById(`md-${key}`).value);
-    const mdPrice = Math.round(p.amPrice * (1 - mdPct / 100));
-    const expSold = Math.min(expectedAfternoonDemand(key, mdPct), d.leftover);
+    const mdPct    = parseInt(document.getElementById(`md-${key}`).value);
+    const mdPrice  = Math.round(p.amPrice * (1 - mdPct / 100));
+    const expDem   = expectedAfternoonDemand(key, mdPct);
+    const expSold  = Math.min(expDem, d.leftover);
     const expWaste = d.leftover - expSold;
-    const expRev  = expSold * mdPrice;
+    const expRev   = expSold * mdPrice;
 
     d.mdPct = mdPct; d.mdPrice = mdPrice;
 
-    const marginTxt = mdPrice >= p.cost
-      ? `<span style="color:var(--green)">개당 마진 +${fmt(mdPrice - p.cost)}</span>`
-      : `<span style="color:var(--red)">개당 마진 ${fmt(mdPrice - p.cost)}</span> (폐기 시 ${fmt(-(p.cost + DISPOSAL_FEE))})`;
-
     document.getElementById(`md-pct-${key}`).textContent = mdPct + '%';
     document.getElementById(`md-info-${key}`).innerHTML =
-      `할인가 <strong>${fmt(mdPrice)}</strong> · ${marginTxt}<br>
-       예상 판매 <strong>${expSold}개</strong> · 예상 폐기 <strong style="color:${expWaste > 0 ? 'var(--red)' : 'var(--text2)'}">${expWaste}개</strong> · 예상 오후 매출 ${fmt(expRev)}`;
+      `할인가 <strong>${fmt(mdPrice)}</strong> · 예상 오후 손님 <strong>${expDem}명</strong>${mdPct > MD_SATURATE ? ' <span style="color:var(--red)">(60% 넘게 할인해도 손님은 늘지 않음)</span>' : ''}<br>
+       예상 판매 <strong>${expSold}개</strong> · 예상 폐기 <strong style="color:${expWaste > 0 ? 'var(--red)' : 'var(--text2)'}">${expWaste}개</strong>
+       → 오후 매출 ${fmt(expRev)} − 처리비 ${fmt(expWaste * DISPOSAL_FEE)} = <strong>${fmt(expRev - expWaste * DISPOSAL_FEE)}</strong>`;
   });
   updateProfitPreview();
 };
@@ -816,22 +863,24 @@ function updateProfitPreview() {
     <div style="background:#f0f5ff;border-radius:var(--radius);padding:12px;margin-top:12px;text-align:center;">
       <div style="font-size:12px;color:var(--text2);margin-bottom:4px;">오늘 예상 순이익</div>
       <div style="font-size:20px;font-weight:700;color:${profit >= 0 ? 'var(--green)' : 'var(--red)'};">${fmt(profit)}</div>
-      <div style="font-size:10px;color:var(--text3);margin-top:4px;">실제 오후 수요는 예상치에서 ±15% 변동합니다</div>
+      <div style="font-size:10px;color:var(--text3);margin-top:4px;">실제 오후 손님 수는 예상치에서 ±15% 변동합니다</div>
     </div>`;
 }
 
 /* ══ 하루 마감 (오후 판매 실현) ══ */
 window.completeDay = async function() {
+  const btn = document.getElementById('pm-btn');
+  btn.disabled = true;
   let cost = 0, pmRev = 0, wasteQty = 0, totalAmSold = 0, totalPmSold = 0;
 
   Object.entries(PRODUCTS).forEach(([key, p]) => {
     const d = currentDayData.products[key];
     cost += d.cost;
     totalAmSold += d.amSold;
-
     if (d.leftover > 0) {
       const dem  = actualAfternoonDemand(key, d.mdPct);
       const sold = Math.min(dem, d.leftover);
+      d.pmDemand = dem;
       d.pmSold = sold;
       d.pmRev  = sold * d.mdPrice;
       d.waste  = d.leftover - sold;
@@ -849,7 +898,7 @@ window.completeDay = async function() {
     dayNo: day + 1, cost, pmRev, wasteQty, disposal, dayProfit, totalAmSold, totalPmSold
   });
   history.push({ ...currentDayData });
-  await saveScore(false);
+  await saveScore(false);   // pend 없이 저장 → 그날 마감 완료
 
   /* 결과 렌더 */
   document.getElementById('daily-results').innerHTML =
@@ -862,15 +911,15 @@ window.completeDay = async function() {
           <div style="font-weight:500;color:${prodProfit >= 0 ? 'var(--green)' : 'var(--red)'};">${fmt(prodProfit)}</div>
         </div>
         <div style="font-size:11px;color:var(--text2);line-height:1.7;">
-          발주 ${d.ordered}개 · 아침 ${d.amSold}개 판매 (${fmt(d.amRev)})<br>
+          발주 ${d.ordered}개 · 아침 손님 ${d.amDemand}명 → ${d.amSold}개 판매 (${fmt(d.amRev)})<br>
           ${d.leftover > 0
-            ? `오후 ${d.mdPct}% 할인 → ${d.pmSold}개 판매 (${fmt(d.pmRev)}) · <span style="color:${d.waste > 0 ? 'var(--red)' : 'var(--green)'}">폐기 ${d.waste}개</span>`
-            : `<span style="color:var(--green)">아침 완판 ✓</span>`}
+            ? `오후 ${d.mdPct}% 할인 → 손님 ${d.pmDemand}명, ${d.pmSold}개 판매 (${fmt(d.pmRev)}) · <span style="color:${d.waste > 0 ? 'var(--red)' : 'var(--green)'}">폐기 ${d.waste}개</span>`
+            : `<span style="color:var(--amber)">아침에 모두 팔림 · 아침 손님 ${d.amDemand - d.amSold}명은 못 삼</span>`}
         </div>
       </div>`;
     }).join('');
 
-  document.getElementById('res-title').textContent = `Day ${day + 1} 최종 결과`;
+  document.getElementById('res-title').textContent = `Day ${day + 1} (${DAY_NAMES[day] || ''}) 최종 결과`;
   document.getElementById('r-am').textContent    = fmt(currentDayData.amSales);
   document.getElementById('r-pm').textContent    = fmt(pmRev);
   document.getElementById('r-cost').textContent  = '−' + fmt(cost);
@@ -880,23 +929,17 @@ window.completeDay = async function() {
   pd.className = 'profit-disp ' + (dayProfit >= 0 ? 'pos' : 'neg');
   document.getElementById('p-val').textContent = fmt(dayProfit);
 
-  /* 분석 */
-  let analysis = `<strong>마크다운 분석</strong><br>`;
-  let anyWaste = false, anyDeepDiscount = false;
+  /* 상품별 결과 (판단 문구 없이 사실만) */
+  let analysis = `<strong>상품별 결과</strong><br>`;
   Object.entries(PRODUCTS).forEach(([key, p]) => {
     const d = currentDayData.products[key];
-    if (d.waste > 0) {
-      anyWaste = true;
-      analysis += `🗑️ ${p.name}: ${d.waste}개 폐기 → 손실 ${fmt(d.waste * (p.cost + DISPOSAL_FEE))} <span style="color:var(--text3)">(할인을 더 크게 했다면?)</span><br>`;
-    }
-    if (d.leftover > 0 && d.mdPrice < p.cost && d.pmSold > 0) {
-      anyDeepDiscount = true;
-      const saved = d.pmSold * ((d.mdPrice) - (-(DISPOSAL_FEE)));
-      analysis += `💡 ${p.name}: 원가 이하로 팔았지만, 폐기했을 때보다 ${fmt(saved)} 이득<br>`;
+    if (d.leftover === 0) {
+      analysis += `${p.icon} ${p.name}: 아침에 모두 팔림 · 못 판 아침 손님 ${Math.max(0, d.amDemand - d.amSold)}명 (개당 놓친 이익 ${fmt(p.amPrice - p.cost)})<br>`;
+    } else {
+      analysis += `${p.icon} ${p.name}: 남은 ${d.leftover}개 → 할인 ${d.mdPct}%로 ${d.pmSold}개 판매 (+${fmt(d.pmRev)})`;
+      analysis += d.waste > 0 ? ` · 폐기 ${d.waste}개 (처리비 −${fmt(d.waste * DISPOSAL_FEE)})<br>` : ` · 폐기 없음<br>`;
     }
   });
-  if (!anyWaste) analysis += `✅ 폐기 손실 없음! 마크다운 최적화 성공`;
-  else if (!anyDeepDiscount) analysis += `<br><span style="color:var(--text3)">💡 팁: 폐기하면 원가 + 처리비를 모두 잃습니다. 원가 이하 할인도 고려해 보세요.</span>`;
   document.getElementById('analysis-box').innerHTML = analysis;
 
   renderHistory('h-tbody');
@@ -907,7 +950,7 @@ window.completeDay = async function() {
 };
 
 function renderHistory(tbodyId) {
-  document.getElementById(tbodyId).innerHTML = history.slice().reverse().map(h =>
+  document.getElementById(tbodyId).innerHTML = history.map(h =>
     `<tr>
       <td>${h.dayNo}</td>
       <td>${h.totalOrdered}개</td>
@@ -926,6 +969,34 @@ window.nextDay = function() {
   else loadMorning();
 };
 
+/* ══ 최종 화면: 참고표 ══ */
+function renderReference() {
+  let rows = '';
+  Object.entries(PRODUCTS).forEach(([key, p]) => {
+    const noMd = bestQ(key, false);
+    const withMd = bestQ(key, true);
+    const guide = [3, 6, 10, 15, 20].filter(L => L <= p.qMax).map(L => `${L}개→${bestMarkdown(key, L).md}%`).join(' · ');
+    const myQ = history.length ? Math.round(history.reduce((s, h) => s + h.products[key].ordered, 0) / history.length) : null;
+    const mdDays = history.filter(h => h.products[key].leftover > 0);
+    const myMd = mdDays.length ? Math.round(mdDays.reduce((s, h) => s + h.products[key].mdPct, 0) / mdDays.length) : null;
+    rows += `<tr><td>${p.icon} ${p.name}</td>
+      <td>${p.amDemand}개</td>
+      <td>${noMd.Q}개</td>
+      <td><strong>${withMd.Q}개</strong></td>
+      <td style="font-size:11px;">${guide}</td>
+      <td>${myQ === null ? '—' : myQ + '개'}${myMd === null ? '' : ` / ${myMd}%`}</td></tr>`;
+  });
+  document.getElementById('f-ref').innerHTML = `
+    <div style="font-size:12px;color:var(--text2);line-height:1.7;">
+      <strong>참고: 기대이익이 가장 큰 결정</strong> — 할인을 활용할 수 있을 때 아침 발주가 얼마나 늘어나는지,
+      남은 양에 따라 할인율이 어떻게 달라지는지 비교해 보세요.
+    </div>
+    <table class="ref-table">
+      <thead><tr><th>상품</th><th>아침 평균 수요</th><th>오후 판매가 없다면<br>(Level 1처럼) 최적 발주</th><th>할인 활용 시<br>최적 발주</th><th>남은 양별 좋은 할인율</th><th>내 평균<br>발주 / 할인</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
 /* ══ 최종 ══ */
 async function showFinal() {
   await saveScore(true);
@@ -934,16 +1005,18 @@ async function showFinal() {
   fn.textContent = fmt(cumProfit);
   fn.style.color = cumProfit >= 0 ? 'var(--green)' : 'var(--red)';
 
+  // 기준(7일 기대이익): 최적 약 212만 · 할인 없이 최적 발주 약 184만 · 아침 평균만큼 주문 약 166만
   let grade, gs;
-  if      (cumProfit >= 2500000) { grade = '👑 동적 가격의 달인'; gs = 'background:#eaf3de;color:#3B6D11;'; }
-  else if (cumProfit >= 1800000) { grade = '🥇 베테랑 카페 점주'; gs = 'background:#fef3e2;color:#854F0B;'; }
-  else if (cumProfit >= 1000000) { grade = '🥈 성장하는 점주';    gs = 'background:#e6f1fb;color:#185FA5;'; }
+  if      (cumProfit >= 2050000) { grade = '👑 마크다운의 달인';   gs = 'background:#eaf3de;color:#3B6D11;'; }
+  else if (cumProfit >= 1850000) { grade = '🥇 베테랑 카페 점주'; gs = 'background:#fef3e2;color:#854F0B;'; }
+  else if (cumProfit >= 1650000) { grade = '🥈 성장하는 점주';    gs = 'background:#e6f1fb;color:#185FA5;'; }
   else if (cumProfit >=       0) { grade = '🥉 신입 점주';        gs = 'background:#f1efe8;color:#5F5E5A;'; }
   else                           { grade = '😢 적자 카페';        gs = 'background:#fcebeb;color:#A32D2D;'; }
   const gb = document.getElementById('f-grade');
   gb.textContent = grade; gb.style.cssText = gs;
 
   renderHistory('f-tbody');
+  try { renderReference(); } catch (e) {}
   startLbListener(['final-lb'], true);
 
   const snap = await get(ref(db, `leaderboard_l3/scores/${classCode}`)).catch(() => null);
@@ -958,43 +1031,15 @@ async function showFinal() {
   show('s-final');
 }
 
-/* ══ 리셋 ══ */
-window.resetGame = function() {
-  if (lbUnsub) { lbUnsub(); lbUnsub = null; }
-  day = 0; cumProfit = 0; history = [];
-  myNick = ''; myKey = ''; classCode = ''; className = '';
-  document.getElementById('nick-input').value = '';
-  document.getElementById('code-input').value = '';
-  document.getElementById('code-msg').textContent = '';
-  document.getElementById('st-rank').textContent = '-';
-  document.getElementById('step-code').style.display = 'block';
-  document.getElementById('step-nick').style.display = 'none';
-  document.getElementById('intro-lb').innerHTML = '<div class="lb-empty">수업 코드를 입력하면 해당 반 리더보드가 표시됩니다</div>';
-  show('s-intro');
-};
-
 /* ══ 공유 ══ */
 window.shareResult = function() {
   const totalWaste = history.reduce((s, h) => s + h.wasteQty, 0);
-  const text = `☕ Opsera · OpsApex (Lv.3) — ${myNick}의 20일 최종 이익: ${fmt(cumProfit)}\n총 폐기: ${totalWaste}개`;
+  const text = `☕ Opsera · OpsApex (Lv.3) — ${myNick}의 7일 최종 이익: ${fmt(cumProfit)}\n총 폐기: ${totalWaste}개`;
   navigator.clipboard.writeText(text).then(() => alert('결과가 클립보드에 복사되었습니다!'));
 };
 
-/* ══════════════════════════════════════════
-   허브 로그인 이어받기 (localStorage)
-   - 허브를 거쳐 왔으면 코드/닉네임 자동 입력 + 자동 검증
-   - 직접 URL로 접속했으면 아무 일도 일어나지 않음 (기존 흐름 유지)
-   - "다른 계정으로 입력" 으로 언제든 덮어쓰기 가능
-══════════════════════════════════════════ */
+/* ══ 메인 화면 로그인 이어받기 ══ */
 const HUB_LS_KEY = 'opsquest_user';
-
-window.useOtherAccount = function () {
-  localStorage.removeItem(HUB_LS_KEY);
-  const ni = document.getElementById('nick-input');
-  if (ni) ni.value = '';
-  window.resetCode();
-};
-
 (async function prefillFromHub() {
   let saved = null;
   try { saved = JSON.parse(localStorage.getItem(HUB_LS_KEY) || 'null'); } catch (e) {}

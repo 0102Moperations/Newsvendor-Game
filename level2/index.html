@@ -281,7 +281,9 @@
         50%보다 작으면 남을 때의 손해가 더 크므로 예상 수요보다 <strong>덜</strong> 주문하는 것이 유리합니다.
         Level 1에서 본 원리와 같습니다.<br><br>
         <strong>③ 원가가 바뀌면 같은 가격에서도 발주량이 달라집니다.</strong>
-        5회차부터 김밥 재료비가 내려가자, 남을 때의 손해는 줄고 모자랄 때의 손해는 커졌습니다.
+        5회차부터 김밥 재료비가 내려가자, 남을 때의 손해는 줄고 모자랄 때의 손해는 커졌습니다.<br><br>
+        <strong>④ 손님 반응이 바뀌면 가격도 바꿔야 합니다.</strong>
+        7회차부터 주먹밥 손님이 가격에 더 민감해지자, 가격을 내려 더 많이 파는 쪽이 유리해졌습니다. 가격을 내리면 예상 수요가 늘어나므로 발주도 함께 늘려야 합니다.
       </div>
       <div id="f-ref" style="margin-top:12px;"></div>
     </div>
@@ -333,6 +335,8 @@ const NOISE        = 0.30;
 const TOTAL_WEEKS  = 8;      // 발주 회차 수 (4주 × 주 2회)
 const EVENT_ROUND  = 4;      // 0부터 셈 → 5회차
 const EVENT_COST   = { kimbap: 1200 };
+const EVENT2_ROUND = 6;      // 0부터 셈 → 7회차
+const EVENT2_ELASTICITY = { riceball: -2.0 };   // 옆 편의점 개점 → 주먹밥 손님이 가격에 2배 민감
 const PSTEP        = 100;
 
 /* ══ 상태 ══ */
@@ -344,6 +348,7 @@ let lbUnsub = null;
 const fmt = n => (n < 0 ? '-₩' : '₩') + Math.abs(Math.round(n)).toLocaleString();
 const show = id => { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); };
 const costOf = (key, round) => (round >= EVENT_ROUND && EVENT_COST[key] != null) ? EVENT_COST[key] : PRODUCTS[key].cost;
+const elasOf = (key, round) => (round >= EVENT2_ROUND && EVENT2_ELASTICITY[key] != null) ? EVENT2_ELASTICITY[key] : PRODUCTS[key].elasticity;
 const whenOf = round => `${Math.floor(round / 2) + 1}주차 ${round % 2 === 0 ? '전반' : '후반'}`;
 const clampPrice = (key, v) => {
   const p = PRODUCTS[key];
@@ -352,10 +357,10 @@ const clampPrice = (key, v) => {
 };
 
 /* ══ 수요 ══ */
-function expectedDemand(key, price) {
+function expectedDemand(key, price, round = cur) {
   const p = PRODUCTS[key];
   const change = (price - p.basePrice) / p.basePrice;
-  return Math.max(0, Math.round(p.baseDemand * (1 + p.elasticity * change)));
+  return Math.max(0, Math.round(p.baseDemand * (1 + elasOf(key, round) * change)));
 }
 const demandRange = d => [Math.round(d * (1 - NOISE)), Math.round(d * (1 + NOISE))];
 function actualDemand(key, price) {
@@ -371,16 +376,16 @@ function expSold(Q, a, b) {
   if (Q >= b) return (a + b) / 2;
   return (Q * Q - a * a) / (2 * (b - a)) + Q * (b - Q) / (b - a);
 }
-function expProfit(key, price, Q, cost) {
-  const d = expectedDemand(key, price);
+function expProfit(key, price, Q, cost, round) {
+  const d = expectedDemand(key, price, round);
   return price * expSold(Q, d * (1 - NOISE), d * (1 + NOISE)) - cost * Q;
 }
-function bestDecision(key, cost) {
+function bestDecision(key, cost, round) {
   const p = PRODUCTS[key];
   let best = null;
   for (let price = p.pMin; price <= p.pMax; price += PSTEP) {
     for (let Q = 0; Q <= p.qMax; Q++) {
-      const v = expProfit(key, price, Q, cost);
+      const v = expProfit(key, price, Q, cost, round);
       if (!best || v > best.v) best = { price, Q, v };
     }
   }
@@ -689,15 +694,19 @@ function loadWeek() {
   document.getElementById('st-profit').textContent = fmt(cumProfit);
   document.getElementById('st-profit').style.color = cumProfit >= 0 ? 'var(--green)' : 'var(--red)';
   const ev = document.getElementById('event-box');
+  const notes = [];
   if (cur === EVENT_ROUND) {
-    ev.innerHTML = `📢 <strong>상황 변화!</strong> 이번 회차부터 <strong>김밥 재료비가 ${fmt(PRODUCTS.kimbap.cost)} → ${fmt(EVENT_COST.kimbap)}</strong>으로 내려갑니다.`;
-    ev.style.display = '';
+    notes.push(`📢 <strong>상황 변화!</strong> 이번 회차부터 <strong>김밥 재료비가 ${fmt(PRODUCTS.kimbap.cost)} → ${fmt(EVENT_COST.kimbap)}</strong>으로 내려갑니다.`);
   } else if (cur > EVENT_ROUND) {
-    ev.innerHTML = `📌 5회차부터 김밥 재료비는 <strong>${fmt(EVENT_COST.kimbap)}</strong>입니다.`;
-    ev.style.display = '';
-  } else {
-    ev.style.display = 'none';
+    notes.push(`📌 5회차부터 김밥 재료비는 <strong>${fmt(EVENT_COST.kimbap)}</strong>입니다.`);
   }
+  if (cur === EVENT2_ROUND) {
+    notes.push(`📢 <strong>상황 변화!</strong> 옆에 편의점이 새로 생겨 <strong>주먹밥 손님들이 가격을 비교하기 시작했습니다.</strong> 이제 주먹밥은 가격을 바꾸면 손님 수가 <strong>이전보다 2배 크게</strong> 변합니다.`);
+  } else if (cur > EVENT2_ROUND) {
+    notes.push(`📌 7회차부터 주먹밥 손님은 가격에 이전보다 2배 민감합니다.`);
+  }
+  ev.innerHTML = notes.join('<br>');
+  ev.style.display = notes.length ? '' : 'none';
   buildProg('prog-g', cur);
   onProductChange();
   startLbListener(['game-lb'], false);
@@ -814,22 +823,25 @@ window.nextWeek = function() {
 
 /* ══ 최종 화면: 참고 결정표 + 결정 효율 ══ */
 function renderReference() {
-  const periods = [
-    { label: '1~4회차', round: 0 },
-    { label: '5~8회차', round: EVENT_ROUND }
-  ];
   let rows = '';
   let myExp = 0, bestExp = 0;
   Object.entries(PRODUCTS).forEach(([key, p]) => {
-    periods.forEach(per => {
-      const cost = costOf(key, per.round);
-      const b = bestDecision(key, cost);
-      const d = expectedDemand(key, b.price);
-      const mine = history.filter(h => (h.week - 1 >= per.round) && (per.round === 0 ? h.week - 1 < EVENT_ROUND : true));
+    // 조건(원가·가격 민감도)이 같은 회차끼리 한 구간으로 묶음
+    const segs = [];
+    for (let r = 0; r < TOTAL_WEEKS; r++) {
+      const last = segs[segs.length - 1];
+      if (last && last.cost === costOf(key, r) && last.elas === elasOf(key, r)) last.to = r;
+      else segs.push({ from: r, to: r, cost: costOf(key, r), elas: elasOf(key, r) });
+    }
+    segs.forEach(sg => {
+      const b = bestDecision(key, sg.cost, sg.from);
+      const d = expectedDemand(key, b.price, sg.from);
+      const mine = history.filter(h => h.week - 1 >= sg.from && h.week - 1 <= sg.to);
       const avgP = mine.length ? Math.round(mine.reduce((s, h) => s + h.weekData[key].price, 0) / mine.length) : null;
       const avgQ = mine.length ? Math.round(mine.reduce((s, h) => s + h.weekData[key].ordered, 0) / mine.length) : null;
-      mine.forEach(h => { myExp += expProfit(key, h.weekData[key].price, h.weekData[key].ordered, cost); bestExp += b.v; });
-      rows += `<tr><td>${p.icon} ${p.name}</td><td>${per.label}</td><td>${fmt(cost)}</td>
+      mine.forEach(h => { myExp += expProfit(key, h.weekData[key].price, h.weekData[key].ordered, sg.cost, h.week - 1); bestExp += b.v; });
+      const cond = `원가 ${fmt(sg.cost)}` + (sg.elas !== p.elasticity ? ' · 가격 민감도 2배' : '');
+      rows += `<tr><td>${p.icon} ${p.name}</td><td>${sg.from + 1}~${sg.to + 1}회차</td><td>${cond}</td>
         <td><strong>${fmt(b.price)}</strong> / <strong>${b.Q}개</strong> <span style="color:var(--text3);">(예상 ${d}개)</span></td>
         <td>${avgP === null ? '—' : `${fmt(avgP)} / ${avgQ}개`}</td></tr>`;
     });
@@ -841,7 +853,7 @@ function renderReference() {
       실제 수요는 매번 운에 따라 달라집니다. 운을 뺀 <strong>내 결정의 기대이익</strong>은 가장 좋은 결정의 <strong>${eff}%</strong> 수준이었습니다.
     </div>
     <table class="ref-table">
-      <thead><tr><th>상품</th><th>기간</th><th>원가</th><th>가장 좋은 가격 / 발주</th><th>내 평균 가격 / 발주</th></tr></thead>
+      <thead><tr><th>상품</th><th>기간</th><th>조건</th><th>가장 좋은 가격 / 발주</th><th>내 평균 가격 / 발주</th></tr></thead>
       <tbody>${rows}</tbody>
     </table>`;
 }

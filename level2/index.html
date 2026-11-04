@@ -273,17 +273,7 @@
     <div class="card">
       <div class="card-title">🎓 학습 정리</div>
       <div class="info-box" style="margin-bottom:0;">
-        <strong>① 가격은 수요와 마진을 동시에 바꿉니다.</strong>
-        가격을 올리면 팔리는 양은 줄고 개당 마진은 커집니다. 이익이 가장 큰 가격은 원가와 수요 반응을 함께 봐야 정해집니다.<br><br>
-        <strong>② 가격이 바뀌면 발주 판단도 바뀝니다.</strong>
-        남으면 1개당 <strong>원가</strong>를 잃고, 모자라면 1개당 <strong>마진(가격 − 원가)</strong>을 놓칩니다.
-        마진율(마진 ÷ 가격)이 50%보다 크면 모자랄 때의 손해가 더 크므로 예상 수요보다 <strong>더</strong>,
-        50%보다 작으면 남을 때의 손해가 더 크므로 예상 수요보다 <strong>덜</strong> 주문하는 것이 유리합니다.
-        Level 1에서 본 원리와 같습니다.<br><br>
-        <strong>③ 원가가 바뀌면 같은 가격에서도 발주량이 달라집니다.</strong>
-        5회차부터 김밥 재료비가 내려가자, 남을 때의 손해는 줄고 모자랄 때의 손해는 커졌습니다.<br><br>
-        <strong>④ 손님 반응이 바뀌면 가격도 바꿔야 합니다.</strong>
-        7회차부터 주먹밥 손님이 가격에 더 민감해지자, 가격을 내려 더 많이 파는 쪽이 유리해졌습니다. 가격을 내리면 예상 수요가 늘어나므로 발주도 함께 늘려야 합니다.
+        가격은 수요와 마진을 동시에 바꿉니다. 원가가 바뀌면 같은 가격에서도 발주량이 달라집니다. 손님 반응이 바뀌면 가격도 바꿔야 합니다.
       </div>
       <div id="f-ref" style="margin-top:12px;"></div>
     </div>
@@ -819,10 +809,9 @@ window.nextWeek = function() {
   else loadWeek();
 };
 
-/* ══ 최종 화면: 참고 결정표 + 결정 효율 ══ */
+/* ══ 최종 화면: 최적 결정표 ══ */
 function renderReference() {
   let rows = '';
-  let myExp = 0, bestExp = 0;
   Object.entries(PRODUCTS).forEach(([key, p]) => {
     // 조건(원가·가격 민감도)이 같은 회차끼리 한 구간으로 묶음
     const segs = [];
@@ -837,21 +826,18 @@ function renderReference() {
       const mine = history.filter(h => h.week - 1 >= sg.from && h.week - 1 <= sg.to);
       const avgP = mine.length ? Math.round(mine.reduce((s, h) => s + h.weekData[key].price, 0) / mine.length) : null;
       const avgQ = mine.length ? Math.round(mine.reduce((s, h) => s + h.weekData[key].ordered, 0) / mine.length) : null;
-      mine.forEach(h => { myExp += expProfit(key, h.weekData[key].price, h.weekData[key].ordered, sg.cost, h.week - 1); bestExp += b.v; });
       const cond = `원가 ${fmt(sg.cost)}` + (sg.elas !== p.elasticity ? ' · 가격 민감도 2배' : '');
       rows += `<tr><td>${p.icon} ${p.name}</td><td>${sg.from + 1}~${sg.to + 1}회차</td><td>${cond}</td>
-        <td><strong>${fmt(b.price)}</strong> / <strong>${b.Q}개</strong> <span style="color:var(--text3);">(예상 ${d}개)</span></td>
+        <td><strong>${fmt(b.price)}</strong> / <strong>${b.Q}개</strong> <span style="color:var(--text3);">(평균 예상 수요 ${d}개)</span></td>
         <td>${avgP === null ? '—' : `${fmt(avgP)} / ${avgQ}개`}</td></tr>`;
     });
   });
-  const eff = bestExp > 0 ? Math.round(myExp / bestExp * 100) : 0;
   document.getElementById('f-ref').innerHTML = `
     <div style="font-size:12px;color:var(--text2);line-height:1.7;">
-      <strong>참고: 기대이익이 가장 큰 결정과 내 평균 결정</strong><br>
-      실제 수요는 매번 운에 따라 달라집니다. 운을 뺀 <strong>내 결정의 기대이익</strong>은 가장 좋은 결정의 <strong>${eff}%</strong> 수준이었습니다.
+      <strong>참고: 기대이익을 최대로 하는 결정(최적해)과 내 평균 결정</strong>
     </div>
     <table class="ref-table">
-      <thead><tr><th>상품</th><th>기간</th><th>조건</th><th>가장 좋은 가격 / 발주</th><th>내 평균 가격 / 발주</th></tr></thead>
+      <thead><tr><th>상품</th><th>기간</th><th>조건</th><th>최적 가격 / 발주량</th><th>내 평균 가격 / 발주량</th></tr></thead>
       <tbody>${rows}</tbody>
     </table>`;
 }

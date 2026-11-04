@@ -334,10 +334,13 @@ function renderModules(results) {
       barCls = 'zero';
     }
 
-    const tagName = locked ? 'div' : 'a';
+    const done = r.state === 'done';
+    const tagName = (locked || done) ? 'div' : 'a';
     const attr = locked
       ? `onclick="alert('Level ${r.id - 1}을(를) 먼저 완료해 주세요.')"`
-      : `href="${r.href}"`;
+      : done
+        ? `onclick="alert('이미 완료한 레벨입니다. 레벨마다 한 번만 도전할 수 있어요.')"`
+        : `href="${r.href}"`;
     return `<${tagName} ${attr} class="mod${locked ? ' locked' : ''}">
       <div class="emo">${r.emo}</div>
       <div class="codename">${r.code}</div>

@@ -808,7 +808,7 @@ function renderAfternoon() {
         </div>
         <div class="markdown-info" id="md-info-${key}"></div>`;
     return `<div class="markdown-section">
-      <div class="markdown-title" style="margin-bottom:10px;">${p.icon} ${p.name} <span style="font-weight:400;color:var(--text2);font-size:12px;">· 정가 ${fmt(p.amPrice)}</span></div>
+      <div class="markdown-title" style="margin-bottom:10px;">${p.icon} ${p.name} <span style="font-weight:400;color:var(--text2);font-size:12px;">· 정가 ${fmt(p.amPrice)} · 재료비 ${fmt(p.cost)}</span></div>
       <div class="md-grid"><div>${left}</div><div>${right}</div></div>
     </div>`;
   }).join('');

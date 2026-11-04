@@ -243,7 +243,10 @@ window.doLogin = async function () {
       msg.textContent = `❌ '${name}'은(는) 이 수업 명단에 없습니다. 등록된 실명을 띄어쓰기 없이 입력했는지 확인해 주세요.`;
       return;
     }
-    user = { code, className: cls.val().name || code, nick: name };
+    /* name = 명단 확인된 실명(강사 확인·단계 잠금용), nick = 리더보드 표시 이름(각 레벨 시작 화면에서 변경 가능) */
+    let prevNick = '';
+    try { const old = JSON.parse(localStorage.getItem(LS_KEY) || 'null'); if (old && old.code === code && old.name === name) prevNick = old.nick; } catch {}
+    user = { code, className: cls.val().name || code, name, nick: prevNick || name };
     localStorage.setItem(LS_KEY, JSON.stringify(user));
     enterDash();
   } catch (e) {
@@ -265,9 +268,9 @@ window.doLogout = function () {
 function enterDash() {
   document.getElementById('login-screen').classList.add('hidden');
   document.getElementById('dash-screen').classList.remove('hidden');
-  document.getElementById('greet-title').textContent = `안녕하세요, ${user.nick}님!`;
+  document.getElementById('greet-title').textContent = `안녕하세요, ${user.name}님!`;
   document.getElementById('greet-sub').textContent =
-    `${user.className} · 최근 업데이트: ${new Date().toLocaleTimeString('ko-KR')}`;
+    `${user.className} · 리더보드 닉네임: ${user.nick} (레벨 시작 화면에서 변경) · 최근 업데이트: ${new Date().toLocaleTimeString('ko-KR')}`;
   renderModules([]);
   loadProgress();
 }
@@ -278,7 +281,7 @@ async function loadProgress() {
     LEVELS.map(async lv => {
       try {
         const snap = await get(ref(db, `${lv.path}/scores/${user.code}`));
-        const rows = Object.values(snap.val() || {}).filter(r => r.nick === user.nick);
+        const rows = Object.values(snap.val() || {}).filter(r => (r.name || r.nick) === user.name);
         if (!rows.length) return { ...lv, state:'none', pct:0, profit:0, steps:0 };
         const best = rows.sort((a, b) =>
           (b.completed ? 1 : 0) - (a.completed ? 1 : 0) || b.profit - a.profit)[0];
@@ -354,21 +357,24 @@ async function loadRanking() {
   await Promise.all(LEVELS.map(async lv => {
     try {
       const snap = await get(ref(db, `${lv.path}/scores/${user.code}`));
-      const byNick = {};
+      /* 학생은 실명(name)으로 묶고, 화면에는 가장 최근 닉네임(nick)을 보여줌 */
+      const byId = {};
       Object.values(snap.val() || {}).forEach(r => {
-        if (!r.nick) return;
-        if (!byNick[r.nick] || r.profit > byNick[r.nick].profit) byNick[r.nick] = r;
+        const id = r.name || r.nick;
+        if (!id) return;
+        if (!byId[id] || r.profit > byId[id].profit) byId[id] = r;
+        if (!totals[id]) totals[id] = { profit: 0, maxLevel: 0, nick: r.nick, nickTs: 0 };
+        if ((r.ts || 0) >= totals[id].nickTs) { totals[id].nick = r.nick; totals[id].nickTs = r.ts || 0; }
       });
-      Object.entries(byNick).forEach(([nick, r]) => {
-        if (!totals[nick]) totals[nick] = { profit: 0, maxLevel: 0 };
-        totals[nick].profit += (r.profit || 0);
-        if (lv.id > totals[nick].maxLevel) totals[nick].maxLevel = lv.id;
+      Object.entries(byId).forEach(([id, r]) => {
+        totals[id].profit += (r.profit || 0);
+        if (lv.id > totals[id].maxLevel) totals[id].maxLevel = lv.id;
       });
     } catch {}
   }));
 
   const sorted = Object.entries(totals)
-    .map(([nick, v]) => ({ nick, ...v }))
+    .map(([id, v]) => ({ id, ...v }))
     .sort((a, b) => b.profit - a.profit);
 
   const el = document.getElementById('ranking');
@@ -377,16 +383,17 @@ async function loadRanking() {
     return;
   }
 
-  const myIdx = sorted.findIndex(e => e.nick === user.nick);
+  const myIdx = sorted.findIndex(e => e.id === user.name);
   document.getElementById('s-rank').textContent =
     myIdx === -1 ? `— / ${sorted.length}` : `${myIdx + 1} / ${sorted.length}`;
 
+  const esc = s => String(s ?? '').replace(/[&<>"'`]/g, c => '&#' + c.charCodeAt(0) + ';');
   const row = (e, i) => {
-    const isMe = e.nick === user.nick;
+    const isMe = e.id === user.name;
     const cls  = i === 0 ? 'n1' : i === 1 ? 'n2' : i === 2 ? 'n3' : 'nn';
     return `<div class="rk">
       <div class="rk-num ${cls}">${i + 1}</div>
-      <div class="rk-name${isMe ? ' me' : ''}">${isMe ? '⭐ ' : ''}${e.nick}</div>
+      <div class="rk-name${isMe ? ' me' : ''}">${isMe ? '⭐ ' : ''}${esc(e.nick)}</div>
       <div class="rk-lv">Level ${e.maxLevel}</div>
       <div class="rk-val">${fmt(e.profit)}</div>
     </div>`;
@@ -403,7 +410,10 @@ async function loadRanking() {
   if (saved) {
     try {
       const u = JSON.parse(saved);
-      if (u && u.code && u.nick) { user = u; enterDash(); return; }
+      if (u && u.code && (u.name || u.nick)) {
+        if (!u.name) { u.name = u.nick; localStorage.setItem(LS_KEY, JSON.stringify(u)); }   // 예전 로그인 정보 호환
+        user = u; enterDash(); return;
+      }
     } catch {}
     localStorage.removeItem(LS_KEY);
   }

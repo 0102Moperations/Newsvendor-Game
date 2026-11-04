@@ -938,17 +938,25 @@ window.completeDay = async function() {
   const cumBox = document.getElementById('cum-box');
   if (history.length >= 2) {
     const sum = f => history.reduce((s, h) => s + (h[f] || 0), 0);
+    const rowsDef = [
+      ['정가 판매액', h => fmt(h.amSales),                         () => fmt(sum('amSales')), ''],
+      ['오후 판매액', h => fmt(h.pmRev),                           () => fmt(sum('pmRev')), ''],
+      ['재료비',      h => '−' + fmt(h.cost),                      () => '−' + fmt(sum('cost')), ''],
+      ['폐기 처리비', h => `−${fmt(h.disposal)}<br><span style="font-size:10px;">(${h.wasteQty}개)</span>`,
+                                                                   () => `−${fmt(sum('disposal'))}<br><span style="font-size:10px;">(${sum('wasteQty')}개)</span>`, 'color:var(--red);'],
+    ];
+    const head = history.map(h => `<th>Day ${h.dayNo}<br><span style="font-weight:400;">${(DAY_NAMES[h.dayNo - 1] || '').slice(0, 1)}</span></th>`).join('');
+    const body = rowsDef.map(([label, cell, total, st]) =>
+      `<tr><td style="text-align:left;color:var(--text2);">${label}</td>${history.map(h => `<td style="${st}">${cell(h)}</td>`).join('')}<td style="${st}font-weight:500;">${total()}</td></tr>`
+    ).join('') +
+      `<tr style="font-weight:500;"><td style="text-align:left;">순이익</td>${history.map(h => `<td class="${h.dayProfit >= 0 ? 'pos' : 'neg'}">${fmt(h.dayProfit)}</td>`).join('')}<td class="${cumProfit >= 0 ? 'pos' : 'neg'}" style="font-size:14px;">${fmt(cumProfit)}</td></tr>`;
     cumBox.innerHTML = `
-      <div style="font-size:13px;font-weight:500;margin-bottom:8px;">📈 Day 1~${history.length} 누적</div>
-      <div class="result-grid">
-        <div class="ri"><span class="k">정가 판매액</span><span class="v">${fmt(sum('amSales'))}</span></div>
-        <div class="ri"><span class="k">오후 판매액</span><span class="v">${fmt(sum('pmRev'))}</span></div>
-        <div class="ri"><span class="k">재료비</span><span class="v">−${fmt(sum('cost'))}</span></div>
-        <div class="ri"><span class="k">폐기 처리비</span><span class="v" style="color:var(--red);">−${fmt(sum('disposal'))} (${sum('wasteQty')}개)</span></div>
-      </div>
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:14px;">
-        <span style="color:var(--text2);">누적 순이익</span>
-        <strong style="font-size:18px;color:${cumProfit >= 0 ? 'var(--green)' : 'var(--red)'};">${fmt(cumProfit)}</strong>
+      <div style="font-size:13px;font-weight:500;margin-bottom:8px;">📈 날짜별 결과 (Day 1~${history.length})</div>
+      <div class="hist-wrap" style="margin-bottom:0;">
+        <table>
+          <thead><tr><th></th>${head}<th>누적 합계</th></tr></thead>
+          <tbody>${body}</tbody>
+        </table>
       </div>`;
     cumBox.style.display = '';
   } else {

@@ -360,7 +360,6 @@
       <div style="font-size:42px;margin-bottom:8px">🏆</div>
       <div style="font-size:13px;color:var(--text2);margin-bottom:4px">10라운드 최종 누적 이익</div>
       <div class="fn" id="f-num"></div>
-      <div class="grade-b" id="f-grade"></div>
       <div style="font-size:14px;color:var(--text2);margin-top:6px">최종 순위: <strong id="f-rank" style="font-size:17px"></strong></div>
     </div>
     <div class="card">
@@ -822,15 +821,6 @@ async function showFinal() {
   const fn = document.getElementById('f-num');
   fn.textContent = fmt(cumProfit);
   fn.className = 'fn' + (cumProfit < 0 ? ' neg' : '');
-
-  let grade, gs;
-  if      (cumProfit >= 800000) { grade = '👑 김밥왕 달성!';    gs = 'background:#eaf3de;color:#3B6D11;'; }
-  else if (cumProfit >= 500000) { grade = '🥇 베테랑 사장님';  gs = 'background:#fef3e2;color:#854F0B;'; }
-  else if (cumProfit >= 200000) { grade = '🥈 신입 사장님';    gs = 'background:#e6f1fb;color:#185FA5;'; }
-  else if (cumProfit >= 0)      { grade = '🥉 수습 사장님';    gs = 'background:#f1efe8;color:#5F5E5A;'; }
-  else                          { grade = '😢 적자 가게';       gs = 'background:#fcebeb;color:#A32D2D;'; }
-  const gb = document.getElementById('f-grade');
-  gb.textContent = grade; gb.style.cssText = gs;
 
   document.getElementById('f-tbody').innerHTML = history.map(h =>
     `<tr><td>${h.round}</td><td style="font-size:11px">${h.weather}</td>

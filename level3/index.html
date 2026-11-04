@@ -377,7 +377,7 @@ const MD_SATURATE  = 60;    // 할인 60%에서 수요 포화
 
 /* ══ 상태 ══ */
 let day = 0, cumProfit = 0, history = [];
-let myNick = '', myKey = '', classCode = '', className = '';
+let myName = '', myNick = '', myKey = '', classCode = '', className = '';
 let currentDayData = {};
 let lbUnsub = null;
 
@@ -452,20 +452,21 @@ window.onMorningChange = function() {
 /* ══ Firebase ══ */
 async function saveScore(completed = false) {
   await set(ref(db, `leaderboard_l3/scores/${classCode}/${myKey}`), {
-    nick: myNick, profit: cumProfit, days: history.length, completed, ts: Date.now()
+    name: myName, nick: myNick, profit: cumProfit, days: history.length, completed, ts: Date.now()
   });
 }
 /* ══ 같은 닉네임은 한 줄로 ══ */
 function dedupeByNick(all) {
   const done = {}, prog = {};
   all.forEach(e => {
-    if (!e.nick) return;
+    const id = e.name || e.nick;
+    if (!id) return;
     if (e.completed) {
-      if (!done[e.nick] || e.profit > done[e.nick].profit) done[e.nick] = e;
+      if (!done[id] || e.profit > done[id].profit) done[id] = e;
     } else if (e.key === myKey) {
-      prog[e.nick] = e;
-    } else if (!prog[e.nick] || (prog[e.nick].key !== myKey && (e.ts || 0) > (prog[e.nick].ts || 0))) {
-      prog[e.nick] = e;
+      prog[id] = e;
+    } else if (!prog[id] || (prog[id].key !== myKey && (e.ts || 0) > (prog[id].ts || 0))) {
+      prog[id] = e;
     }
   });
   Object.keys(prog).forEach(n => { if (done[n] && prog[n].key !== myKey) delete prog[n]; });
@@ -607,12 +608,39 @@ window.startGame = async function() {
     location.href = '../index.html';
     return;
   }
-  const nick = hubUser.nick;
+  // 🎭 실명은 기록·잠금용, 닉네임은 리더보드 표시용 (익명 플레이)
+  myName = hubUser.name || hubUser.nick;
+  let nick = (document.getElementById('nick-input').value || '').trim().replace(/\s+/g, ' ') || myName;
+  if (nick.replace(/\s+/g, '') === myName) nick = myName;
+  if (!/^[가-힣ㄱ-ㅎㅏ-ㅣA-Za-z0-9 _-]{1,12}$/.test(nick)) {
+    alert('닉네임은 한글·영문·숫자·공백·_·- 로 12자 이내로 입력해 주세요.');
+    return;
+  }
+  if (nick !== myName) {
+    try {
+      if ((await get(ref(db, `roster/${classCode}/${nick.replace(/\s+/g, '')}`))).exists()) {
+        alert('명단에 있는 학생 이름은 닉네임으로 쓸 수 없습니다. 다른 닉네임을 입력해 주세요.');
+        return;
+      }
+      for (const p of ['leaderboard', 'leaderboard_l2', 'leaderboard_l3']) {
+        const s = await get(ref(db, `${p}/scores/${classCode}`));
+        if (Object.values(s.val() || {}).some(r => r.nick === nick && (r.name || r.nick) !== myName)) {
+          alert('이미 다른 학생이 쓰고 있는 닉네임입니다. 다른 닉네임을 입력해 주세요.');
+          return;
+        }
+      }
+    } catch (e) {
+      alert('닉네임을 확인하지 못했습니다. 잠시 후 다시 시도해 주세요.');
+      return;
+    }
+  }
+  hubUser.nick = nick;
+  localStorage.setItem('opsquest_user', JSON.stringify(hubUser));
   if (!nick) { alert('닉네임을 입력해 주세요!'); return; }
    // 🔒 Level 2 완료 여부 확인
   try {
     const prev = await get(ref(db, `leaderboard_l2/scores/${classCode}`));
-    const passed = Object.values(prev.val() || {}).some(r => r.nick === nick && r.completed);
+    const passed = Object.values(prev.val() || {}).some(r => (r.name || r.nick) === myName && r.completed);
     if (!passed) {
       alert(`'${nick}'님은 아직 Level 2(OpsFlow)를 완료하지 않았습니다.\nLevel 2를 먼저 완료해 주세요.`);
       location.href = '../index.html';
@@ -950,7 +978,7 @@ window.useOtherAccount = function () {
   const ci = document.getElementById('code-input');
   const ni = document.getElementById('nick-input');
   if (ci) ci.value = saved.code;
-  if (ni) { ni.value = saved.nick; ni.readOnly = true; }
+  if (ni) { ni.value = saved.nick || saved.name || ''; ni.placeholder = '비워 두면 실명으로 표시됩니다'; }
 
   await window.verifyCode();
 

@@ -311,7 +311,13 @@
     <div class="card">
       <div class="card-title">🎓 학습 정리</div>
       <div class="info-box" style="margin-bottom:0;">
-        남은 재고를 할인해서 팔 수 있으면 남을 때의 손해가 줄어들므로 더 많이 준비하는 것이 유리합니다. 오후 판매가 없는 날에는 준비 수량을 줄여야 합니다. 할인율은 남은 재고의 양에 맞춰 정합니다.
+        <strong>① 할인할 수 있으면 재료를 더 많이 준비해도 됩니다.</strong>
+        오후에 할인해서 팔 수 있으니 "남았을 때의 손해"가 줄어듭니다.<br><br>
+        <strong>② 오후에는 원가가 이미 쓴 돈입니다.</strong>
+        판단 기준은 원가가 아니라 "지금부터 들어오고 나가는 돈"입니다.
+        할인으로 늘어난 손님 덕에 버려질 뻔한 물건이 팔리지만, 할인을 덜 했어도 사 갔을 손님에게까지 더 싸게 팔 수 있다는 점을 고려해야 합니다.<br><br>
+        <strong>③ 같은 상품, 두 개의 가격.</strong>
+        정가를 내는 손님과 할인을 기다리는 오후 손님에게 다른 가격을 받으면, 한 가격으로 팔 때보다 이익이 커집니다.
       </div>
       <div id="f-ref" style="margin-top:12px;"></div>
     </div>
@@ -994,18 +1000,28 @@ function renderReference() {
     const myQ = normal.length ? Math.round(normal.reduce((s, h) => s + h.products[key].ordered, 0) / normal.length) : null;
     const thu = history.find(h => h.dayNo - 1 === NO_PM_DAY);
     const myThuQ = thu ? thu.products[key].ordered : null;
+    // 할인율: 그날 남은 양에서의 최적 할인율과 내 할인율의 차이(%p)를 평균
+    const mdDays = normal.filter(h => h.products[key].leftover > 0);
+    const gap = mdDays.length
+      ? Math.round(mdDays.reduce((s, h) => s + (h.products[key].mdPct - bestMarkdown(key, h.products[key].leftover).md), 0) / mdDays.length)
+      : null;
+    const gapTxt = gap === null ? '—'
+      : gap === 0 ? '최적과 같음'
+      : gap > 0 ? `평균 <strong>${gap}%p 더</strong> 할인`
+      : `평균 <strong>${-gap}%p 덜</strong> 할인`;
     rows += `<tr><td>${p.icon} ${p.name}</td>
       <td>${p.amDemand}개</td>
       <td><strong>${withMd.Q}개</strong> / ${myQ === null ? '—' : myQ + '개'}</td>
-      <td><strong>${noMd.Q}개</strong> / ${myThuQ === null ? '—' : myThuQ + '개'}</td></tr>`;
+      <td><strong>${noMd.Q}개</strong> / ${myThuQ === null ? '—' : myThuQ + '개'}</td>
+      <td>${gapTxt}</td></tr>`;
   });
   document.getElementById('f-ref').innerHTML = `
     <div style="font-size:12px;color:var(--text2);line-height:1.7;">
-      <strong>참고: 기대이익을 최대로 하는 준비 수량(최적해)과 내 준비 수량</strong>
+      <strong>참고: 기대이익을 최대로 하는 결정(최적해)과 내 결정</strong>
     </div>
     <table class="ref-table">
       <thead>
-        <tr><th>상품</th><th>평균 예상 수요<br>(오후 4시 전)</th><th>할인 판매가 있는 날<br>최적 / 내 평균</th><th>오후 판매가 없는 날 (목요일)<br>최적 / 내 준비 수량</th></tr>
+        <tr><th>상품</th><th>평균 예상 수요<br>(오후 4시 전)</th><th>할인 판매가 있는 날<br>최적 / 내 평균 준비 수량</th><th>오후 판매가 없는 날 (목요일)<br>최적 / 내 준비 수량</th><th>오후 할인율<br>(남은 양이 같을 때 최적과 비교)</th></tr>
       </thead>
       <tbody>${rows}</tbody>
     </table>`;

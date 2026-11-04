@@ -841,8 +841,7 @@ async function showFinal() {
   const underO = history.filter(h => h.demand > h.ordered).length;
   const overO  = history.filter(h => h.demand <= h.ordered && h.leftover > 0).length;
   document.getElementById('f-ins').textContent =
-    `10라운드 결산 — 품절 ${underO}회, 과다재고 ${overO}회. ` +
-    `날씨와 요일에 따라 수요가 크게 달라집니다. ` +
+    `총 결산 — 10라운드 중 품절 ${underO}회, 과다재고 ${overO}회. ` +
     `원가가 낮아질수록, 잔존가치가 높을수록 더 공격적으로 주문하는 것이 유리합니다.`;
 
   // 최종 화면: 완료자만 표시 (finalMode=true)

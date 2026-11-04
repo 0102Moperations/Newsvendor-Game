@@ -451,7 +451,7 @@ window.onMorningChange = function() {
 /* ══ Firebase ══ */
 async function saveScore(completed = false) {
   await set(ref(db, `leaderboard_l3/scores/${classCode}/${myKey}`), {
-    name: myName, nick: myNick, profit: cumProfit, days: history.length, completed, ts: Date.now()
+    name: myName, nick: myNick, hist: JSON.stringify(history), profit: cumProfit, days: history.length, completed, ts: Date.now()
   });
 }
 /* ══ 같은 닉네임은 한 줄로 ══ */
@@ -666,6 +666,19 @@ window.startGame = async function() {
   myKey  = 'l3_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
   day = 0; cumProfit = 0; history = [];
   buildMorningCards();
+   // ⏯️ 중간에 그만둔 기록이 있으면 처음부터가 아니라 이어서 진행
+  try {
+    const snapR = await get(ref(db, `leaderboard_l3/scores/${classCode}`));
+    const prev = Object.entries(snapR.val() || {})
+      .filter(([, r]) => (r.name || r.nick) === myName && !r.completed && typeof r.hist === 'string')
+      .sort((a, b) => (b[1].ts || 0) - (a[1].ts || 0))[0];
+    const h = prev ? JSON.parse(prev[1].hist) : null;
+    if (Array.isArray(h)) {
+      myKey = prev[0]; history = h; cumProfit = prev[1].profit || 0; day = h.length;
+      if (h.length) alert(`이어서 진행합니다. ${h.length}일차까지 끝낸 기록을 불러왔어요.`);
+      if (day >= TOTAL_DAYS) { day = TOTAL_DAYS - 1; nextDay(); return; }
+    }
+  } catch (e) {}
   await saveScore(false);
   loadMorning();
 };

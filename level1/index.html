@@ -489,7 +489,7 @@ window.resetCode = function() {
 /* ══ Firebase 저장 ══ */
 async function saveScore(completed = false) {
   await set(ref(db, `leaderboard/scores/${classCode}/${myKey}`), {
-    name: myName, nick: myNick, profit: cumProfit, rounds: history.length,
+    name: myName, nick: myNick, hist: JSON.stringify(history), profit: cumProfit, rounds: history.length,
     completed: completed, ts: Date.now()
   });
 }
@@ -706,6 +706,19 @@ window.startGame = async function() {
   myNick = nick;
   myKey = 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
   cur = 0; cumProfit = 0; history = [];
+   // ⏯️ 중간에 그만둔 기록이 있으면 처음부터가 아니라 이어서 진행
+  try {
+    const snapR = await get(ref(db, `leaderboard/scores/${classCode}`));
+    const prev = Object.entries(snapR.val() || {})
+      .filter(([, r]) => (r.name || r.nick) === myName && !r.completed && typeof r.hist === 'string')
+      .sort((a, b) => (b[1].ts || 0) - (a[1].ts || 0))[0];
+    const h = prev ? JSON.parse(prev[1].hist) : null;
+    if (Array.isArray(h)) {
+      myKey = prev[0]; history = h; cumProfit = prev[1].profit || 0; cur = h.length;
+      if (h.length) alert(`이어서 진행합니다. ${h.length}라운드까지 끝낸 기록을 불러왔어요.`);
+      if (cur >= ROUNDS.length) { cur = ROUNDS.length - 1; nextRound(); return; }
+    }
+  } catch (e) {}
   await saveScore();
   loadRound();
 };

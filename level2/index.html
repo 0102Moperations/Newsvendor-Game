@@ -853,8 +853,7 @@ window.useOtherAccount = function () {
   if (stepNick && stepNick.style.display !== 'none') {
     const hint = document.createElement('div');
     hint.style.cssText = 'font-size:11px;margin-top:8px;color:#9a9aa6;';
-    hint.innerHTML = '허브에서 로그인 정보를 불러왔습니다. ' +
-      '<span style="text-decoration:underline;cursor:pointer;" onclick="useOtherAccount()">다른 계정으로 입력</span>';
+    hint.textContent = '메인 화면 로그인 정보를 불러왔습니다. 리더보드에 보일 닉네임은 위 칸에서 바꿀 수 있습니다.';
     stepNick.appendChild(hint);
   }
 })();

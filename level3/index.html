@@ -305,7 +305,6 @@
       <div style="font-size:42px;margin-bottom:8px">🏆</div>
       <div style="font-size:13px;color:var(--text2);margin-bottom:4px">7일 최종 누적 이익</div>
       <div style="font-size:40px;font-weight:700;font-family:'Black Han Sans',sans-serif;" id="f-num"></div>
-      <div class="grade-b" id="f-grade"></div>
       <div style="font-size:14px;color:var(--text2);margin-top:6px">최종 순위: <strong id="f-rank" style="font-size:17px;color:var(--blue)"></strong></div>
     </div>
 
@@ -1004,16 +1003,6 @@ async function showFinal() {
   const fn = document.getElementById('f-num');
   fn.textContent = fmt(cumProfit);
   fn.style.color = cumProfit >= 0 ? 'var(--green)' : 'var(--red)';
-
-  // 기준(7일 기대이익): 최적 약 212만 · 할인 없이 최적 발주 약 184만 · 아침 평균만큼 주문 약 166만
-  let grade, gs;
-  if      (cumProfit >= 2050000) { grade = '👑 마크다운의 달인';   gs = 'background:#eaf3de;color:#3B6D11;'; }
-  else if (cumProfit >= 1850000) { grade = '🥇 베테랑 카페 점주'; gs = 'background:#fef3e2;color:#854F0B;'; }
-  else if (cumProfit >= 1650000) { grade = '🥈 성장하는 점주';    gs = 'background:#e6f1fb;color:#185FA5;'; }
-  else if (cumProfit >=       0) { grade = '🥉 신입 점주';        gs = 'background:#f1efe8;color:#5F5E5A;'; }
-  else                           { grade = '😢 적자 카페';        gs = 'background:#fcebeb;color:#A32D2D;'; }
-  const gb = document.getElementById('f-grade');
-  gb.textContent = grade; gb.style.cssText = gs;
 
   renderHistory('f-tbody');
   try { renderReference(); } catch (e) {}

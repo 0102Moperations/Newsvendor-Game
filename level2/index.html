@@ -433,7 +433,7 @@ window.onProductChange = function() {
 /* ══ Firebase 저장 ══ */
 async function saveScore(completed = false) {
   await set(ref(db, `leaderboard_l2/scores/${classCode}/${myKey}`), {
-    name: myName, nick: myNick, profit: cumProfit, weeks: history.length, completed, ts: Date.now()
+    name: myName, nick: myNick, hist: JSON.stringify(history), profit: cumProfit, weeks: history.length, completed, ts: Date.now()
   });
 }
 
@@ -652,6 +652,19 @@ window.startGame = async function() {
   myKey  = 'l2_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
   cur = 0; cumProfit = 0; history = [];
   buildProductCards();
+   // ⏯️ 중간에 그만둔 기록이 있으면 처음부터가 아니라 이어서 진행
+  try {
+    const snapR = await get(ref(db, `leaderboard_l2/scores/${classCode}`));
+    const prev = Object.entries(snapR.val() || {})
+      .filter(([, r]) => (r.name || r.nick) === myName && !r.completed && typeof r.hist === 'string')
+      .sort((a, b) => (b[1].ts || 0) - (a[1].ts || 0))[0];
+    const h = prev ? JSON.parse(prev[1].hist) : null;
+    if (Array.isArray(h)) {
+      myKey = prev[0]; history = h; cumProfit = prev[1].profit || 0; cur = h.length;
+      if (h.length) alert(`이어서 진행합니다. ${h.length}주차까지 끝낸 기록을 불러왔어요.`);
+      if (cur >= TOTAL_WEEKS) { cur = TOTAL_WEEKS - 1; nextWeek(); return; }
+    }
+  } catch (e) {}
   await saveScore(false);
   loadWeek();
 };

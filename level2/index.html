@@ -690,7 +690,7 @@ function loadWeek() {
   document.getElementById('st-profit').style.color = cumProfit >= 0 ? 'var(--green)' : 'var(--red)';
   const ev = document.getElementById('event-box');
   if (cur === EVENT_ROUND) {
-    ev.innerHTML = `📢 <strong>상황 변화!</strong> 이번 회차부터 <strong>김밥 재료비가 ${fmt(PRODUCTS.kimbap.cost)} → ${fmt(EVENT_COST.kimbap)}</strong>으로 내려갑니다. 판매가 범위와 손님 반응은 그대로입니다.`;
+    ev.innerHTML = `📢 <strong>상황 변화!</strong> 이번 회차부터 <strong>김밥 재료비가 ${fmt(PRODUCTS.kimbap.cost)} → ${fmt(EVENT_COST.kimbap)}</strong>으로 내려갑니다.`;
     ev.style.display = '';
   } else if (cur > EVENT_ROUND) {
     ev.innerHTML = `📌 5회차부터 김밥 재료비는 <strong>${fmt(EVENT_COST.kimbap)}</strong>입니다.`;
@@ -763,7 +763,7 @@ window.submitWeek = async function() {
       </div>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;font-size:11px;color:var(--text2);">
         <div>발주 ${w.ordered}개</div>
-        <div>실제 수요 ${w.demand}개</div>
+        <div><strong style="color:var(--text);">실제 수요 ${w.demand}개</strong></div>
         <div>판매 ${w.sold}개</div>
         <div style="color:${w.leftover > 0 ? 'var(--red)' : 'var(--text2)'};">폐기 ${w.leftover}개</div>
       </div>

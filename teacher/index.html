@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Opsera · 강사 대시보드</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#1B5FA8;--navy-d:#164E8A;--navy-l:#E8F1FA;
+  --green:#2A9D5C;--green-l:#E6F4EC;--amber:#C98A16;--amber-l:#FDF3E2;--red:#D6474A;
+  --bg:#F7F6F3;--surface:#fff;--surface2:#F1EFEA;
+  --text:#1E1E22;--text2:#6A6A72;--text3:#9C9CA6;--border:rgba(0,0,0,.09);
+}
+body{font-family:'Noto Sans KR','Malgun Gothic',sans-serif;background:var(--bg);color:var(--text);padding:20px 16px 60px;}
+.wrap{max-width:1180px;margin:0 auto;}
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px;}
+.top h1{font-size:20px;}
+.top .cls{font-size:13px;color:var(--text2);}
+.top .who{margin-left:auto;font-size:12px;color:var(--text2);display:flex;align-items:center;gap:8px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px;}
+.card h2{font-size:14px;margin-bottom:10px;}
+.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;}
+.controls .f{display:flex;flex-direction:column;gap:5px;}
+.controls label,.field label{font-size:11px;color:var(--text2);}
+input[type=text],input[type=email],input[type=password]{padding:9px 12px;border:1px solid rgba(0,0,0,.16);border-radius:10px;font-size:13px;font-family:inherit;}
+select{padding:9px 10px;border:1px solid rgba(0,0,0,.16);border-radius:10px;font-size:13px;font-family:inherit;background:#fff;min-width:220px;}
+textarea{width:100%;min-height:110px;padding:10px 12px;border:1px solid rgba(0,0,0,.16);border-radius:10px;font-size:13px;font-family:inherit;line-height:1.6;resize:vertical;}
+button{padding:9px 14px;border:none;border-radius:10px;background:var(--navy);color:#fff;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;}
+button:hover{background:var(--navy-d);}
+button.sec{background:var(--surface2);color:var(--text);}
+button.sec:hover{background:#e6e3dc;}
+button.link{background:none;color:var(--text2);padding:0;text-decoration:underline;font-weight:400;}
+.hint{font-size:11px;color:var(--text3);margin-top:8px;line-height:1.7;}
+.msg{font-size:12px;margin-top:8px;min-height:16px;color:var(--text2);}
+.msg.err{color:var(--red);}
+.hidden{display:none !important;}
+
+.login-wrap{max-width:400px;margin:60px auto 0;}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
+.field input{width:100%;}
+
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px;}
+.stat{background:var(--navy-l);border:1px solid rgba(27,95,168,.12);border-radius:10px;padding:12px;text-align:center;}
+.stat .k{font-size:11px;color:var(--text2);margin-bottom:4px;}
+.stat .v{font-size:20px;font-weight:700;color:var(--navy);}
+.stat .s{font-size:11px;color:var(--text3);margin-top:2px;}
+
+.tbl-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{font-size:11px;color:var(--text2);font-weight:500;background:var(--surface2);padding:9px 10px;text-align:left;white-space:nowrap;cursor:pointer;user-select:none;}
+th.num,td.num{text-align:right;}
+td{padding:9px 10px;border-bottom:1px solid rgba(0,0,0,.05);white-space:nowrap;}
+tr:hover td{background:#FAF9F6;}
+.badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500;}
+.b-done{background:var(--green-l);color:var(--green);}
+.b-prog{background:var(--amber-l);color:var(--amber);}
+.b-none{background:var(--surface2);color:var(--text3);}
+.b-warn{background:#FBEAEA;color:var(--red);}
+.small{font-size:11px;color:var(--text3);}
+.pos{color:var(--green);} .neg{color:var(--red);}
+.empty{text-align:center;padding:30px;color:var(--text3);font-size:13px;}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 12px;}
+.chip{background:var(--navy-l);color:var(--navy);border-radius:20px;padding:4px 6px 4px 11px;font-size:12px;display:flex;align-items:center;gap:4px;}
+.chip button{background:none;color:var(--text3);padding:0 4px;font-size:13px;line-height:1;}
+.chip button:hover{color:var(--red);background:none;}
+details summary{cursor:pointer;font-size:14px;font-weight:700;}
+@media(max-width:800px){.stats{grid-template-columns:repeat(2,1fr);}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- 로그인 -->
+  <div id="login-screen" class="login-wrap hidden">
+    <div class="card">
+      <h2>🎓 Opsera 강사 로그인</h2>
+      <p class="hint" style="margin:0 0 14px;">강사 계정으로만 들어올 수 있습니다.</p>
+      <div class="field"><label for="email">이메일</label><input type="email" id="email" autocomplete="username"></div>
+      <div class="field"><label for="pw">비밀번호</label><input type="password" id="pw" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <button onclick="doLogin()" style="width:100%;">로그인</button>
+      <div class="msg" id="login-msg"></div>
+      <button class="link" onclick="resetPw()" style="margin-top:6px;">비밀번호를 잊으셨나요?</button>
+    </div>
+  </div>
+
+  <!-- 대시보드 -->
+  <div id="app" class="hidden">
+    <div class="top">
+      <h1>🎓 Opsera 강사 대시보드</h1>
+      <span class="cls" id="cls-name"></span>
+      <span class="who"><span id="who"></span><button class="sec" onclick="doLogout()">로그아웃</button></span>
+    </div>
+
+    <div class="card">
+      <div class="controls">
+        <div class="f">
+          <label>수업</label>
+          <select id="code" onchange="load()"></select>
+        </div>
+        <button class="sec" onclick="load()">새로고침</button>
+        <div class="f">
+          <label>보기</label>
+          <select id="filter" onchange="render()" style="min-width:150px;">
+            <option value="all">전체</option>
+            <option value="notdone">3단계 미완료</option>
+            <option value="none">아직 시작 안 함</option>
+            <option value="done">3단계 모두 완료</option>
+          </select>
+        </div>
+        <button class="sec" onclick="exportCsv()">엑셀(CSV) 저장</button>
+      </div>
+      <div class="msg" id="msg"></div>
+      <p class="hint">
+        · 이익은 레벨마다 <b>완료한 시도 중 최고 기록</b>입니다. 진행 중인 레벨은 가장 최근 시도의 진행 상황입니다.<br>
+        · 이름 옆 괄호는 학생이 리더보드에 쓴 닉네임입니다. 표 머리글을 누르면 정렬됩니다.
+      </p>
+    </div>
+
+    <div class="stats" id="stats"></div>
+
+    <div class="card tbl-wrap">
+      <table>
+        <thead><tr id="thead"></tr></thead>
+        <tbody id="tbody"><tr><td class="empty" colspan="9">수업을 고르세요.</td></tr></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <details id="roster-box">
+        <summary>📋 수강 명단 관리 (<span id="roster-count">0</span>명)</summary>
+        <p class="hint">명단에 있는 이름만 학생 로그인이 됩니다. 띄어쓰기는 자동으로 지웁니다. 동명이인은 김민준A, 김민준B처럼 구분해 등록하고 학생에게 알려주세요.</p>
+        <div class="chips" id="roster-chips"></div>
+        <textarea id="roster-add" placeholder="추가할 이름을 한 줄에 한 명씩 (엑셀 열을 복사해 붙여 넣어도 됩니다)"></textarea>
+        <div class="controls" style="margin-top:8px;"><button onclick="addNames()">명단에 추가</button></div>
+        <div class="msg" id="roster-msg"></div>
+      </details>
+    </div>
+  </div>
+
+  <div id="denied" class="login-wrap hidden">
+    <div class="card">
+      <h2>권한이 없는 계정입니다</h2>
+      <p class="hint" style="margin:0 0 12px;" id="denied-who"></p>
+      <button class="sec" onclick="doLogout()">다른 계정으로 로그인</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import { getDatabase, ref, get, update, remove } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-database.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCgBJ6yt9_TrK7AlgTKhEth7Qt2QdCYADc",
+  authDomain: "newsvendor-game-simulation.firebaseapp.com",
+  databaseURL: "https://newsvendor-game-simulation-default-rtdb.firebaseio.com",
+  projectId: "newsvendor-game-simulation",
+  storageBucket: "newsvendor-game-simulation.firebasestorage.app",
+  messagingSenderId: "213354360321",
+  appId: "1:213354360321:web:4dc63514cc19ba6019da00"
+};
+const app  = initializeApp(firebaseConfig);
+const db   = getDatabase(app);
+const auth = getAuth(app);
+
+const LEVELS = [
+  { id:1, key:'l1', name:'OpsQuest', path:'leaderboard',    step:'rounds', total:10, unit:'R' },
+  { id:2, key:'l2', name:'OpsFlow',  path:'leaderboard_l2', step:'weeks',  total:4,  unit:'주' },
+  { id:3, key:'l3', name:'OpsApex',  path:'leaderboard_l3', step:'days',   total:20, unit:'일' }
+];
+const BAD = /[.#$\[\]\/]/;
+
+let state = { code:'', className:'', rows:[], roster:[], scores:null };
+let sortKey = 'name', sortDir = 1;
+
+const $ = id => document.getElementById(id);
+const fmt = n => (n < 0 ? '-₩' : '₩') + Math.abs(Math.round(n)).toLocaleString();
+const esc = s => String(s ?? '').replace(/[&<>"'`]/g, c => '&#' + c.charCodeAt(0) + ';');
+const fmtTime = ts => ts ? new Date(ts).toLocaleString('ko-KR', { month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit' }) : '—';
+const show = id => ['login-screen', 'app', 'denied'].forEach(x => $(x).classList.toggle('hidden', x !== id));
+function setMsg(id, t, err) { const m = $(id); m.textContent = t; m.className = 'msg' + (err ? ' err' : ''); }
+
+/* ══ 로그인 ══ */
+window.doLogin = async function () {
+  const email = $('email').value.trim(), pw = $('pw').value;
+  if (!email || !pw) { setMsg('login-msg', '이메일과 비밀번호를 입력해 주세요.', true); return; }
+  setMsg('login-msg', '로그인 중...');
+  try {
+    await signInWithEmailAndPassword(auth, email, pw);
+    $('pw').value = '';
+  } catch (e) {
+    setMsg('login-msg', '❌ 이메일 또는 비밀번호가 맞지 않습니다.', true);
+  }
+};
+window.resetPw = async function () {
+  const email = $('email').value.trim();
+  if (!email) { setMsg('login-msg', '이메일을 먼저 입력한 뒤 다시 눌러 주세요.', true); return; }
+  try { await sendPasswordResetEmail(auth, email); setMsg('login-msg', '비밀번호 재설정 메일을 보냈습니다. 메일함을 확인해 주세요.'); }
+  catch { setMsg('login-msg', '메일을 보내지 못했습니다. 이메일 주소를 확인해 주세요.', true); }
+};
+window.doLogout = async function () { await signOut(auth); };
+
+onAuthStateChanged(auth, async u => {
+  if (!u) { show('login-screen'); return; }
+  let isAdmin = false;
+  try { isAdmin = (await get(ref(db, `admins/${u.uid}`))).val() === true; } catch {}
+  if (!isAdmin) {
+    $('denied-who').textContent = `${u.email} 계정은 강사로 등록되어 있지 않습니다. (계정 ID: ${u.uid})`;
+    show('denied');
+    return;
+  }
+  $('who').textContent = u.email;
+  show('app');
+  await loadClasses();
+});
+
+/* ══ 수업 목록 ══ */
+async function loadClasses() {
+  try {
+    const cls = (await get(ref(db, 'leaderboard/classes'))).val() || {};
+    const sel = $('code');
+    sel.innerHTML = '<option value="">수업을 고르세요</option>' +
+      Object.entries(cls).map(([code, v]) => `<option value="${esc(code)}">${esc((v && v.name) || code)} (${esc(code)})</option>`).join('');
+    const codes = Object.keys(cls);
+    if (codes.length === 1) { sel.value = codes[0]; load(); }
+  } catch (e) {
+    setMsg('msg', '수업 목록을 불러오지 못했습니다. (' + e.message + ')', true);
+  }
+}
+
+/* ══ 기록 → 학생별 요약 ══ */
+function summarize(scoresByLevel, rosterNames) {
+  const people = {};
+  const touch = id => people[id] || (people[id] = { name:id, nicks:new Set(), lv:{}, last:0, attempts:0 });
+  LEVELS.forEach(lv => {
+    Object.values(scoresByLevel[lv.key] || {}).forEach(r => {
+      const id = r && (r.name || r.nick);
+      if (!id) return;
+      const p = touch(id);
+      if (r.nick && r.nick !== id) p.nicks.add(r.nick);
+      p.attempts++;
+      p.last = Math.max(p.last, r.ts || 0);
+      const cur = p.lv[lv.key] || (p.lv[lv.key] = { done:false, best:null, steps:0, latestTs:0, latestProfit:0 });
+      if (r.completed) {
+        cur.done = true;
+        if (cur.best === null || r.profit > cur.best) cur.best = r.profit;
+      } else if ((r.ts || 0) >= cur.latestTs) {
+        cur.latestTs = r.ts || 0;
+        cur.steps = r[lv.step] || 0;
+        cur.latestProfit = r.profit || 0;
+      }
+    });
+  });
+  rosterNames.forEach(n => touch(n));
+  return Object.values(people).map(p => {
+    const doneCount = LEVELS.filter(lv => p.lv[lv.key]?.done).length;
+    const total = LEVELS.reduce((s, lv) => s + (p.lv[lv.key]?.done ? p.lv[lv.key].best : 0), 0);
+    return { ...p, doneCount, total, started: LEVELS.some(lv => p.lv[lv.key]), inRoster: rosterNames.includes(p.name) };
+  });
+}
+
+/* ══ 수업 불러오기 ══ */
+window.load = async function () {
+  const code = $('code').value;
+  if (!code) return;
+  setMsg('msg', '불러오는 중...');
+  try {
+    const [cls, roster, ...parts] = await Promise.all([
+      get(ref(db, `leaderboard/classes/${code}`)),
+      get(ref(db, `roster/${code}`)),
+      ...LEVELS.map(lv => get(ref(db, `${lv.path}/scores/${code}`)))
+    ]);
+    const scores = {};
+    LEVELS.forEach((lv, i) => scores[lv.key] = parts[i].val() || {});
+    const rv = roster.val();
+    state = { ...state, code, className: (cls.val() && cls.val().name) || code, scores,
+              roster: rv && typeof rv === 'object' ? Object.keys(rv).filter(k => rv[k] === true) : [] };
+    state.rows = summarize(scores, state.roster);
+    $('cls-name').textContent = `${state.className} (${code})`;
+    setMsg('msg', `✅ ${new Date().toLocaleTimeString('ko-KR')} 기준 · 명단 ${state.roster.length}명 · 기록 있는 학생 ${state.rows.filter(r => r.started).length}명`);
+    render();
+    renderRoster();
+  } catch (e) {
+    setMsg('msg', '불러오지 못했습니다. (' + e.message + ')', true);
+  }
+};
+
+/* ══ 표 ══ */
+function levelCell(p, lv) {
+  const d = p.lv[lv.key];
+  if (!d) return '<span class="badge b-none">미시작</span>';
+  if (d.done) return `<span class="badge b-done">완료</span> <span class="${d.best >= 0 ? 'pos' : 'neg'}">${fmt(d.best)}</span>`;
+  return `<span class="badge b-prog">${d.steps}/${lv.total}${lv.unit}</span> <span class="small">${fmt(d.latestProfit)}</span>`;
+}
+function filtered() {
+  const f = $('filter').value;
+  return state.rows.filter(r => f === 'all' ? true : f === 'notdone' ? r.doneCount < 3 : f === 'none' ? !r.started : f === 'done' ? r.doneCount === 3 : true);
+}
+function sortVal(r, k) {
+  if (k === 'name') return r.name;
+  if (k === 'total') return r.total;
+  if (k === 'done') return r.doneCount * 1e12 + r.total;
+  if (k === 'last') return r.last;
+  if (k === 'attempts') return r.attempts;
+  const lv = LEVELS.find(l => l.key === k);
+  if (lv) { const d = r.lv[k]; return !d ? -1e15 : d.done ? 1e12 + d.best : d.steps; }
+  return 0;
+}
+window.setSort = k => { sortDir = sortKey === k ? -sortDir : (k === 'name' ? 1 : -1); sortKey = k; render(); };
+
+window.render = function () {
+  const cols = [['rank','#',false], ['name','이름 (닉네임)',false], ...LEVELS.map(l => [l.key, `L${l.id} ${l.name}`, false]),
+    ['done','완료 단계',true], ['total','완료 레벨 이익 합계',true], ['attempts','시도 수',true], ['last','마지막 활동',false]];
+  $('thead').innerHTML = cols.map(([k, t, num]) =>
+    `<th class="${num ? 'num' : ''}" ${k !== 'rank' ? `onclick="setSort('${k}')"` : ''}>${t}${sortKey === k ? (sortDir > 0 ? ' ▲' : ' ▼') : ''}</th>`).join('');
+
+  const prog = r => LEVELS.reduce((s, lv) => { const d = r.lv[lv.key]; return s + (d && !d.done ? d.steps / lv.total : 0); }, 0);
+  const ranked = [...state.rows].sort((a, b) => b.doneCount - a.doneCount || b.total - a.total || prog(b) - prog(a));
+  const rankOf = new Map(ranked.map((r, i) => [r.name, r.started ? i + 1 : null]));
+  const rows = filtered().sort((a, b) => {
+    const va = sortVal(a, sortKey), vb = sortVal(b, sortKey);
+    return (typeof va === 'string' ? va.localeCompare(vb, 'ko') : va - vb) * sortDir;
+  });
+  $('tbody').innerHTML = rows.length ? rows.map(r => `<tr>
+      <td class="small">${rankOf.get(r.name) ?? '—'}</td>
+      <td><b>${esc(r.name)}</b>${r.nicks.size ? ` <span class="small">(${[...r.nicks].map(esc).join(', ')})</span>` : ''}${r.inRoster ? '' : ' <span class="badge b-warn" title="명단에 없는 이름(예전 기록)">명단 외</span>'}</td>
+      ${LEVELS.map(lv => `<td>${levelCell(r, lv)}</td>`).join('')}
+      <td class="num">${r.doneCount} / 3</td>
+      <td class="num ${r.total >= 0 ? 'pos' : 'neg'}">${r.doneCount ? fmt(r.total) : '—'}</td>
+      <td class="num">${r.attempts}</td>
+      <td class="small">${fmtTime(r.last)}</td>
+    </tr>`).join('') : `<tr><td class="empty" colspan="${cols.length}">해당하는 학생이 없습니다.</td></tr>`;
+  renderStats();
+};
+
+function renderStats() {
+  const all = state.rows, n = all.length, started = all.filter(r => r.started).length;
+  const card = (k, v, s) => `<div class="stat"><div class="k">${k}</div><div class="v">${v}</div><div class="s">${s || ''}</div></div>`;
+  const lv = LEVELS.map(l => {
+    const done = all.filter(r => r.lv[l.key]?.done);
+    const avg = done.length ? done.reduce((s, r) => s + r.lv[l.key].best, 0) / done.length : null;
+    return card(`L${l.id} 완료`, `${done.length}명 (${n ? Math.round(done.length / n * 100) : 0}%)`, avg === null ? '평균 이익 —' : `평균 이익 ${fmt(avg)}`);
+  });
+  $('stats').innerHTML = card('학생 수', `${n}명`, `명단 ${state.roster.length} · 시작 ${started}`) + lv.join('') +
+    card('3단계 모두 완료', `${all.filter(r => r.doneCount === 3).length}명`, '');
+}
+
+/* ══ 명단 관리 ══ */
+function renderRoster() {
+  $('roster-count').textContent = state.roster.length;
+  const sorted = [...state.roster].sort((a, b) => a.localeCompare(b, 'ko'));
+  $('roster-chips').innerHTML = sorted.length
+    ? sorted.map(n => `<span class="chip">${esc(n)}<button title="명단에서 빼기" data-name="${esc(n)}" onclick="removeName(this.dataset.name)">×</button></span>`).join('')
+    : '<span class="small">아직 등록된 학생이 없습니다. 아래에 이름을 붙여 넣으세요.</span>';
+}
+
+window.addNames = async function () {
+  if (!state.code) { setMsg('roster-msg', '먼저 수업을 고르세요.', true); return; }
+  const names = [...new Set($('roster-add').value.split(/\r?\n/).map(s => s.split('\t').pop().replace(/\s+/g, '')).filter(Boolean))];
+  if (!names.length) { setMsg('roster-msg', '추가할 이름을 입력해 주세요.', true); return; }
+  const bad = names.filter(n => n.length > 20 || BAD.test(n));
+  if (bad.length) { setMsg('roster-msg', `다음 이름은 20자 이하로, . # $ [ ] / 없이 써 주세요: ${bad.join(', ')}`, true); return; }
+  const dup = names.filter(n => state.roster.includes(n));
+  const fresh = names.filter(n => !state.roster.includes(n));
+  if (!fresh.length) { setMsg('roster-msg', '모두 이미 명단에 있는 이름입니다. 동명이인이면 김민준A처럼 구분해 주세요.', true); return; }
+  const patch = {};
+  fresh.forEach(n => patch[n] = true);
+  try {
+    await update(ref(db, `roster/${state.code}`), patch);
+    $('roster-add').value = '';
+    setMsg('roster-msg', `✅ ${fresh.length}명 추가` + (dup.length ? ` · 이미 있던 ${dup.length}명(${dup.join(', ')})은 건너뜀` : ''));
+    await load();
+  } catch (e) {
+    setMsg('roster-msg', '추가하지 못했습니다. (' + e.message + ')', true);
+  }
+};
+
+window.removeName = async function (name) {
+  if (!confirm(`'${name}'을(를) 명단에서 뺄까요?\n이 학생은 더 이상 로그인할 수 없습니다. 이미 남긴 기록은 지워지지 않습니다.`)) return;
+  try {
+    await remove(ref(db, `roster/${state.code}/${name}`));
+    setMsg('roster-msg', `✅ '${name}'을(를) 명단에서 뺐습니다.`);
+    await load();
+  } catch (e) {
+    setMsg('roster-msg', '빼지 못했습니다. (' + e.message + ')', true);
+  }
+};
+
+/* ══ CSV ══ */
+window.exportCsv = function () {
+  if (!state.rows.length) { setMsg('msg', '먼저 수업을 골라 주세요.', true); return; }
+  const q = s => `"${String(s).replace(/"/g, '""')}"`;
+  const head = ['이름', '닉네임', ...LEVELS.flatMap(l => [`L${l.id} 상태`, `L${l.id} 최고 이익(완료)`, `L${l.id} 진행`]), '완료 단계 수', '완료 레벨 이익 합계', '시도 수', '마지막 활동', '명단 여부'];
+  const lines = [head.map(q).join(',')];
+  [...state.rows].sort((a, b) => a.name.localeCompare(b.name, 'ko')).forEach(r => {
+    const cells = [r.name, [...r.nicks].join(' / ')];
+    LEVELS.forEach(lv => {
+      const d = r.lv[lv.key];
+      cells.push(!d ? '미시작' : d.done ? '완료' : '진행 중');
+      cells.push(d && d.done ? Math.round(d.best) : '');
+      cells.push(d && !d.done ? `${d.steps}/${lv.total}` : d && d.done ? `${lv.total}/${lv.total}` : '');
+    });
+    cells.push(r.doneCount, r.doneCount ? Math.round(r.total) : '', r.attempts, r.last ? new Date(r.last).toLocaleString('ko-KR') : '', r.inRoster ? 'O' : 'X');
+    lines.push(cells.map(q).join(','));
+  });
+  const blob = new Blob(['﻿' + lines.join('\r\n')], { type:'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `Opsera_${state.code}_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  setMsg('msg', '✅ CSV 파일을 저장했습니다. 엑셀로 열 수 있습니다.');
+};
+</script>
+</body>
+</html>

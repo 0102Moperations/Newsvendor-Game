@@ -62,6 +62,7 @@
   .markdown-slider input[type=range]{flex:1;accent-color:var(--amber);}
   .markdown-info{font-size:11px;color:var(--text2);margin-top:8px;line-height:1.8;}
   .calc-box{display:inline-block;background:#fff;border:1px solid #eadfd0;border-radius:6px;padding:2px 8px;margin-top:4px;color:var(--text);}
+  .event-note{background:#fff7e6;border:1px solid #f0d49a;border-left:3px solid var(--amber);border-radius:var(--radius);padding:10px 12px;font-size:12px;color:#7a5410;margin-bottom:12px;line-height:1.7;}
   .md-grid{display:grid;grid-template-columns:2fr 3fr;gap:14px;align-items:start;}
   .md-left{background:var(--surface);border:1px solid #eadfd0;border-radius:var(--radius);padding:10px 12px;}
   .md-stat{display:flex;justify-content:space-between;font-size:12px;color:var(--text2);padding:3px 0;}
@@ -215,7 +216,7 @@
 
     <div class="phase-indicator morning">
       <div class="phase-label">🌅 <span id="am-when">월요일</span> 아침 7시. 오늘의 재료 준비 계획</div>
-      <div style="font-size:12px;color:var(--text2);">3개 상품의 준비 수량을 정하세요. 아침에 남은 재고는 오후에 할인해서 팔 수 있습니다.</div>
+      <div style="font-size:12px;color:var(--text2);" id="am-guide">3개 상품의 준비 수량을 정하세요. 아침에 남은 재고는 오후에 할인해서 팔 수 있습니다.</div>
     </div>
 
     <div class="card">
@@ -268,6 +269,7 @@
     <div class="prog" id="prog-r"></div>
     <div class="card">
       <div class="card-title" id="res-title">Day 1 최종 결과</div>
+      <div class="event-note" id="next-notice" style="display:none;"></div>
       <div id="daily-results" style="margin-bottom:16px;"></div>
       <div class="result-grid">
         <div class="ri"><span class="k">정가 판매액</span><span class="v" id="r-am">₩0</span></div>
@@ -279,6 +281,7 @@
         <div class="pl">오늘 순이익</div>
         <div class="pv" id="p-val">₩0</div>
       </div>
+      <div id="cum-box" style="display:none;margin-top:12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;"></div>
     </div>
 
     <div class="card">
@@ -309,7 +312,7 @@
       <div class="card-title">🎓 학습 정리</div>
       <div class="info-box" style="margin-bottom:0;">
         <strong>① 할인할 수 있으면 재료를 더 많이 준비해도 됩니다.</strong>
-        오후에 할인해서 팔 수 있으니 "남았을 때의 손해"가 줄어듭니다. Level 1의 원리대로, 남을 때의 손해가 작아지면 더 많이 준비하는 것이 유리합니다.<br><br>
+        오후에 할인해서 팔 수 있으니 "남았을 때의 손해"가 줄어듭니다. Level 1의 원리대로, 남을 때의 손해가 작아지면 더 많이 준비하는 것이 유리합니다. 반대로 목요일처럼 오후 판매가 없는 날에는 남으면 모두 버려야 하므로 준비 수량을 줄이는 것이 유리합니다.<br><br>
         <strong>② 할인 폭은 "남은 양"에 맞춰 정합니다.</strong>
         조금 남았으면 할인 없이도 오후 손님이 사 갑니다. 많이 남았을 때만 크게 할인하세요. 너무 크게 할인하면 어차피 팔릴 물건까지 싸게 팔게 되고, 60%를 넘으면 손님이 더 늘지도 않습니다.<br><br>
         <strong>③ 오후에는 원가가 이미 쓴 돈입니다.</strong>
@@ -369,6 +372,7 @@ const TOTAL_DAYS   = 7;
 const DAY_NAMES    = ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일'];
 const DISPOSAL_FEE = 200;   // 폐기 1개당 처리비
 const MD_SATURATE  = 60;    // 할인 60%에서 수요 포화
+const NO_PM_DAY    = 3;     // 0부터 셈 → 4일차(목요일): 위생 점검으로 오후 할인 판매 없음 (전날 결과 화면에서 예고)
 const AM_NOISE     = 0.20;
 const PM_NOISE     = 0.15;
 
@@ -712,7 +716,7 @@ window.startGame = async function() {
       if (pend && pend.dayIdx === day && pend.products) {
         alert(`이어서 진행합니다. Day ${day + 1} 정가 판매가 끝난 상태예요. 오후 4시 할인 결정부터 이어 갑니다.`);
         currentDayData = pend;
-        renderAfternoon();
+        if (day === NO_PM_DAY) completeDay(); else renderAfternoon();
         return;
       }
       if (h.length) alert(`이어서 진행합니다. ${h.length}일차까지 끝낸 기록을 불러왔어요.`);
@@ -729,6 +733,9 @@ function loadMorning() {
   document.getElementById('st-profit').style.color = cumProfit >= 0 ? 'var(--green)' : 'var(--red)';
   document.getElementById('st-week').textContent   = DAY_NAMES[day] || '';
   document.getElementById('am-when').textContent   = DAY_NAMES[day] || '';
+  document.getElementById('am-guide').innerHTML = day === NO_PM_DAY
+    ? `3개 상품의 준비 수량을 정하세요. <strong style="color:var(--red);">📢 오늘은 위생 점검으로 오후 할인 판매가 없습니다. 4시에 남은 재고는 모두 폐기됩니다(처리비 ₩200/개).</strong>`
+    : '3개 상품의 준비 수량을 정하세요. 아침에 남은 재고는 오후에 할인해서 팔 수 있습니다.';
   buildProg('prog-g', day);
   onMorningChange();
   startLbListener(['game-lb'], false);
@@ -773,6 +780,7 @@ window.goAfternoon = async function() {
 
   // 아침 결과를 바로 저장 → 창을 닫았다 와도 이 결과로 오후부터 이어짐
   try { await saveScore(false, currentDayData); } catch (e) {}
+  if (day === NO_PM_DAY) { completeDay(); return; }   // 오후 판매 없는 날: 바로 마감
   renderAfternoon();
 };
 
@@ -880,7 +888,7 @@ window.completeDay = async function() {
     cost += d.cost;
     totalAmSold += d.amSold;
     if (d.leftover > 0) {
-      const dem  = actualAfternoonDemand(key, d.mdPct);
+      const dem  = day === NO_PM_DAY ? 0 : actualAfternoonDemand(key, d.mdPct);
       const sold = Math.min(dem, d.leftover);
       d.pmDemand = dem;
       d.pmSold = sold;
@@ -915,13 +923,22 @@ window.completeDay = async function() {
         <div style="font-size:11px;color:var(--text2);line-height:1.7;">
           준비 ${d.ordered}개 · 정가 손님 ${d.amDemand}명 → ${d.amSold}개 판매 (${fmt(d.amRev)})<br>
           ${d.leftover > 0
-            ? `오후 ${d.mdPct}% 할인 → 손님 ${d.pmDemand}명, ${d.pmSold}개 판매 (${fmt(d.pmRev)}) · <span style="color:${d.waste > 0 ? 'var(--red)' : 'var(--green)'}">폐기 ${d.waste}개</span>`
+            ? (day === NO_PM_DAY
+                ? `오후 판매 없음 (위생 점검) · <span style="color:var(--red)">폐기 ${d.waste}개</span>`
+                : `오후 ${d.mdPct}% 할인 → 손님 ${d.pmDemand}명, ${d.pmSold}개 판매 (${fmt(d.pmRev)}) · <span style="color:${d.waste > 0 ? 'var(--red)' : 'var(--green)'}">폐기 ${d.waste}개</span>`)
             : `<span style="color:var(--amber)">4시 전에 모두 팔림 · 손님 ${d.amDemand - d.amSold}명은 못 삼</span>`}
         </div>
       </div>`;
     }).join('');
 
   document.getElementById('res-title').textContent = `Day ${day + 1} (${DAY_NAMES[day] || ''}) 최종 결과`;
+  const nn = document.getElementById('next-notice');
+  if (day === NO_PM_DAY - 1) {
+    nn.innerHTML = `📢 <strong>내일(${DAY_NAMES[NO_PM_DAY]})은 위생 점검으로 오후 할인 판매가 없습니다.</strong> 4시에 남은 재고는 모두 폐기됩니다(처리비 ₩200/개). 내일 아침 준비 수량을 정할 때 참고하세요.`;
+    nn.style.display = '';
+  } else {
+    nn.style.display = 'none';
+  }
   document.getElementById('r-am').textContent    = fmt(currentDayData.amSales);
   document.getElementById('r-pm').textContent    = fmt(pmRev);
   document.getElementById('r-cost').textContent  = '−' + fmt(cost);
@@ -930,6 +947,27 @@ window.completeDay = async function() {
   const pd = document.getElementById('p-disp');
   pd.className = 'profit-disp ' + (dayProfit >= 0 ? 'pos' : 'neg');
   document.getElementById('p-val').textContent = fmt(dayProfit);
+
+  /* 누적 결과 (2일차부터) */
+  const cumBox = document.getElementById('cum-box');
+  if (history.length >= 2) {
+    const sum = f => history.reduce((s, h) => s + (h[f] || 0), 0);
+    cumBox.innerHTML = `
+      <div style="font-size:13px;font-weight:500;margin-bottom:8px;">📈 Day 1~${history.length} 누적</div>
+      <div class="result-grid">
+        <div class="ri"><span class="k">정가 판매액</span><span class="v">${fmt(sum('amSales'))}</span></div>
+        <div class="ri"><span class="k">오후 판매액</span><span class="v">${fmt(sum('pmRev'))}</span></div>
+        <div class="ri"><span class="k">재료비</span><span class="v">−${fmt(sum('cost'))}</span></div>
+        <div class="ri"><span class="k">폐기 처리비</span><span class="v" style="color:var(--red);">−${fmt(sum('disposal'))} (${sum('wasteQty')}개)</span></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:14px;">
+        <span style="color:var(--text2);">누적 순이익</span>
+        <strong style="font-size:18px;color:${cumProfit >= 0 ? 'var(--green)' : 'var(--red)'};">${fmt(cumProfit)}</strong>
+      </div>`;
+    cumBox.style.display = '';
+  } else {
+    cumBox.style.display = 'none';
+  }
 
 
   renderHistory('h-tbody');
@@ -966,23 +1004,30 @@ function renderReference() {
     const noMd = bestQ(key, false);
     const withMd = bestQ(key, true);
     const guide = [3, 6, 10, 15, 20].filter(L => L <= p.qMax).map(L => `${L}개→${bestMarkdown(key, L).md}%`).join(' · ');
-    const myQ = history.length ? Math.round(history.reduce((s, h) => s + h.products[key].ordered, 0) / history.length) : null;
-    const mdDays = history.filter(h => h.products[key].leftover > 0);
+    const normal = history.filter(h => h.dayNo - 1 !== NO_PM_DAY);
+    const myQ = normal.length ? Math.round(normal.reduce((s, h) => s + h.products[key].ordered, 0) / normal.length) : null;
+    const thu = history.find(h => h.dayNo - 1 === NO_PM_DAY);
+    const myThuQ = thu ? thu.products[key].ordered : null;
+    const mdDays = normal.filter(h => h.products[key].leftover > 0);
     const myMd = mdDays.length ? Math.round(mdDays.reduce((s, h) => s + h.products[key].mdPct, 0) / mdDays.length) : null;
     rows += `<tr><td>${p.icon} ${p.name}</td>
       <td>${p.amDemand}개</td>
-      <td>${noMd.Q}개</td>
       <td><strong>${withMd.Q}개</strong></td>
+      <td>${myQ === null ? '—' : myQ + '개'}</td>
+      <td><strong>${noMd.Q}개</strong></td>
+      <td>${myThuQ === null ? '—' : myThuQ + '개'}</td>
       <td style="font-size:11px;">${guide}</td>
-      <td>${myQ === null ? '—' : myQ + '개'}${myMd === null ? '' : ` / ${myMd}%`}</td></tr>`;
+      <td>${myMd === null ? '—' : myMd + '%'}</td></tr>`;
   });
   document.getElementById('f-ref').innerHTML = `
     <div style="font-size:12px;color:var(--text2);line-height:1.7;">
-      <strong>참고: 기대이익이 가장 큰 결정</strong> — 할인을 활용할 수 있을 때 준비 수량이 얼마나 늘어나는지,
-      남은 양에 따라 할인율이 어떻게 달라지는지 비교해 보세요.
+      <strong>참고: 기대이익을 최대로 하는 결정(최적해)과 내 결정</strong> — 오후 할인 판매가 있는 날과 없는 날(목요일)의 준비 수량을 비교해 보세요.
     </div>
     <table class="ref-table">
-      <thead><tr><th>상품</th><th>정가 판매<br>평균 수요</th><th>오후 판매가 없다면<br>(Level 1처럼) 최적 준비 수량</th><th>할인 활용 시<br>최적 준비 수량</th><th>남은 양별 좋은 할인율</th><th>내 평균<br>준비 수량 / 할인</th></tr></thead>
+      <thead>
+        <tr><th rowspan="2">상품</th><th rowspan="2">정가 판매<br>평균 수요</th><th colspan="2">할인 판매가 있는 날</th><th colspan="2">오후 판매가 없는 날 (목요일)</th><th colspan="2">오후 할인율</th></tr>
+        <tr><th>최적 준비 수량</th><th>내 평균</th><th>최적 준비 수량</th><th>내 준비 수량</th><th>남은 양별 최적 할인율</th><th>내 평균</th></tr>
+      </thead>
       <tbody>${rows}</tbody>
     </table>`;
 }
